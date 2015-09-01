@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+   <modelVersion>4.0.0</modelVersion>
+   <!-- Identificador del componente -->
+   <groupId>com.softwaresano.pipeline.plugin</groupId>
+   <artifactId>exportRepos</artifactId>
+   <version>1</version>
+   <packaging>pom</packaging>
+   <name>Export Rpm Repository</name>
+   <description>
+      Exportación repositorio de rpms para la pipeline
+   </description>
+   <organization>
+      <name>SoftwareSano</name>
+      <url>http://develenv.softwaresano.com</url>
+   </organization>
+   <!-- [MODIFICAR] la URL del proyecto. Ojo no suprimir la URL, ya que es
+      obligatoria para el maven-changes-plugin -->
+   <url>${project.organization.url}/${project.artifactId}/</url>
+   <!-- [MODIFICAR] La licencia bajo la que se distribuye el componente -->
+   <licenses>
+      <license>
+         <name>GNU GENERAL PUBLIC LICENSE</name>
+         <url>http://www.gnu.org/licenses/gpl-3.0.txt</url>
+         <distribution>GPL 3.0</distribution>
+      </license>
+   </licenses>
+   <!-- [MODIFICAR] Fijar el desarrollador por defecto y añadir el resto de
+      desarrolladores -->
+   <developers>
+      <developer>
+         <id>${userId}</id>
+         <name>Carlos E. Gómez Gómez</name>
+         <email>${userMail}</email>
+         <roles>
+            <role>${userRole}</role>
+         </roles>
+         <organization>${userOrganization}</organization>
+         <timezone>+1</timezone>
+      </developer>
+   </developers>
+   <properties>
+      <!-- Forzamos a los plugins a utilizar UTF-8, para evitar problemas con
+         los encodings por defectos de los diferentes sistemas operativos -->
+      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+      <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+      <copyright.year>2012</copyright.year>
+      <maven.version>3.0.4</maven.version>
+      <ant.version>1.8.4</ant.version>
+      <tomcat.version>7.0.32</tomcat.version>
+      <sonar.version>3.2.1</sonar.version>
+      <selenium.version>2.25.0</selenium.version>
+      <selenium.chrome.version>23.0.1240.0</selenium.chrome.version>
+      <jmeter.version>2.8</jmeter.version>
+      <soapui.version>4.5.1</soapui.version>
+      <statsvn.version>0.7.0</statsvn.version>
+      <companyBlog>${project.organization.url}</companyBlog>
+      <userName>Carlos Enrique Gómez Gómez</userName>
+      <userMail>carlosg@softwaresano.com</userMail>
+      <organization.acronym>ss</organization.acronym>
+      <userId>carlosg</userId>
+      <userRole>developer</userRole>
+      <userOrganization>${project.organization.name}</userOrganization>
+      <companyName>${project.organization.name}</companyName>
+      <companyUrl>${project.organization.url}</companyUrl>
+   </properties>
+   <profiles>
+         <profile>
+         <id>site</id>
+         <activation>
+            <file>
+               <exists>${basedir}</exists>
+            </file>
+         </activation>
+         <!-- generar el site del proyecto en español -->
+         <build>
+            <plugins>
+               <plugin>
+                  <inherited>true</inherited>
+                  <artifactId>maven-site-plugin</artifactId>
+                  <version>3.3</version>
+                  <dependencies>
+                     <dependency>
+                        <groupId>org.apache.maven.doxia</groupId>
+                        <artifactId>doxia-module-markdown</artifactId>
+                        <version>1.3</version>
+                     </dependency>
+                  </dependencies>
+               </plugin>
+            </plugins>
+         </build>
+      </profile>
+   </profiles>
+</project>

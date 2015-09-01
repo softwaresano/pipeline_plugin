@@ -1,0 +1,15 @@
+#!/bin/bash
+[[ -z $DP_HOME ]] && export DP_HOME=$(python -c 'import os,sys;print os.path.realpath(sys.argv[1])' $(which dp_package.sh)/..)
+if [[ "$DP_HOME" == "/" ]]; then
+     if [ ! -f ~/pipeline_plugin/dp_version.sh ]; then
+       #Install dp scripts
+       pushd . >/dev/null
+       cd
+       curl http://cdn-jenkins-server.hi.inet/develenv/repositories/artifacts/dp.tar.gz 2>/dev/null|tar xfz -
+       popd >/dev/null
+     fi
+     export DP_HOME=~/pipeline_plugin
+     export PATH=$DP_HOME:$PATH
+fi
+#Invoke hook
+$DP_HOME/tools/scm/git/templates/hooks/$(basename $0) $*

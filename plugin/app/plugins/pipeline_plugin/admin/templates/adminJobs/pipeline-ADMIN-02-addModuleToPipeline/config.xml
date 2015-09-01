@@ -1,0 +1,132 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description>&lt;a href=&quot;http://www.softwaresano.com/&quot; title=&quot;SoftwareSano&quot; class=&quot;poweredBy&quot;&gt;&#xd;
+   &lt;img id=&quot;jobJenkins&quot; class=&quot;poweredBy&quot;  alt=&quot;softwaresano&quot; src=&quot;http://pimpam.googlecode.com/files/jobJenkins.png&quot;/&gt;&#xd;
+   &lt;script type=&quot;text/javascript&quot; src=&quot;http://www.softwaresano.com/widgets/jobBuiltyBy.php&quot;&gt;&lt;/script&gt;&#xd;
+   &lt;script type=&quot;text/javascript&quot; src=&quot;/widgets/jobBuiltyBy.php&quot;&gt;&lt;/script&gt;&#xd;
+&lt;/a&gt;&#xd;
+&lt;br/&gt;&#xd;
+Añade un módulo a una pipeline que ha sido creada anterioremente&#xd;
+&lt;br/&gt;&#xd;
+Una vez añadido el módulo se ha de seguir el  documento de &lt;a href=&quot;Next_steps&quot;&gt;Next steps&lt;/a&gt;</description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <hudson.plugins.googlecode.GoogleCodeProjectProperty/>
+    <hudson.plugins.sidebar__link.ProjectLinks>
+      <links>
+        <hudson.plugins.sidebar__link.LinkAction>
+          <url>../../../sites/pipelines/index.html</url>
+          <text>Deployment pipeline dashboard</text>
+          <icon>graph.gif</icon>
+        </hudson.plugins.sidebar__link.LinkAction>
+      </links>
+    </hudson.plugins.sidebar__link.ProjectLinks>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <hudson.model.ChoiceParameterDefinition>
+          <name>project</name>
+          <description>Proyecto al que se le quiere añadir el módulo</description>
+          <choices class="java.util.Arrays$ArrayList">
+            <a class="string-array">
+              <string>PIPELINE_PROJECT_ID</string>
+            </a>
+          </choices>
+        </hudson.model.ChoiceParameterDefinition>
+        <hudson.plugins.validating__string__parameter.ValidatingStringParameterDefinition>
+          <name>module</name>
+          <description>Módulo a añadir al proyecto Ejemplo: (db)</description>
+          <defaultValue></defaultValue>
+          <regex>([a-zA-Z])+[0-9]*([a-zA-Z])*</regex>
+          <failedValidationMessage>No cumple la expresión regular ([a-zA-Z])+[0-9]*([a-zA-Z])*</failedValidationMessage>
+        </hudson.plugins.validating__string__parameter.ValidatingStringParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+  </properties>
+  <scm class="hudson.scm.NullSCM"/>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers class="vector"/>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>#!/bin/bash
+export DEBUG_PIPELINE="FALSE"
+. pipeline.sh</command>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers>
+    <hudson.plugins.chucknorris.CordellWalkerRecorder>
+      <factGenerator/>
+    </hudson.plugins.chucknorris.CordellWalkerRecorder>
+   <hudson.plugins.logparser.LogParserPublisher>
+      <unstableOnWarning>false</unstableOnWarning>
+      <failBuildOnError>false</failBuildOnError>
+      <parsingRulesPath>/home/develenv/app/jenkins/consoleParser.conf</parsingRulesPath>
+   </hudson.plugins.logparser.LogParserPublisher>
+    <hudson.tasks.ArtifactArchiver>
+      <artifacts>NEXT_STEPS.html</artifacts>
+      <latestOnly>false</latestOnly>
+    </hudson.tasks.ArtifactArchiver>
+    
+    <hudson.plugins.emotional__hudson.EmotionalHudsonPublisher/>
+    <net.hurstfrost.hudson.sounds.HudsonSoundsNotifier>
+      <soundEvents>
+        <net.hurstfrost.hudson.sounds.HudsonSoundsNotifier_-SoundEvent>
+          <soundId>EXPLODE</soundId>
+          <toResult>
+            <name>FAILURE</name>
+            <ordinal>2</ordinal>
+            <color>RED</color>
+          </toResult>
+          <fromResults>
+            <hudson.model.Result>
+              <name>SUCCESS</name>
+              <ordinal>0</ordinal>
+              <color>BLUE</color>
+            </hudson.model.Result>
+            <hudson.model.Result>
+              <name>UNSTABLE</name>
+              <ordinal>1</ordinal>
+              <color>YELLOW</color>
+            </hudson.model.Result>
+            <hudson.model.Result>
+              <name>NOT_BUILT</name>
+              <ordinal>3</ordinal>
+              <color>NOTBUILT</color>
+            </hudson.model.Result>
+            <hudson.model.Result>
+              <name>ABORTED</name>
+              <ordinal>4</ordinal>
+              <color>ABORTED</color>
+            </hudson.model.Result>
+            <hudson.model.Result>
+              <name>FAILURE</name>
+              <ordinal>2</ordinal>
+              <color>RED</color>
+            </hudson.model.Result>
+          </fromResults>
+        </net.hurstfrost.hudson.sounds.HudsonSoundsNotifier_-SoundEvent>
+      </soundEvents>
+    </net.hurstfrost.hudson.sounds.HudsonSoundsNotifier>
+    <htmlpublisher.HtmlPublisher>
+      <reportTargets>
+        <htmlpublisher.HtmlPublisherTarget>
+          <reportName>Next steps</reportName>
+          <reportDir>.</reportDir>
+          <reportFiles>NEXT_STEPS.html</reportFiles>
+          <keepAll>true</keepAll>
+          <wrapperName>htmlpublisher-wrapper.html</wrapperName>
+        </htmlpublisher.HtmlPublisherTarget>
+      </reportTargets>
+    </htmlpublisher.HtmlPublisher>
+
+  </publishers>
+  <buildWrappers>
+    <hudson.plugins.ansicolor.AnsiColorBuildWrapper>
+      <colorMapName>xterm</colorMapName>
+    </hudson.plugins.ansicolor.AnsiColorBuildWrapper>
+  </buildWrappers>
+</project>

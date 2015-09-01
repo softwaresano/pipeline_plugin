@@ -1,0 +1,11 @@
+.svn/
+target/
+pipeline.sh
+
+# Emacs files
+*~
+
+# Pydev files
+.project
+.pydevproject
+.settings

@@ -1,0 +1,172 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description>&lt;a href=&quot;http://www.softwaresano.com/&quot; title=&quot;SoftwareSano&quot; class=&quot;poweredBy&quot;&gt;&#xd;
+   &lt;img id=&quot;jobJenkins&quot; class=&quot;poweredBy&quot;  alt=&quot;softwaresano&quot; src=&quot;http://pimpam.googlecode.com/files/jobJenkins.png&quot;/&gt;&#xd;
+   &lt;script type=&quot;text/javascript&quot; src=&quot;http://www.softwaresano.com/widgets/jobBuiltyBy.php&quot;&gt;&lt;/script&gt;&#xd;
+   &lt;script type=&quot;text/javascript&quot; src=&quot;/widgets/jobBuiltyBy.php&quot;&gt;&lt;/script&gt;&#xd;
+&lt;/a&gt;&#xd;
+&lt;br/&gt;&#xd;
+Una vez se han pasado los smokeTest se lanzan un conjunto de pruebas automáticas que comprueban el funcionamiento de la aplicación.&#xd;
+&lt;br/&gt;&#xd;
+Este job ha sido generada a partir de una plantilla del &lt;a href=&quot;http://code.google.com/p/develenv-pipeline-plugin/&quot; &gt;deployment pipeline&lt;/a&gt;&#xd;
+&lt;br/&gt;&#xd;
+&lt;b style=&quot;color:#FF0000&quot;&gt;[WARNING] Falta definir el repositorio desde donde se descargarán los acceptanceTest&lt;/b&gt;&#xd;
+</description>
+  <logRotator>
+    <daysToKeep>-1</daysToKeep>
+    <numToKeep>100</numToKeep>
+    <artifactDaysToKeep>-1</artifactDaysToKeep>
+    <artifactNumToKeep>-1</artifactNumToKeep>
+  </logRotator>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <hudson.plugins.googlecode.GoogleCodeProjectProperty/>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <hudson.plugins.validating__string__parameter.ValidatingStringParameterDefinition plugin="validating-string-parameter@2.2">
+          <name>pauseSeconds</name>
+          <description>Segundos a esperar antes de que se lancen los acceptanceTest</description>
+          <defaultValue>0</defaultValue>
+          <regex>^[0-9]+$</regex>
+          <failedValidationMessage>Debe ser un número entero positivo</failedValidationMessage>
+        </hudson.plugins.validating__string__parameter.ValidatingStringParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+    <hudson.plugins.sidebar__link.ProjectLinks>
+      <links>
+        <hudson.plugins.sidebar__link.LinkAction>
+          <url>../../../sites/pipelines/index.html?&amp;executorPipelines=PROJECTTEMPLATE%28HOST_PIPELINE%29</url>
+          <text>Deployment Pipeline</text>
+          <icon>graph.gif</icon>
+        </hudson.plugins.sidebar__link.LinkAction>
+      </links>
+    </hudson.plugins.sidebar__link.ProjectLinks>
+  </properties>
+  <scm class="hudson.scm.NullSCM"/>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers class="vector"/>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>
+         TEST_DEPLOYMENT_PIPELINE
+      </command>    
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers>
+    <hudson.plugins.chucknorris.CordellWalkerRecorder>
+      <factGenerator/>
+    </hudson.plugins.chucknorris.CordellWalkerRecorder>
+   <hudson.plugins.logparser.LogParserPublisher>
+      <unstableOnWarning>false</unstableOnWarning>
+      <failBuildOnError>false</failBuildOnError>
+      <parsingRulesPath>/home/develenv/app/jenkins/consoleParser.conf</parsingRulesPath>
+   </hudson.plugins.logparser.LogParserPublisher>
+    <xunit plugin="xunit@1.50">
+      <types>
+        <JUnitType>
+          <pattern>target/TESTS-pipeline/**/*.xml</pattern>
+          <failIfNotNew>true</failIfNotNew>
+          <deleteOutputFiles>true</deleteOutputFiles>
+          <stopProcessingIfError>true</stopProcessingIfError>
+        </JUnitType>
+      </types>
+      <thresholds>
+        <org.jenkinsci.plugins.xunit.threshold.FailedThreshold>
+          <unstableThreshold></unstableThreshold>
+          <unstableNewThreshold></unstableNewThreshold>
+          <failureThreshold></failureThreshold>
+          <failureNewThreshold></failureNewThreshold>
+        </org.jenkinsci.plugins.xunit.threshold.FailedThreshold>
+        <org.jenkinsci.plugins.xunit.threshold.SkippedThreshold>
+          <unstableThreshold></unstableThreshold>
+          <unstableNewThreshold></unstableNewThreshold>
+          <failureThreshold></failureThreshold>
+          <failureNewThreshold></failureNewThreshold>
+        </org.jenkinsci.plugins.xunit.threshold.SkippedThreshold>
+      </thresholds>
+      <thresholdMode>1</thresholdMode>
+    </xunit>
+    <hudson.plugins.emailext.ExtendedEmailPublisher >
+      <recipientList>$DEFAULT_RECIPIENTS</recipientList>
+      <configuredTriggers>
+        <hudson.plugins.emailext.plugins.trigger.FirstFailureTrigger>
+          <email>
+            <recipientList></recipientList>
+            <subject>$PROJECT_DEFAULT_SUBJECT</subject>
+            <body>$PROJECT_DEFAULT_CONTENT</body>
+            <sendToDevelopers>true</sendToDevelopers>
+            <sendToRequester>true</sendToRequester>
+            <includeCulprits>false</includeCulprits>
+            <sendToRecipientList>true</sendToRecipientList>
+          </email>
+        </hudson.plugins.emailext.plugins.trigger.FirstFailureTrigger>
+        <hudson.plugins.emailext.plugins.trigger.FixedTrigger>
+          <email>
+            <recipientList></recipientList>
+            <subject>$PROJECT_DEFAULT_SUBJECT</subject>
+            <body>$PROJECT_DEFAULT_CONTENT</body>
+            <sendToDevelopers>true</sendToDevelopers>
+            <sendToRequester>true</sendToRequester>
+            <includeCulprits>false</includeCulprits>
+            <sendToRecipientList>true</sendToRecipientList>
+          </email>
+        </hudson.plugins.emailext.plugins.trigger.FixedTrigger>
+      </configuredTriggers>
+      <contentType>default</contentType>
+      <defaultSubject>$DEFAULT_SUBJECT</defaultSubject>
+      <defaultContent>$DEFAULT_CONTENT</defaultContent>
+      <attachmentsPattern></attachmentsPattern>
+      <presendScript></presendScript>
+    </hudson.plugins.emailext.ExtendedEmailPublisher>
+    <hudson.plugins.emotional__hudson.EmotionalHudsonPublisher/>
+    <net.hurstfrost.hudson.sounds.HudsonSoundsNotifier>
+      <soundEvents>
+        <net.hurstfrost.hudson.sounds.HudsonSoundsNotifier_-SoundEvent>
+          <soundId>EXPLODE</soundId>
+          <toResult>
+            <name>FAILURE</name>
+            <ordinal>2</ordinal>
+            <color>RED</color>
+          </toResult>
+          <fromResults>
+            <hudson.model.Result>
+              <name>ABORTED</name>
+              <ordinal>4</ordinal>
+              <color>ABORTED</color>
+            </hudson.model.Result>
+            <hudson.model.Result>
+              <name>SUCCESS</name>
+              <ordinal>0</ordinal>
+              <color>BLUE</color>
+            </hudson.model.Result>
+            <hudson.model.Result>
+              <name>UNSTABLE</name>
+              <ordinal>1</ordinal>
+              <color>YELLOW</color>
+            </hudson.model.Result>
+            <hudson.model.Result>
+              <name>FAILURE</name>
+              <ordinal>2</ordinal>
+              <color>RED</color>
+            </hudson.model.Result>
+            <hudson.model.Result>
+              <name>NOT_BUILT</name>
+              <ordinal>3</ordinal>
+              <color>NOTBUILT</color>
+            </hudson.model.Result>
+          </fromResults>
+        </net.hurstfrost.hudson.sounds.HudsonSoundsNotifier_-SoundEvent>
+      </soundEvents>
+    </net.hurstfrost.hudson.sounds.HudsonSoundsNotifier>
+  </publishers>
+  <buildWrappers>
+    <hudson.plugins.ansicolor.AnsiColorBuildWrapper>
+      <colorMapName>xterm</colorMapName>
+    </hudson.plugins.ansicolor.AnsiColorBuildWrapper>
+  </buildWrappers>
+</project>

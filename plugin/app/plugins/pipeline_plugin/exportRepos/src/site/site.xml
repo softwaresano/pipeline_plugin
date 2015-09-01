@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Generado con el arquetipo: standalone-archetype
+    http://pimpam.googlecode.com
+-->
+<project name="develenv">
+    <poweredBy>
+        <logo name="softwaresano" href="http://www.softwaresano.com/"
+            img="http://pimpam.googlecode.com/files/builtByPimpam.png" />
+    </poweredBy>
+    <bannerLeft>
+        <name>develenv</name>
+        <src>
+           ${project.url}/img/develenv.jpg
+        </src>
+        <href>http://www.softwaresano.com</href>
+    </bannerLeft>
+    <body>
+        <head>
+<meta http-equiv="cache-control" content="no-cache"/>
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-8116005-4']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+
+<link href="http://pimpam.googlecode.com/files/favicon.ico" rel="shortcut icon" />
+    </head>
+        <links>
+            <item name="Contacto" href="team-list.html" />
+            <item name="develenv" href="http://develenv.softwaresano.com" />
+            <item name="Repositorios de rpms"
+                href="/develenv/rpms" />
+        </links>
+        <menu name="Export Repos">
+            <item name="Instalación Repositorio" href="#Instalacin_Repositorio" />
+            <item name="Instalación Paquetes" href="#Instalacin_de_paquetes_del_repositorio" />
+            <item name="Paquetes Repositorio" href="#Paquetes_que_contiene_el_repositorio" />
+        </menu>
+        <menu ref="reports" />
+        <menu ref="parent" />
+    </body>
+</project>

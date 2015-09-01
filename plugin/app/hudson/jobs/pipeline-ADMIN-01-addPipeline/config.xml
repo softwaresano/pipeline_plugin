@@ -1,0 +1,166 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description>&lt;a href=&quot;http://www.softwaresano.com/&quot; title=&quot;SoftwareSano&quot; class=&quot;poweredBy&quot;&gt;&#xd;
+   &lt;img id=&quot;jobJenkins&quot; class=&quot;poweredBy&quot;  alt=&quot;softwaresano&quot; src=&quot;http://pimpam.googlecode.com/files/jobJenkins.png&quot;/&gt;&#xd;
+   &lt;script type=&quot;text/javascript&quot; src=&quot;http://www.softwaresano.com/widgets/jobBuiltyBy.php&quot;&gt;&lt;/script&gt;&#xd;
+   &lt;script type=&quot;text/javascript&quot; src=&quot;/widgets/jobBuiltyBy.php&quot;&gt;&lt;/script&gt;&#xd;
+&lt;/a&gt;&#xd;
+&lt;br/&gt;&#xd;
+Crea un pipeline para un proyecto.&#xd;
+&lt;br/&gt;&#xd;
+Una vez creado correctamente el pipeline es necesario:&#xd;
+&lt;br/&gt;&#xd;
+   Recargar las configuración de jenkins para que aparezcan los nuevos jobs&#xd;
+&lt;br/&gt;&#xd;
+   Configurar los repositorios de fuentes de los jobs &lt;b&gt;*-build *-ALL-02-smokeTest&lt;/b&gt; y &lt;b&gt;*-ALL-03-acceptanceTest&lt;/b&gt;.&#xd;
+&lt;br/&gt;&#xd;
+   Revisar la tabla de despliegue &lt;b&gt;*-ALL-01-install&lt;/b&gt;&#xd;
+&lt;br/&gt;&#xd;
+   Exportar la clave .ssh de develenv a los administradores de cada una de las máquinas que se hace el despliegue&#xd;
+&lt;br&gt;&#xd;
+Todos los pasos anteriores están recogidos en el documento de &lt;a href=&quot;Next_steps&quot;&gt;Next steps&lt;/a&gt;&#xd;
+&#xd;
+  </description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <hudson.plugins.googlecode.GoogleCodeProjectProperty/>
+    <hudson.plugins.sidebar__link.ProjectLinks>
+      <links>
+        <hudson.plugins.sidebar__link.LinkAction>
+          <url>../../../sites/pipelines/index.html</url>
+          <text>Deployment pipeline dashboard</text>
+          <icon>graph.gif</icon>
+        </hudson.plugins.sidebar__link.LinkAction>
+      </links>
+    </hudson.plugins.sidebar__link.ProjectLinks>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <hudson.plugins.validating__string__parameter.ValidatingStringParameterDefinition plugin="validating-string-parameter@2.2">
+          <name>organization</name>
+          <description>Inicialies de la organización (empresa) que desarrolla el proyecto.</description>
+          <defaultValue></defaultValue>
+          <regex>^([a-zA-Z])+[0-9]*([a-zA-Z])*</regex>
+          <failedValidationMessage>Campo Obligatorio. No cumple la expresión regular (Es una secuencia que empieza por almenos una letra y a continuación se añaden más números y letras)</failedValidationMessage>
+        </hudson.plugins.validating__string__parameter.ValidatingStringParameterDefinition>
+        <hudson.plugins.validating__string__parameter.ValidatingStringParameterDefinition plugin="validating-string-parameter@2.2">
+          <name>project</name>
+          <description>Nombre del proyecto</description>
+          <defaultValue></defaultValue>
+          <regex>^([a-zA-Z])+[0-9]*([a-zA-Z])*</regex>
+          <failedValidationMessage>Campo Obligatorio. No cumple la expresión regular (Es una secuencia que empieza por almenos una letra y a continuación se añaden más números y letras)</failedValidationMessage>
+        </hudson.plugins.validating__string__parameter.ValidatingStringParameterDefinition>
+        <hudson.plugins.validating__string__parameter.ValidatingStringParameterDefinition plugin="validating-string-parameter@2.2">
+          <name>version</name>
+          <description>Versión del proyecto</description>
+          <defaultValue>1.0</defaultValue>
+          <regex>^[0-9]+(\.[0-9]+)*</regex>
+          <failedValidationMessage>Campo Obligatorio.No cumple la expresión regular. Debe estar formado por una secuencia de números y puntos.</failedValidationMessage>
+        </hudson.plugins.validating__string__parameter.ValidatingStringParameterDefinition>
+        <hudson.plugins.validating__string__parameter.ValidatingStringParameterDefinition plugin="validating-string-parameter@2.2">
+          <name>modules</name>
+          <description>Módulos que forman parte del proyecto Ejemplo(frontend backend)</description>
+          <defaultValue></defaultValue>
+          <regex>^([a-zA-Z])+[0-9]*([a-zA-Z])*( ([a-zA-Z])+[0-9]*([a-zA-Z])*)*</regex>
+          <failedValidationMessage>No cumple la expresión regular. Debe empezar por una letra y puede estar formado por una secuencia de números y letras</failedValidationMessage>
+        </hudson.plugins.validating__string__parameter.ValidatingStringParameterDefinition>
+        <hudson.plugins.validating__string__parameter.ValidatingStringParameterDefinition plugin="validating-string-parameter@2.2">
+          <name>enviroments</name>
+          <description>Entornos en los que se va a instalar el proyecto separado por esapcios. Ejemplo (int qa e2e demo)</description>
+          <defaultValue>int qa e2e demo</defaultValue>
+          <regex>^([a-zA-Z])+[0-9]*([a-zA-Z])*( ([a-zA-Z])+[0-9]*([a-zA-Z])*)*</regex>
+          <failedValidationMessage>No cumple la expresión regular. Debe empezar por una letra y puede estar formado por una secuencia de números y letras</failedValidationMessage>
+        </hudson.plugins.validating__string__parameter.ValidatingStringParameterDefinition>
+        <hudson.plugins.validating__string__parameter.ValidatingStringParameterDefinition plugin="validating-string-parameter@2.2">
+          <name>adminUser</name>
+          <description>Usuario administrador (será el mismo para todas las máquinas del pipeline). Si no se tiene acceso con el usuario root se ha de poner un usuario que esté en la lista de sudoers</description>
+          <defaultValue>root</defaultValue>
+          <regex>^([a-zA-Z])+[0-9]*([a-zA-Z])*( ([a-zA-Z])+[0-9]*([a-zA-Z])*)*</regex>
+          <failedValidationMessage>No cumple la expresión regular. Debe empezar por una letra y puede estar formado por una secuencia de números y letras</failedValidationMessage>
+        </hudson.plugins.validating__string__parameter.ValidatingStringParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+  </properties>
+  <scm class="hudson.scm.NullSCM"/>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers class="vector"/>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>#!/bin/bash
+#export DEBUG_PIPELINE=&quot;TRUE&quot;
+pipeline.sh</command>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers>
+    <hudson.plugins.chucknorris.CordellWalkerRecorder>
+      <factGenerator/>
+    </hudson.plugins.chucknorris.CordellWalkerRecorder>
+   <hudson.plugins.logparser.LogParserPublisher>
+      <unstableOnWarning>false</unstableOnWarning>
+      <failBuildOnError>false</failBuildOnError>
+      <parsingRulesPath>/home/develenv/app/jenkins/consoleParser.conf</parsingRulesPath>
+   </hudson.plugins.logparser.LogParserPublisher>
+    
+    <hudson.plugins.emotional__hudson.EmotionalHudsonPublisher/>
+    <net.hurstfrost.hudson.sounds.HudsonSoundsNotifier>
+      <soundEvents>
+        <net.hurstfrost.hudson.sounds.HudsonSoundsNotifier_-SoundEvent>
+          <soundId>EXPLODE</soundId>
+          <toResult>
+            <name>FAILURE</name>
+            <ordinal>2</ordinal>
+            <color>RED</color>
+          </toResult>
+          <fromResults>
+            <hudson.model.Result>
+              <name>SUCCESS</name>
+              <ordinal>0</ordinal>
+              <color>BLUE</color>
+            </hudson.model.Result>
+            <hudson.model.Result>
+              <name>UNSTABLE</name>
+              <ordinal>1</ordinal>
+              <color>YELLOW</color>
+            </hudson.model.Result>
+            <hudson.model.Result>
+              <name>NOT_BUILT</name>
+              <ordinal>3</ordinal>
+              <color>NOTBUILT</color>
+            </hudson.model.Result>
+            <hudson.model.Result>
+              <name>ABORTED</name>
+              <ordinal>4</ordinal>
+              <color>ABORTED</color>
+            </hudson.model.Result>
+            <hudson.model.Result>
+              <name>FAILURE</name>
+              <ordinal>2</ordinal>
+              <color>RED</color>
+            </hudson.model.Result>
+          </fromResults>
+        </net.hurstfrost.hudson.sounds.HudsonSoundsNotifier_-SoundEvent>
+      </soundEvents>
+    </net.hurstfrost.hudson.sounds.HudsonSoundsNotifier>
+    <htmlpublisher.HtmlPublisher>
+      <reportTargets>
+        <htmlpublisher.HtmlPublisherTarget>
+          <reportName>Next steps</reportName>
+          <reportDir>.</reportDir>
+          <reportFiles>NEXT_STEPS.html</reportFiles>
+          <keepAll>true</keepAll>
+          <wrapperName>htmlpublisher-wrapper.html</wrapperName>
+        </htmlpublisher.HtmlPublisherTarget>
+      </reportTargets>
+    </htmlpublisher.HtmlPublisher>
+
+  </publishers>
+  <buildWrappers>
+    <hudson.plugins.ansicolor.AnsiColorBuildWrapper>
+      <colorMapName>xterm</colorMapName>
+    </hudson.plugins.ansicolor.AnsiColorBuildWrapper>
+  </buildWrappers>
+</project>

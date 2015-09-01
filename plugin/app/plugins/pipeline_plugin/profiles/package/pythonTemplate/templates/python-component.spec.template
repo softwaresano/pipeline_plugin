@@ -1,0 +1,97 @@
+Summary:         %{template_name}
+Group:           python-deps
+License:         http://www.tid.es
+Packager:        carlosg@tid.es
+BuildArch:       noarch
+BuildRoot:       %{_topdir}/BUILDROOT
+Vendor:          tid.es
+Requires(post):  /sbin/chkconfig /usr/sbin/useradd
+Requires(preun): /sbin/chkconfig /sbin/service
+Requires:        %{template_requires}
+
+
+%description
+%{template_name}
+%prep
+%{__mkdir_p} $RPM_BUILD_ROOT/%{template_output_dir}
+cp -R %{component_sources}/* $RPM_BUILD_ROOT/%{template_output_dir}
+# Workaround. At the moment doesn't exist src/config directory
+rm -Rf $RPM_BUILD_ROOT/%{template_output_dir}/config
+if [ -d "%{component_sources}/../config" ]; then
+   cp -R %{component_sources}/../config $RPM_BUILD_ROOT/%{template_output_dir}
+fi
+cd $RPM_BUILD_ROOT/%{template_output_dir}
+rm -Rf setup.py test requirements_*.txt requirements.txt *.log MANIFEST.IN target rpm_requires.txt
+
+
+%build
+#Add module to pythonPath
+mkdir -p $RPM_BUILD_ROOT/%{python_site_dir}
+echo "%{template_output_dir}" > $RPM_BUILD_ROOT/%{python_site_dir}/%{name}.pth
+#Links configuration files to /etc
+if [ -d $RPM_BUILD_ROOT/%{template_output_dir}/config ]; then
+   _log "[INFO] Creating links..."
+   mkdir $RPM_BUILD_ROOT/etc
+   cd $RPM_BUILD_ROOT/%{template_output_dir}/config/ 
+   resources="$(find . -type f)"
+   if [ "$resources" != "" ]; then
+      for resource in $resources; do
+         #Set destination folder for link
+         linkResource="/etc/$(echo $resource|sed s:"^\./":"":g)"
+         mkdir -p $RPM_BUILD_ROOT/$(dirname $linkResource) 
+         ln -s %{template_output_dir}/config/$resource $RPM_BUILD_ROOT/$linkResource
+      done;
+   fi
+fi
+
+# ---------------------------------------------------------------------------- #
+# pre-install section:
+# ---------------------------------------------------------------------------- #
+%pre
+# Search for application user, create it if does'nt exist
+if [ "$(grep ^%{template_username} /etc/passwd)" == "" ]; then
+   _log "[INFO] Adding %{template_username} user"
+   /usr/sbin/useradd %{template_username}
+fi
+
+%install
+# ---------------------------------------------------------------------------- #
+# post-install section:
+# ---------------------------------------------------------------------------- #
+%post 
+#Service 
+if [ -d %{template_output_dir}/config/init.d ]; then
+   for file in $(ls %{template_output_dir}/config/init.d); do
+       if [ -f "%{template_output_dir}/config/init.d/$file" ]; then
+          _log "[INFO] Creating $file service:"
+          chkconfig --add $file
+          ret_val=$?
+          if [ $ret_val -eq 0 ]; then
+             _log "[ERROR] Unable create $file service"
+          else
+             _log "[INFO] Service $file succesfull"
+             _log "[INFO] $file must be started with: service $file start"
+          fi
+       fi 
+   done
+fi
+
+# ---------------------------------------------------------------------------- #
+# post-uninstall section:
+# ---------------------------------------------------------------------------- #
+%postun
+
+%clean
+[ %{buildroot} != "/" ] && rm -rf %{buildroot}
+
+
+%changelog
+
+%files
+%defattr(-,%{template_username},%{template_username},-)
+%{python_site_dir}
+%{template_output_dir}
+#Links created in /etc
+/etc
+#Config files are added by createRpm script
+

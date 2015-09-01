@@ -1,0 +1,31 @@
+#!/bin/bash 
+# Return the function to file validate
+
+function get_validator(){
+  type_file=$(file $file_name|cut -d':' -f2)
+  case $type_file in
+    " Bourne-Again shell script text executable") echo "bash";;
+    " POSIX shell script text executable") echo "sh";;
+    *) # By default, it uses the extension file to identify file type 
+      base_file_name=$(basename $file_name)
+      #get last suffix
+      echo ${base_file_name##*.};;
+  esac
+}
+
+validator_dir=$(dirname $0)/validators
+while read file_name; do
+    validator_file=$validator_dir/$(get_validator).sh
+    if [[ -f $validator_file ]]; then
+       source $validator_file
+       validation_error=$(validate)
+       result_code=$?
+    else
+       result_code=126
+    fi
+    case $result_code in
+      126) echo "[WARNING] There isn´t any validator for $file_name";;
+      0) echo "[OK] $file_name";;
+      *) echo "[KO] $file_name $([[ "$validation_error" != "" ]] && echo -en --- $validation_error)" && exit 1;;
+    esac
+done < <(git status --porcelain|egrep '^AM |^ M |^M |^A '|awk '{print $2}')

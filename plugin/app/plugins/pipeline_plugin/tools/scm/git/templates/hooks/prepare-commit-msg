@@ -1,0 +1,7 @@
+#!/bin/bash
+prefix_message=$(dp_scm_compliant.sh)
+[[ $? != 0 ]] && exit 1
+cp $1 $1.aux
+printf "$prefix_message "> $1
+cat $1.aux >> $1
+rm $1.aux

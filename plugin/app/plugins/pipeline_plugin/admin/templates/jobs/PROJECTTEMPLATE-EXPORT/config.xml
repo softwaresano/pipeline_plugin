@@ -1,0 +1,132 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description>&lt;a href=&quot;http://www.softwaresano.com/&quot; title=&quot;SoftwareSano&quot; class=&quot;poweredBy&quot;&gt;&#xd;
+   &lt;img id=&quot;jobJenkins&quot; class=&quot;poweredBy&quot;  alt=&quot;softwaresano&quot; src=&quot;http://pimpam.googlecode.com/files/jobJenkins.png&quot;/&gt;&#xd;
+   &lt;script type=&quot;text/javascript&quot; src=&quot;http://www.softwaresano.com/widgets/jobBuiltyBy.php&quot;&gt;&lt;/script&gt;&#xd;
+   &lt;script type=&quot;text/javascript&quot; src=&quot;/widgets/jobBuiltyBy.php&quot;&gt;&lt;/script&gt;&#xd;
+&lt;/a&gt;&#xd;
+&lt;br/&gt;&#xd;
+Exporta un rpm con todo los paquetes necesarios para instalar el proyecto&#xd;
+&lt;br/&gt;&#xd;
+en una máquina a la que no se tiene acceso desde el pipeline.&#xd;
+&lt;br/&gt;&#xd;
+Si la exportación ha sido correcta, sigue la &lt;a href=&quot;./Repo_Installation_Guide&quot;&gt;Guía de instalación&lt;/a&gt; para instalar &#xd;
+&lt;br/&gt;y acceder al repositorio desde una máquina ajena al pipeline&#xd;
+&lt;br/&gt;&#xd;
+Este job ha sido generado a partir de una plantilla del &lt;a href=&quot;http://code.google.com/p/develenv-pipeline-plugin/&quot; &gt;deployment pipeline&lt;/a&gt;</description>  <logRotator>
+    <daysToKeep>-1</daysToKeep>
+    <numToKeep>100</numToKeep>
+    <artifactDaysToKeep>-1</artifactDaysToKeep>
+    <artifactNumToKeep>-1</artifactNumToKeep>
+  </logRotator>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <hudson.plugins.googlecode.GoogleCodeProjectProperty plugin="googlecode@1.7"/>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <hudson.plugins.validating__string__parameter.ValidatingStringParameterDefinition plugin="validating-string-parameter@2.2">
+          <name>N_BUILD</name>
+          <description>Número de build del job de instalación. Los valores posibles son LAST ó un número natural.</description>
+          <defaultValue>LAST</defaultValue>
+          <regex>^[0-9]*[^LAST]$|LAST{0,1}$</regex>
+          <failedValidationMessage>No se cumple la expresión regular. Debe ser la palabra LAST o un número natural</failedValidationMessage>
+        </hudson.plugins.validating__string__parameter.ValidatingStringParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+    <hudson.plugins.sidebar__link.ProjectLinks plugin="sidebar-link@1.6">
+      <links>
+        <hudson.plugins.sidebar__link.LinkAction>
+          <url>../../../sites/pipelines/PROJECTTEMPLATE/pipeline.html</url>
+          <text>Deployment Pipeline</text>
+          <icon>graph.gif</icon>
+        </hudson.plugins.sidebar__link.LinkAction>
+      </links>
+    </hudson.plugins.sidebar__link.ProjectLinks>
+  </properties>
+  <scm class="hudson.scm.NullSCM"/>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers class="vector"/>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>#!/bin/bash
+#export DEBUG_PIPELINE=&quot;TRUE&quot;
+. pipeline.sh
+exportRepos
+</command>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers>
+    <hudson.plugins.chucknorris.CordellWalkerRecorder plugin="chucknorris@0.4">
+      <factGenerator/>
+    </hudson.plugins.chucknorris.CordellWalkerRecorder>
+   <hudson.plugins.logparser.LogParserPublisher>
+      <unstableOnWarning>false</unstableOnWarning>
+      <failBuildOnError>false</failBuildOnError>
+      <parsingRulesPath>/home/develenv/app/jenkins/consoleParser.conf</parsingRulesPath>
+   </hudson.plugins.logparser.LogParserPublisher>
+    <hudson.tasks.ArtifactArchiver>
+      <artifacts>target/**/*.sh,target/README.*,src/site/markdown/README.md</artifacts>
+      <latestOnly>false</latestOnly>
+    </hudson.tasks.ArtifactArchiver>
+    <htmlpublisher.HtmlPublisher plugin="htmlpublisher@1.0">
+      <reportTargets>
+        <htmlpublisher.HtmlPublisherTarget>
+          <reportName>Repo Installation Guide</reportName>
+          <reportDir>target/site/</reportDir>
+          <reportFiles>README.html</reportFiles>
+          <keepAll>true</keepAll>
+          <wrapperName>htmlpublisher-wrapper.html</wrapperName>
+        </htmlpublisher.HtmlPublisherTarget>
+      </reportTargets>
+    </htmlpublisher.HtmlPublisher>
+    <net.hurstfrost.hudson.sounds.HudsonSoundsNotifier plugin="sounds@0.4">
+      <soundEvents>
+        <net.hurstfrost.hudson.sounds.HudsonSoundsNotifier_-SoundEvent>
+          <soundId>EXPLODE</soundId>
+          <toResult>
+            <name>FAILURE</name>
+            <ordinal>2</ordinal>
+            <color>RED</color>
+          </toResult>
+          <fromResults>
+            <hudson.model.Result>
+              <name>NOT_BUILT</name>
+              <ordinal>3</ordinal>
+              <color>NOTBUILT</color>
+            </hudson.model.Result>
+            <hudson.model.Result>
+              <name>UNSTABLE</name>
+              <ordinal>1</ordinal>
+              <color>YELLOW</color>
+            </hudson.model.Result>
+            <hudson.model.Result>
+              <name>FAILURE</name>
+              <ordinal>2</ordinal>
+              <color>RED</color>
+            </hudson.model.Result>
+            <hudson.model.Result>
+              <name>SUCCESS</name>
+              <ordinal>0</ordinal>
+              <color>BLUE</color>
+            </hudson.model.Result>
+            <hudson.model.Result>
+              <name>ABORTED</name>
+              <ordinal>4</ordinal>
+              <color>ABORTED</color>
+            </hudson.model.Result>
+          </fromResults>
+        </net.hurstfrost.hudson.sounds.HudsonSoundsNotifier_-SoundEvent>
+      </soundEvents>
+    </net.hurstfrost.hudson.sounds.HudsonSoundsNotifier>
+  </publishers>
+  <buildWrappers>
+    <hudson.plugins.ansicolor.AnsiColorBuildWrapper plugin="ansicolor@0.3.1">
+      <colorMapName>xterm</colorMapName>
+    </hudson.plugins.ansicolor.AnsiColorBuildWrapper>
+  </buildWrappers>
+</project>

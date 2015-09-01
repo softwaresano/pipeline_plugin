@@ -1,0 +1,63 @@
+Name:      repo
+Summary:   A repo project
+Version:   %{versionModule}
+Release:   %{releaseModule}
+License:   GPL 3.0
+Packager:  Softwaresano
+Group:     repo
+BuildArch: noarch
+Vendor:    SoftwareSano.com
+
+%define package_name repo
+%define _prefix_ /opt
+%define component_home /etc/yum.repos.d
+%define repos_home %{_prefix_}/%{_org_acronym}/%{_repoName}/repo
+
+
+%description
+Repository with the rpms of the projects
+
+%install
+[ -d $RPM_BUILD_ROOT/%{component_home} ] || %{__mkdir_p} $RPM_BUILD_ROOT/%{component_home}
+[ -d $RPM_BUILD_ROOT/%{repos_home} ] || %{__mkdir_p} $RPM_BUILD_ROOT/%{repos_home}
+PACKAGES_INSTALLED_FILE=%{packagesVersionFile}
+DIR_TEMP_REPOSITORY=$RPM_BUILD_ROOT/%{repos_home}
+DEVELENV_REPO_DIR=/home/develenv/app/repositories/rpms/
+rm -Rf $DIR_TEMP_REPOSITORY
+mkdir -p $DIR_TEMP_REPOSITORY
+architectures=""
+for i in `cat $PACKAGES_INSTALLED_FILE|sed s:"=":"-":g`; do
+    route=`find $DEVELENV_REPO_DIR -name "${i}.rpm"`
+    [ "$route" == "" ] && _log "[ERROR] [${i}.rpm] No está almacenado en el repositorio" && exit 1
+    dirarch=$(dirname `echo $route|sed s:"$DEVELENV_REPO_DIR":"":g`)
+    mkdir -p $DIR_TEMP_REPOSITORY/$dirarch
+    cp $route $DIR_TEMP_REPOSITORY/`echo $route|sed s:"$DEVELENV_REPO_DIR":"":g`
+    createrepo -s sha -d --update ${DIR_TEMP_REPOSITORY}/${dirarch}
+    architectures="$architectures $dirarch"
+done;
+
+cd ${RPM_BUILD_ROOT}/%{component_home}
+
+NOTA="# Repositorio de rpms generados con develenv
+"
+for architecture in $architectures; do
+    echo "
+$NOTA
+
+[%{name}-$architecture]
+name=%{name}-$architecture
+baseurl=file://%{repos_home}/$architecture
+enabled=1
+gpgcheck=0" > $RPM_BUILD_ROOT/%{component_home}/%{name}-$architecture.repo
+done; 
+if [ -d "%{_sourcedir}/%{package_name}" ]; then
+   %{__cp} -R %{_sourcedir}/%{package_name}/* ${RPM_BUILD_ROOT}/%{repos_home}
+fi
+
+%clean 
+[ ${RPM_BUILD_ROOT} != "/" ] && rm -rf ${RPM_BUILD_ROOT}/*
+
+
+%files
+%attr (-,root,root) /%{repos_home}/
+%config  %{component_home}

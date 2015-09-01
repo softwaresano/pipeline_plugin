@@ -1,0 +1,187 @@
+#!/usr/bin/env python
+#-*- coding: utf-8 -*-
+#
+# Copyright 2013 Telefonica Digital. All rights reserved.
+#
+# Authors:
+#    Pablo Enfedaque <pev@tid.es> - 05/06/2013
+#
+u"""
+Install local requirements specified in $PWD/requirements_local.txt as .pth files in site-packages.
+
+This scripts must contain relative or absolute Unix-style paths (with slashes '/'), one for each line. For each
+requirement it will create a FOLDER_NAME.pth file in current site-packages, where FOLDER_NAME is the last
+
+EXIT VALUES:
+0: Script succeeded
+1: Could not import distutils.sysconfig.get_python_lib
+2: Python site-packages path not found
+3: Impossible to open local requirements file
+4: Impossible to create or overwrite site-packages .pth file
+"""
+
+# TODO: Install transitive dependencies (requirements of local requirements)
+
+import logging
+from os import path as ospath
+from sys import path as syspath, exit
+from shutil import copy2
+from functools import partial
+import argparse
+
+
+LOGS_FORMAT = u"[%(levelname)s] %(asctime)s | %(message)s"
+logging.basicConfig(level=logging.INFO, format=LOGS_FORMAT)
+logger = logging.getLogger(__name__)
+
+
+LOCAL_REQS_FILENAME = u"requirements_local.txt"
+
+
+_VERSION = u"1.0"
+_DESCRIPTION = u"""
+Install local requirements (other folders) as a .pth file inside site-packages
+"""
+
+_FILE_PATH_PREFIXES = (u"file://", u"file:")
+_FILE_PATH_SUFFIXES = (u"#egg=", )
+
+_WIN_SEPARATOR = u"\\"
+_UNIX_SEPARATOR = u"/"
+
+_PTH_FILE_SUFFIX = u".reqs.local.pth"
+_PTH_BKUP_SUFFIX = u".bkup"
+
+
+def normalize_path(src_path, raw_path):
+    u"""Replace Unix separators (/) with Windows separators (\) if needed,
+    expand user home, expand environment variables, convert to absolute path
+    and validate that folder exists.
+    :returns: normalized path
+    """
+    norm_path = raw_path = raw_path.replace("\n", "")
+    if not norm_path:
+        return
+    if norm_path.startswith(_FILE_PATH_PREFIXES):
+        for prefix in _FILE_PATH_PREFIXES:
+            norm_path = norm_path.split(prefix, 1)[-1]
+    for suffix in _FILE_PATH_SUFFIXES:
+        norm_path = norm_path.rsplit(suffix, 1)[0]
+    if ospath.sep == _WIN_SEPARATOR:
+        split_path = str.split(norm_path, _UNIX_SEPARATOR)
+        norm_path = ospath.join(*split_path)
+    norm_path = ospath.join(src_path, norm_path)
+    norm_path = ospath.expanduser(norm_path)
+    norm_path = ospath.expandvars(norm_path)
+    norm_path = ospath.abspath(norm_path)
+    if not ospath.isdir(norm_path):
+        msg = u"Path '%s' (normalized as '%s') not found. Ignored"
+        logger.warning(msg, raw_path, norm_path)
+        return
+    logger.debug(u"Normalized '%s' as '%s'", raw_path, norm_path)
+    return norm_path
+
+
+def install_local_reqs(sp_path, local_reqs_filepath):
+    u"""Install all local requirements listed in local_reqs_filepath
+    """
+    installed = updated = failed = 0
+    local_reqs_paths = []
+    try:
+        with open(local_reqs_filepath) as local_reqs:
+            norm_path = partial(normalize_path, ospath.dirname(ospath.abspath(local_reqs_filepath)))
+            local_reqs_paths = filter(None, map(norm_path, local_reqs))
+    except IOError:
+        if not ospath.isfile(local_reqs_filepath):
+            logger.warning(u"Local requirements file '%s' does not exist. Skipping", LOCAL_REQS_FILENAME)
+            exit(0)
+        logger.exception(u"Impossible to open local requirements file '%s'", LOCAL_REQS_FILENAME)
+        exit(3)
+    except BaseException, e:
+        print e, e.__class__.__name__
+        logger.exception(u"Impossible to open local requirements file '%s'", LOCAL_REQS_FILENAME)
+        exit(3)
+    if not local_reqs_paths:
+        logger.warning(u"No requirements to install. Skipping")
+        return
+    else:
+        logger.debug(u"Proceeding to install paths: %s", str(local_reqs_paths))
+    # pth filepath construction
+    component_name = ospath.basename(ospath.dirname(ospath.dirname(ospath.abspath(local_reqs_filepath))))
+    reqs_pth_filename = component_name + _PTH_FILE_SUFFIX
+    reqs_pth_filepath = ospath.join(sp_path, reqs_pth_filename)
+    if ospath.exists(reqs_pth_filepath):
+        copy2(reqs_pth_filepath, ospath.join(sp_path, "." + reqs_pth_filename + _PTH_BKUP_SUFFIX))
+        logger.debug(u"Replacing '%s' with '%s' requirements", reqs_pth_filepath, component_name)
+    else:
+        logger.debug(u"Creating '%s' with '%s' requirements", reqs_pth_filepath, component_name)
+    # Create or overwrite the requirement pth file
+    try:
+        with open(reqs_pth_filepath, u"w") as f:
+            for requirement_path in local_reqs_paths:
+                f.write(requirement_path + "\n")
+                logger.debug(u"Installed in '%s' requirement '%s'", reqs_pth_filepath, requirement_path)
+    except IOError:
+        logger.exception(u"Impossible to install requirements at '%s'", reqs_pth_filepath)
+        exit(4)
+    msg = u"Successfully installed %d local requirements of '%s' at '%s'"
+    logger.info(msg, len(local_reqs_paths), component_name, reqs_pth_filepath)
+
+
+def get_site_packages(sp_path=None):
+    u"""Retrieve currrent site-packages folder path
+    """
+    if sp_path is None:
+        try:
+            from distutils.sysconfig import get_python_lib
+        except ImportError:
+            logger.error(u"Impossible to import 'distutils.sysconfig.get_python_lib' to find site-packages")
+            exit(1)
+        sp_path = get_python_lib()
+    if sp_path not in syspath or not ospath.isdir(sp_path):
+        logger.error(u"Impossible to retrieve site-packages path")
+        exit(2)
+    return sp_path
+
+
+def main():
+    parser = argparse.ArgumentParser(prog=ospath.basename(__file__),
+                                     description=_DESCRIPTION,
+                                     formatter_class=argparse.RawTextHelpFormatter)
+
+    parser.add_argument(u"--version", action=u"version", version=u"%(prog)s {}".format(_VERSION),
+                        help=u"Display program version and exit")
+
+    options = parser.add_argument_group(u"Program options")
+    options.add_argument(u"-r", u"--reqs",
+                        dest=u"local_reqs_file",
+                        metavar=u"LOCAL_REQS",
+                        help=u"Local requirements file, '{}' by default".format(LOCAL_REQS_FILENAME),
+#                         type=argparse.FileType("r"),
+                        type=str,
+                        default=LOCAL_REQS_FILENAME)
+
+    options.add_argument(u"-v", u"--verbose",
+                        dest=u"verbose",
+                        action=u"store_true",
+                        help=u"Print debug traces",
+                        default=False)
+
+    advanced = parser.add_argument_group(u"Advanced options")
+    advanced.add_argument(u"--site-packages",
+                          dest="sp_path",
+                          metavar="PATH",
+                          help=u"Provide site-packages location",
+                          type=str,
+                          default=None)
+
+    args = parser.parse_args()
+
+    if args.verbose:
+        logger.setLevel(logging.DEBUG)
+    sp_path = get_site_packages(args.sp_path)
+    install_local_reqs(sp_path, args.local_reqs_file)
+
+
+if __name__ == u"__main__":
+    main()
