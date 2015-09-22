@@ -1,6 +1,6 @@
 #!/bin/bash
 #Publish all artifacts stored in the tree directory. At the moment only rpms
-[ -z $DP_HOME ] && export DP_HOME=$(python -c 'import os,sys;print os.path.realpath(sys.argv[1])' $0/..)
+[ -z $DP_HOME ] && export DP_HOME=$(python -c 'import os,sys;print os.path.realpath(sys.argv[1])' $(which dp_package.sh)/..)
 ### HELP section
 dp_help_message='Copy a source to target directory. This copy assures that nobody is publishing any artifact
 
@@ -73,9 +73,11 @@ function copy_artifact(){
         i=$((i-1))
     done;
     block_publish $source_file
-    # Assures target directory
+    # Copy with hard links
+    # Ensure that parent target exists
+    rm -rf $target
     mkdir -p $(dirname $target)
-    rsync --delete -arv $source_file/* $target
+    cp -rl $source_file $target
     # Remove extra metadata
     rm -rf $target/.dependencies $target/ur\@* $target/initiative/.noarch $target/initiative/.x86_64
     local error_code=$?
