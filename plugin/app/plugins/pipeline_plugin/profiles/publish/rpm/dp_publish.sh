@@ -42,12 +42,6 @@ function get_repo_dir(){
    fi
    
    local arch=$(echo $rpm_name|cut -d'.' -f$(expr $(echo $rpm_name|cut -d'.' -f1- --output-delimiter=$'\n'|wc -l) - 1) 2>/dev/null)
-   case $arch in
-        $(uname -i)|noarch)
-         ;;
-        *) return 1
-        ;;
-    esac
    local target_dir=""
    if [ "$ALL_RPMS_IN_RPM_HOME" == "" ]; then
       echo $(default_repo_dir)/$arch
