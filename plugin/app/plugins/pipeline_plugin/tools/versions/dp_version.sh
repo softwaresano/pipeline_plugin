@@ -229,7 +229,7 @@ PrefixOrganization: ss" $2
 function getVersionProperties(){
    pushd . >/dev/null
    # Find VERSION_FILE
-   while [ ! -f "$VERSION_FILE" ] && [ ! `pwd` = "/" ]; do cd ..; done
+   while [ ! -f "$VERSION_FILE" ] && [ ! "$(pwd)" = "/" ]; do cd ..; done
    if [ -f "$VERSION_FILE" ]; then
        PREFIX_PROJECT=`grep "^Project:" $VERSION_FILE|sed s:"^Project\:":"":g|awk ' {print $1} '`
        if [ "$PREFIX_PROJECT" == "" ]; then
