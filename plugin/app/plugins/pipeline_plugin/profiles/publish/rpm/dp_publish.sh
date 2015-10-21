@@ -246,7 +246,7 @@ function publish_3party_rpm_dependencies(){
 }
 
 function execute(){
-   sudo yum clean all
+   sudo /usr/bin/yum clean all
    publish "*.rpm"
    local error_code=$?
    if [ $error_code != 0 ]; then
