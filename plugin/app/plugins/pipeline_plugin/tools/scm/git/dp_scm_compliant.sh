@@ -20,7 +20,7 @@ function get_git_prefix_message(){
     branch_type=$1
     branch_name=$2
     if [[ $branch_name =~ $jira_prefix_id ]]; then
-      echo $branch_name|sed "s/.*[^0-9]\([0-9][0-9]*\)_.*/${jira_prefix}-\1/g"
+      echo $branch_name|sed s:"_.*":"":g
     else
       [[ "$jira_prefix" == "WITHOUT_JIRA" ]] && [[ "$branch_stability_type" == "unstable" ]] && echo "" && return 0
       [[ "$branch_stability_type" == "other" ]] && branch_type="<feature|bug|hotfix|task>"
