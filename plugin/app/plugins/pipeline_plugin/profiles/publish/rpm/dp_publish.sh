@@ -93,7 +93,7 @@ function extract_dependencies(){
   local rpm_files=$1
   local line
   rm -rf $TMP_DEPENCENCIES_FILE
-  while read line; do
+  while read -r line || [[ -n "$line" ]]; do
     if [[ -f "$line" ]]; then
        rpm -qp --requires $line|grep -v ^"config(" >>$TMP_DEPENCENCIES_FILE
     else
