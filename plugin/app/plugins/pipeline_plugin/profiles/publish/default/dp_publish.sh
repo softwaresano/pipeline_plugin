@@ -77,7 +77,6 @@ function publish_in_user_story(){
   local dir_repo=$(default_repo_dir "true")
   if [[ "$dir_repo" != "" ]]; then
     mkdir -p $dir_repo
-    rm -rf $dir_repo/*
     cp $artifact_file $dir_repo
     createrepo $dir_repo
   fi
