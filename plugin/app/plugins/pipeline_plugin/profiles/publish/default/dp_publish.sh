@@ -34,7 +34,6 @@ function is_blocked(){
 }
 
 
-
 # When starts the publication of an artifact, block repo
 function block_publish(){
     local block_directory=$(get_block_directory)
@@ -51,6 +50,7 @@ function unblock_publish(){
 }
 
 function default_repo_dir(){
+    local is_user_story=$1
     branch=$(get_scm_branch)
     local repo_home_dir=$(dirname ${REPO_RPM_HOME})/releases/
     local relative_dir=$(getVersionModule)/$(get_os_release)
@@ -58,7 +58,13 @@ function default_repo_dir(){
     case $branch in
         develop|master|release/*) environment="rc";;
     esac
-    local dir_repo=${repo_home_dir}/${relative_dir}/${environment}/initiative
+    local dir_repo=""
+    [[ "$is_user_story" == "true" ]] && [[ "$environment" == "rc" ]] && return
+    if [ "$environment" == "rc" -o "$is_user_story" != "true" ]; then
+      dir_repo=${repo_home_dir}/${relative_dir}/${environment}/initiative
+    else
+      dir_repo=${repo_home_dir}/${relative_dir}/us/$branch/initiative
+    fi
     echo $dir_repo
 }
 
@@ -66,6 +72,16 @@ function is_new_artifact(){
    [ -f "$(get_repo_dir $fullName)/$fullName" ] && echo "true" || echo "false"
 }
 
+function publish_in_user_story(){
+  local artifact_file=$1
+  local dir_repo=$(default_repo_dir "true")
+  if [[ "$dir_repo" != "" ]]; then
+    mkdir -p $dir_repo
+    rm -rf $dir_repo/*
+    cp $artifact_file $dir_repo
+    createrepo $dir_repo
+  fi
+}
 function publish_artifact(){
    local artifact_file=$1
    local target_repo=$2
@@ -89,6 +105,9 @@ function publish_artifact(){
    fi
    echo $(basename $artifact_file) >>$metadata_file
    cp "$artifact_file" "${target_repo}"
+   if [[ "$ALL_RPMS_IN_RPM_HOME" == "" ]]; then
+    publish_in_user_story "$artifact_file"
+   fi
 }
 # Publish artifact in the right repository
 function publish_artifacts(){
