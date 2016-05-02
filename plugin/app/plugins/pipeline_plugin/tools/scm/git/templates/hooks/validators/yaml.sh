@@ -7,6 +7,11 @@ function validate_yamlint(){
 }
 function validate_ruby(){
   ruby -e "require 'yaml';puts YAML.load_file('$file_name')"
+  if [[ $? != 0 ]]; then
+    return 1
+  fi
+  which yamllint 2>/dev/null >/dev/null || return 0
+  yammlint -c $DP_HOME/tools/scm/git/templates/hooks/validators/yamllint  "$file_name" 2>/dev/stdout
 }
 
 function validate(){
