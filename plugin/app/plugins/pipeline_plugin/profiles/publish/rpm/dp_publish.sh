@@ -170,7 +170,18 @@ name-[version].[x86_64|noarch].rpm[:el5,:el6]"
    install_root_dir=/var/tmp/install-root
    rm -Rf "/var/tmp/yum-$(id -un)-*" $install_root_dir
    mkdir -p $install_root_dir
-   eval yumdownloader -t -c $YUM_CONF_FILE --installroot $install_root_dir --destdir $target_repo_dir --resolve $rpm_names
+   tmp_yumdownloader_log=$(mktemp)
+   eval yumdownloader -t -c $YUM_CONF_FILE --installroot $install_root_dir --destdir $target_repo_dir --resolve $rpm_names|tee $tmp_yumdownloader_log
+   status_yum_downloader=${PIPESTATUS[0]}
+   errors=$(grep 'No Match for argument' $tmp_yumdownloader_log|wc -l)
+   if [[ "$errors" != '0' ]]; then
+     _log "[ERROR] ERROR downloading:"
+     grep 'No Match for argument' $tmp_yumdownloader_log
+   fi
+   rm $tmp_yumdownloader_log
+   [[ "$errors" != '0' ]] && return 1
+   [[ $status_yum_downloader != 0 ]] && _log "[ERROR] Problems downloading rpms" && return 1
+   rm $tmp_yumdownloader_log
    # Remove initiative rpms stored in 3party repo
    _log "[INFO] Remove initiative rpms stored in 3party"
    IFS=" "
