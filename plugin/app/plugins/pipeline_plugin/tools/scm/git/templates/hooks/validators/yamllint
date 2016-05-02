@@ -1,0 +1,21 @@
+extends: default
+
+rules:
+  comments:
+    level: warning
+  colons:
+    level: warning
+  document-start:
+    level: warning
+  new-line-at-end-of-file:
+    level: warning
+  trailing-spaces:
+    level: warning
+  line-length:
+    level: warning
+  indentation:
+    level: warning
+  empty-lines:
+    level: warning
+  comments-indentation:
+    level: warning
