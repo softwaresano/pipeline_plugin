@@ -97,8 +97,8 @@ function extract_dependencies(){
     if [[ -f "$line" ]]; then
        rpm -qp --requires $line|grep -v ^"config(" >>$TMP_DEPENCENCIES_FILE
     else
-       echo $line|tr -d ' '|tr -d '\t'|grep -v "^#"|grep -v "^$"|grep -v ":">>$TMP_DEPENCENCIES_FILE
-       echo $line|sed s:".*/":"":g|tr -d ' '|tr -d '\t'|grep -v "^#"|grep -v "^$"|grep ":$(get_os_release)$"|cut -d':' -f1>>$TMP_DEPENCENCIES_FILE
+       echo $line|grep -v "^#"|tr -d ' '|tr -d '\t'|grep -v "^$"|grep -v ":">>$TMP_DEPENCENCIES_FILE
+       echo $line|grep -v "^#"|sed s:".*/":"":g|tr -d ' '|tr -d '\t'|grep -v "^$"|grep ":$(get_os_release)$"|cut -d':' -f1>>$TMP_DEPENCENCIES_FILE
     fi
   done < $rpm_files
 }
