@@ -133,8 +133,8 @@ function get_dependencies(){
    # os_releases: --> System Operatings releases supported by this rpm. If this field is
    # empty then this rpm supports all so releases 
    # <rpm_name>[-version].>x86_64|noarch>.rpm[:el5,:el6]
-   local rpm_dependencies=$(cat $rpm_files|sed s:".*/":"":g|tr -d ' '|tr -d '\t'|grep -v "^#"|grep -v "^$"|grep -v ":")
-   rpm_dependencies="$rpm_dependencies $(cat $rpm_files|sed s:".*/":"":g|tr -d ' '|tr -d '\t'|grep -v "^#"|grep -v "^$"|grep ":$(get_os_release)$"|cut -d':' -f1)"
+   local rpm_dependencies=$(grep -v "^#" $rpm_files|sed s:".*/":"":g|tr -d ' '|tr -d '\t'|grep -v "^#"|grep -v "^$"|grep -v ":")
+   rpm_dependencies="$rpm_dependencies $(grep -v "^#" $rpm_files|sed s:".*/":"":g|tr -d ' '|tr -d '\t'|grep -v "^#"|grep -v "^$"|grep ":$(get_os_release)$"|cut -d':' -f1)"
    if [ "$rpm_dependencies" == "" ]; then
       _log "[WARNING] There aren't any dependency in $rpm_files"
       return 0
