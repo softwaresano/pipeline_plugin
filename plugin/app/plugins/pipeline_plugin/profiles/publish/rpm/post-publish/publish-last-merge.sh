@@ -5,9 +5,9 @@ item=$(git log -1|egrep  "Merge pull request #[0-9]+ from"|sed s:"    Merge pull
 source $DP_HOME/profiles/publish/rpm/dp_publish.sh
 version=$(dp_version.sh)
 filename="$(dirname $(get_repo_dir))/release-notes-$version.txt"
-repo=$(git config --get remote.origin.url|grep -Po ":.*/.*\.git"|cut -d ':' -f2-)
+repo=$(git config --get remote.origin.url)
 date=$(git log -1|grep ^Date|cut -d ' ' -f4-)
-line="${repo}\t${date}\t${item}"
+line="${repo}\t$(git log --pretty=format:'%h' -1)\t${date}\t${item}"
 >$filename
 [[ "$(grep \"'$line'\" $filename)" == '' ]] && echo -e $line>>$filename
 exit 0
