@@ -456,6 +456,14 @@ function checkIntegrity(){
    fi
 }
 
+# Execute and action after rpm is published
+function post_publish(){
+   if [ "$POST_PUBLISH_RPM_SCRIPT" != "" ]; then
+      _log "[INFO] Execution [$POST_PUBLISH_RPM_SCRIPT] post publish rpm script"
+      $POST_PUBLISH_RPM_SCRIPT $*
+   fi
+}
+
 function execute(){
    init $*
    #checkIntegrity
@@ -463,7 +471,7 @@ function execute(){
    buildRPMS
    dp_postPackage
    if [[ -f $generated_rpms ]]; then
-      publish_rpms $generated_rpms && publish_3party_rpm_dependencies
+      publish_rpms $generated_rpms && publish_3party_rpm_dependencies && post_publish $*
    else
       _log "[WARNING] Any new rpm has been created"
    fi
