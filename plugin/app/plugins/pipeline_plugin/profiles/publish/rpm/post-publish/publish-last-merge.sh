@@ -8,6 +8,14 @@ filename="$(dirname $(get_repo_dir))/release-notes-$version.txt"
 repo=$(git config --get remote.origin.url)
 date=$(git log -1|grep ^Date|cut -d ' ' -f4-)
 line="${repo}\t$(git log --pretty=format:'%h' -1)\t${date}\t${item}"
->$filename
+if [[ -f $filename ]]; then
+  # break i-nodes
+  cp $filename ${filename}.bak
+  rm $filename
+  mv ${filename}.bak $filename
+else
+  >$filename
+fi
+
 [[ "$(grep \"'$line'\" $filename)" == '' ]] && echo -e $line>>$filename
 exit 0
