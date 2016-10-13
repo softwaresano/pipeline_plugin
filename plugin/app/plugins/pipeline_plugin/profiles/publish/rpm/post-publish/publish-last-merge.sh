@@ -16,6 +16,5 @@ if [[ -f $filename ]]; then
 else
   >$filename
 fi
-
-[[ "$(grep \"'$line'\" $filename)" == '' ]] && echo -e $line>>$filename
+grep "$(echo -e $line)" $filename || echo -e $line>>$filename
 exit 0
