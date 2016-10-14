@@ -6,7 +6,7 @@ source $DP_HOME/profiles/publish/rpm/dp_publish.sh
 version=$(dp_version.sh)
 filename="$(dirname $(get_repo_dir))/release-notes-$version.txt"
 repo=$(git config --get remote.origin.url)
-date=$(git log -1|grep ^Date|cut -d ' ' -f4-)
+date=$(git log -1|git log --pretty=format:'%ci' -1)
 line="${repo}\t$(git log --pretty=format:'%h' -1)\t${date}\t${item}"
 if [[ -f $filename ]]; then
   # break i-nodes
