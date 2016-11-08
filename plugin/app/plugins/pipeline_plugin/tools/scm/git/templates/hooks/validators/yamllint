@@ -2,20 +2,21 @@ extends: default
 
 rules:
   comments:
-    level: warning
+    level: error
   colons:
-    level: warning
+    level: error
   document-start:
-    level: warning
+    level: error
   new-line-at-end-of-file:
-    level: warning
+    level: error
   trailing-spaces:
-    level: warning
-  line-length:
-    level: warning
+    level: error
   indentation:
-    level: warning
+    level: error
   empty-lines:
-    level: warning
+    level: error
   comments-indentation:
-    level: warning
+    level: error
+  line-length:
+    level: error
+    max: 120

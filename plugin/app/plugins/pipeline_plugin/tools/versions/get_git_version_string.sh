@@ -25,7 +25,6 @@ function get_git_branch_type(){
 ## PDI specific functions according the pdihub workflow
 get_branch_type()
 {
-    
     get_git_branch_type "$(get_branch)"
 }
 

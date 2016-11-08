@@ -15,5 +15,6 @@ else
 fi
 
 source $DP_HOME/config/dp.cfg
-source $DP_HOME/tools/versions/dp_version.sh
-echo $REPO_RPM_HOME/$(getVersionModule)
+source $DP_HOME/profiles/publish/default/dp_publish.sh
+#echo $REPO_RPM_HOME/$(getVersionModule)
+dirname $(default_repo_dir)
