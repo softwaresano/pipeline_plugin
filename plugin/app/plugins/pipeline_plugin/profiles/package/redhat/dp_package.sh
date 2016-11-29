@@ -460,7 +460,7 @@ function checkIntegrity(){
 function post_publish(){
    if [ "$POST_PUBLISH_RPM_SCRIPT" != "" ]; then
       _log "[INFO] Execution [$POST_PUBLISH_RPM_SCRIPT] post publish rpm script"
-      $POST_PUBLISH_RPM_SCRIPT $*
+      eval $POST_PUBLISH_RPM_SCRIPT $*
    fi
 }
 
