@@ -74,10 +74,15 @@ function is_new_artifact(){
 
 function publish_in_user_story(){
   local artifact_file=$1
+  local rpm_file_name=$(basename $artifact_file)
   local dir_repo=$(default_repo_dir "true")
   if [[ "$dir_repo" != "" ]]; then
-    mkdir -p $dir_repo
-    cp $artifact_file $dir_repo
+    local user_story_id=$(basename $dir_repo|cut -d'/' -f2|cut -d'_' -f1)
+    local user_story_repo=$(dirname $dir_repo)/$user_story_repo
+    mkdir -p $dir_repo $user_story_repo
+    cp $artifact_file $user_story_repo
+    createrepo $user_story_repo
+    ln $user_story_repo/$rpm_file_name $dir_repo/$rpm_file_name
     createrepo $dir_repo
   fi
 }
