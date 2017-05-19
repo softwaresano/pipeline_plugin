@@ -1,5 +1,6 @@
 #!/bin/bash
 # Validate bash
 function validate(){
-  bash -n $file_name 2>/dev/stdout
+  source $validator_dir/non_ascii.sh
+  is_ascii && bash -n $file_name 2>/dev/stdout
 }
