@@ -1,5 +1,5 @@
 #!/bin/bash
 
 function is_ascii(){
-  LANG=C grep -n --color='auto' '[^ -~]\+' $file_name && echo "NON-ASCII characters" && return 1
+  LC_CTYPE=C grep -n --color='auto' '[^[:print:]]' $file_name && echo "NON-ASCII characters" && return 1
 }
