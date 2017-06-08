@@ -114,7 +114,7 @@ function are_there_any_new_dependency(){
     return 0
   else
     # there aren't any new dependency
-    _log "[INFO] There aren´t any new dependency"
+    _log "[INFO] There aren't any new dependency"
     rm -rf $TMP_DEPENCENCIES_FILE.new
     return 1
   fi
@@ -239,10 +239,15 @@ function publish_rpms(){
 
 # Execute and action after rpm is published
 function post_publish(){
-   if [ "$POST_PUBLISH_RPM_SCRIPT" != "" ]; then
       _log "[INFO] Execution post publish rpm script"
       $POST_PUBLISH_RPM_SCRIPT $*
-   fi
+      local ret_val=$?
+      local item=$(git log -1|egrep  "Merge pull request #[0-9]+ from"|sed s:"    Merge pull request.*from ":"":g|awk '{print $1}'|cut -d'/' -f2-)
+      [[ "$item" == "" ]] && return $ret_val
+      local pull_request_dir=$(dirname $(dirname $(default_repo_dir)))/us/$item
+      _log "[INFO] Removing pull request directory [$pull_request_dir]"
+      rm -rf $pull_request_dir
+      return $ret_val
 }
 
 # Search a thirdparty-rpms.txt with external dependencies (mysql-server,
