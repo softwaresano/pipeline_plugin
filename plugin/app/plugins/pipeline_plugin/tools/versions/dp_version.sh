@@ -237,11 +237,11 @@ function getVersionProperties(){
        fi
        PREFIX_ORGANIZATION=`grep "^PrefixOrganization:" $VERSION_FILE|sed s:"^PrefixOrganization\:":"":g|awk ' {print $1} '`
        if [ "$PREFIX_ORGANIZATION" == "" ]; then
-          versionFileError "No se ha definido la organización a la que pertenece este proyecto" 1
+          versionFileError "No se ha definido la organizacion a la que pertenece este proyecto" 1
        fi
        MODULE_PROJECT=`grep "^Module:" $VERSION_FILE|sed s:"^Module\:":"":g|awk ' {print $1} '`
        if [ "$MODULE_PROJECT" == "" ]; then
-          versionFileError "No se ha definido el nombre del módulo" 1
+          versionFileError "No se ha definido el nombre del modulo" 1
        fi
        VERSION_PROJECT=`grep "^Version:" $VERSION_FILE|sed s:"^Version\:":"":g|awk ' {print $1} '|sed s:"-SNAPSHOT":"":g`
        if [ "$VERSION_PROJECT" == "" ]; then
@@ -278,7 +278,7 @@ function getVersionModule(){
 function is_stable_branch(){
     local branch="$(get_scm_branch_type)"
     case $branch in
-        feature|bug|hotfix|task) echo "false";;
+        feature|bug|hotfix|task|test) echo "false";;
         release) echo "true";;
         +(+([[:digit:]])\.)+([[:digit:]]) ) echo "true" ;;
         develop) echo "true";;
