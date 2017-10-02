@@ -1,6 +1,5 @@
 #!/bin/bash
-#!/bin/bash
-# Return de JIRA_ID associated with a branch name. Only if the repo belongs to 
+# Return JIRA_ID associated with a branch name. Only if the repo belongs to 
 # <project_name> parameter
 function get_repo_project_name(){
   basename $(git remote show -n origin | grep Fetch | cut -d: -f2-)|cut -d'-' -f1
@@ -39,7 +38,7 @@ jira_prefix=$(cat $jira_prefix_file 2>/dev/null)
 
 if [[ "$jira_prefix" == "" ]]; then
   if [[ "$project_name" == "cdn" ]]; then
-    jira_prefix=PTWOPCDN
+    jira_prefix="^PTWOPCDN|^PTWOPCDNTC"
   else
     dp_log.sh "[ERROR] There aren't any jira_prefix for $project_name organization"
     dp_log.sh "[ERROR] Add jira-prefix (Ex: PTWOPCDN) in $jira_prefix_file file or assigns WITHOUT_JIRA to disable jira_prefix"
