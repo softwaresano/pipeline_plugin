@@ -487,7 +487,7 @@ if [ "$DEBUG_PIPELINE" == "TRUE" ]; then
 else
    main $*
 fi
-exit 0
+exit $?
 #### RPM MACROS ####
 %define _do_check ERROR_VALUE=`echo $?`;if [ $ERROR_VALUE != "0" ]; then exit -1;fi
 %define _rpm_name %{name}-%{version}-%{release}
