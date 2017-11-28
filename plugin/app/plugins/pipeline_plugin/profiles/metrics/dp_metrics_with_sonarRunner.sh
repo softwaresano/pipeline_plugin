@@ -51,7 +51,7 @@ function externalConfiguration(){
 
 function execute_with_sonar_project_file(){
    WORKSPACE=$PWD
-   echo "sonar-runner"
+   echo "sonar-scanner"
 }
 
 function execute_without_sonar_project_file(){
@@ -89,7 +89,7 @@ function execute_without_sonar_project_file(){
    echo "sonar.build-stability.url=Hudson:"$(getUrlCi) >> ${sonarFileconf}
    typeBuildProject=$(get_phase_TypeProject)
    typeMetrics_${typeBuildProject} ${sonarFileconf}
-   echo "sonar-runner -Dsonar.projectBaseDir=$WORKSPACE \
+   echo "sonar-scanner -Dsonar.projectBaseDir=$WORKSPACE \
    -Dproject.settings=${sonarFileconf}"
 }
 function execute(){

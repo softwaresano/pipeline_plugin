@@ -8,9 +8,8 @@ else
 fi
 
 function isSonarOk(){
-[ "$(which sonar-runner 2>/dev/null)" == "" ] && return 1
-   local wget_test_result=`wget -q -S "${SONAR_URL}" -O /dev/null 2>&1|grep "HTTP/"\
-                    |tail -1|grep "OK"|awk '{ print $2 }'`
+[ "$(which sonar-scanner 2>/dev/null)" == "" ] && return 1
+   local wget_test_result=$(curl -s -o /dev/null -w "%{http_code}" ${SONAR_URL}/)
    case $wget_test_result in
       200)
          return 0
