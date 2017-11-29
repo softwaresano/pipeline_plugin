@@ -107,8 +107,6 @@ function execute(){
       return $errorCode
    fi
    local url_sonar_resource="$(grep ^sonar.projectKey= ${sonarFileconf}|cut -d'=' -f2)"
-   mkdir -p $(dirname "$WORKSPACE/../metrics/sonar")
-   echo $url_sonar_resource py>>$WORKSPACE/../metrics/sonar
    _log "[INFO] Metrics calculated"
    return $errorCode
 }
