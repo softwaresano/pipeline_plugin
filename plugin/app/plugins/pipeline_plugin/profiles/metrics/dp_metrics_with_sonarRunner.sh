@@ -80,13 +80,13 @@ function execute_without_sonar_project_file(){
    [[ "$scmType" == "mercurial" ]] && scmStats="false"
    if [ "$scmType" != "none"  -a  scmStats="true" ]; then
       echo "sonar.scm-stats.enabled=${scmStats}"  >> ${sonarFileconf}
-      echo "sonar.scm.url=$scm">> ${sonarFileconf}
+      echo "sonar.links.scm=$scm">> ${sonarFileconf}
       echo "sonar.scm.enabled=true" >> ${sonarFileconf}
    else
       echo "sonar.scm-stats.enabled=false" >> ${sonarFileconf}
       echo "sonar.scm.enabled=false" >> ${sonarFileconf}
    fi
-   echo "sonar.build-stability.url=Hudson:"$(getUrlCi) >> ${sonarFileconf}
+   echo "sonar.links.ci="$(getUrlCi) >> ${sonarFileconf}
    typeBuildProject=$(get_phase_TypeProject)
    typeMetrics_${typeBuildProject} ${sonarFileconf}
    echo "sonar-scanner -Dsonar.projectBaseDir=$WORKSPACE \

@@ -27,7 +27,7 @@ function post_cloc(){
 }
 
 scm_type=$(dp_scm_type.sh)
-default_ignore_dirs=target,.venv
+default_ignore_dirs=target,.venv,./.scannerwork
 if [ -f .gitignore ]; then
    exclude_dirs=$(cat .gitignore |grep -v "#"|grep -v "*"|grep -v ^$|tr \\n ,)
 fi
