@@ -92,6 +92,19 @@ function execute_without_sonar_project_file(){
    echo "sonar-scanner -Dsonar.projectBaseDir=$WORKSPACE \
    -Dproject.settings=${sonarFileconf}"
 }
+function get_sonar_implicit_options(){
+  local sonar_parameters=""
+  grep '^sonar.projectKey=' $sonarFileconf || \
+     sonar_parameters="-Dsonar.projectKey=$(git config --get remote.origin.url|grep -Po '(?<=\:).*(?=\.git$)'|sed s#/#:#g) ${sonar_parameters}"
+  if [[ "${JOB_URL}" != '' ]]; then
+    sonar_parameters="-Dsonar.links.ci=${JOB_URL} ${sonar_parameters}"
+  fi
+  grep '^sonar.links.scm=' $sonarFileconf || \
+    sonar_parameters="-Dsonar.links.scm=$(git config --get remote.origin.url) ${sonar_parameters}"
+  grep '^sonar.projectVersion=' $sonarFileconf || \
+    sonar_parameters="-Dsonar.projectVersion=$(dp_version.sh)-$(dp_release.sh) ${sonar_parameters}"
+  echo $sonar_parameters
+}
 function execute(){
    local command=""
    sonarFileconf="sonar-project.properties"
@@ -100,7 +113,7 @@ function execute(){
    else
       command=$(execute_without_sonar_project_file)
    fi
-   ${command}
+   ${command} $(get_sonar_implicit_options)
    errorCode=$?
    if [ "$errorCode" != "0" ]; then
       _log "[ERROR] Error in sonar Runner Execution"
