@@ -106,7 +106,7 @@ function get_sonar_implicit_options(){
   grep '^sonar.github.repository=' $sonarFileconf || \
     sonar_parameters="-Dsonar.github.repository=$(git config --get remote.origin.url|grep -Po '(?<=\:).*(?=\.git$)') ${sonar_parameters}"
   if [[ "${CHANGE_ID}" != '' ]]; then
-    sonar_parameters=" -Dsonar.analysis.mode=issues -Dsonar.github.pullRequest=${CHANGE_ID} ${sonar_parameters}"
+    sonar_parameters="-Dsonar.report.export.path=report.json -Dsonar.analysis.mode=issues -Dsonar.github.pullRequest=${CHANGE_ID} ${sonar_parameters}"
   fi
   echo $sonar_parameters
 }
