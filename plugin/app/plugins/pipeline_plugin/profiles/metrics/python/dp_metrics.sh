@@ -26,8 +26,8 @@ function typeMetrics_python(){
 source $DP_HOME/profiles/metrics/dp_metrics_tool.sh
 source $DP_HOME/profiles/metrics/dp_metrics_with_$(getMetricsTool).sh
 
-isExecutedInDevelenv
-if [ "$isDevelenv" == "false" ]; then
-   execute
-fi
+#isExecutedInDevelenv
+#if [ "$isDevelenv" == "false" ]; then
+#   execute
+#fi
 errorCode=$?
