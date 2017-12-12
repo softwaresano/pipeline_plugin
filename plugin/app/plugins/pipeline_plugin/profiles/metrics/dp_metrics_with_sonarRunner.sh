@@ -94,16 +94,16 @@ function execute_without_sonar_project_file(){
 }
 function get_sonar_implicit_options(){
   local sonar_parameters=""
-  grep '^sonar.projectKey=' $sonarFileconf || \
+  grep '^sonar.projectKey=' $sonarFileconf >/dev/null || \
      sonar_parameters="-Dsonar.projectKey=$(git config --get remote.origin.url|grep -Po '(?<=\:).*(?=\.git$)'|sed s#/#:#g) ${sonar_parameters}"
   if [[ "${JOB_URL}" != '' ]]; then
     sonar_parameters="-Dsonar.links.ci=${JOB_URL} ${sonar_parameters}"
   fi
-  grep '^sonar.links.scm=' $sonarFileconf || \
+  grep '^sonar.links.scm=' $sonarFileconf >/dev/null || \
     sonar_parameters="-Dsonar.links.scm=$(git config --get remote.origin.url) ${sonar_parameters}"
-  grep '^sonar.projectVersion=' $sonarFileconf || \
+  grep '^sonar.projectVersion=' $sonarFileconf >/dev/null || \
     sonar_parameters="-Dsonar.projectVersion=$(dp_version.sh)-$(dp_release.sh) ${sonar_parameters}"
-  grep '^sonar.github.repository=' $sonarFileconf || \
+  grep '^sonar.github.repository=' $sonarFileconf >/dev/null || \
     sonar_parameters="-Dsonar.github.repository=$(git config --get remote.origin.url|grep -Po '(?<=\:).*(?=\.git$)') ${sonar_parameters}"
   if [[ "${CHANGE_ID}" != '' ]]; then
     sonar_parameters="-Dsonar.report.export.path=report.json -Dsonar.analysis.mode=issues -Dsonar.github.pullRequest=${CHANGE_ID} ${sonar_parameters}"
