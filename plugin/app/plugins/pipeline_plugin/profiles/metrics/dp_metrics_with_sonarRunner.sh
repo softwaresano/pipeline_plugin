@@ -103,8 +103,14 @@ function get_sonar_implicit_options(){
     sonar_parameters="-Dsonar.links.scm=$(git config --get remote.origin.url) ${sonar_parameters}"
   grep '^sonar.projectVersion=' $sonarFileconf || \
     sonar_parameters="-Dsonar.projectVersion=$(dp_version.sh)-$(dp_release.sh) ${sonar_parameters}"
+  grep '^sonar.github.repository=' $sonarFileconf || \
+    sonar_parameters="-Dsonar.github.repository=$(git config --get remote.origin.url|grep -Po '(?<=\:).*(?=\.git$)') ${sonar_parameters}"
+  if [[ "${CHANGE_ID}" != '' ]]; then
+    sonar_parameters=" -Dsonar.analysis.mode=issues -Dsonar.github.pullRequest=${CHANGE_ID} ${sonar_parameters}"
+  fi
   echo $sonar_parameters
 }
+
 function execute(){
    local command=""
    sonarFileconf="sonar-project.properties"
