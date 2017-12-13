@@ -119,7 +119,9 @@ function execute(){
    else
       command=$(execute_without_sonar_project_file)
    fi
-   ${command} $(get_sonar_implicit_options)
+   local sonar_implicit_options=$(get_sonar_implicit_options)
+   _log "[INFO] ${command} ${sonar_implicit_options}"
+   ${command} ${sonar_implicit_options}
    errorCode=$?
    if [ "$errorCode" != "0" ]; then
       _log "[ERROR] Error in sonar Runner Execution"
