@@ -21,6 +21,7 @@ function get_git_prefix_message(){
     if [[ $branch_name =~ $jira_prefix_id ]]; then
       echo $branch_name|sed s:"_.*":"":g
     else
+      [[ "$current_branch" == 'HEAD' ]] && return 0
       [[ "$jira_prefix" == "WITHOUT_JIRA" ]] && [[ "$branch_stability_type" == "unstable" ]] && echo "" && return 0
       [[ "$branch_stability_type" == "other" ]] && branch_type="<feature|bug|hotfix|task>"
       dp_log.sh "[ERROR] [$current_branch] is not a valid $project_name branch name."
