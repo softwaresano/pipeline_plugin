@@ -109,12 +109,12 @@ is_pdi_compliant()
     "other")
        # Maybe we are on detached mode but also are compliant
        # See if there's a tag (annotated or not) describing a Kick Off
-        git describe --tags --match */KO >/dev/null 2>/dev/null
-        if [ $? -eq 0 ]; then
-            echo 1
-        else
-            echo 0
-        fi
+       git describe --tags --match */KO >/dev/null 2>/dev/null
+       if [ $? -eq 0 ]; then
+         echo 1
+       else
+         echo 0
+       fi
     ;;
     "release")
         ver=$(get_branch)
