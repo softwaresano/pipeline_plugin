@@ -52,7 +52,6 @@ get_version_string()
         develop|master|unstable)
            ## if we are in develop use the total count of commits
            version=$(git describe --tags --long --match */KO)
-           echo "${version%/*}-${version#*KO-}"
            local major_version=$(grep -rl $(cat .git/refs/tags/$(git describe --tags --long --match */KO|cut -d'/' -f1)/KO) .git/refs/tags|tail -1|awk -F '/' '{print $4}')
            echo "${major_version}-${version#*KO-}"
         ;;
