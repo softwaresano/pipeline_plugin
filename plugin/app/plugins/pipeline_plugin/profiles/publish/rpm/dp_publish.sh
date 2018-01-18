@@ -40,7 +40,7 @@ function get_repo_dir(){
          return 2
       fi
    fi
-   
+
    local arch=$(echo $rpm_name|cut -d'.' -f$(expr $(echo $rpm_name|cut -d'.' -f1- --output-delimiter=$'\n'|wc -l) - 1) 2>/dev/null)
    local target_dir=""
    if [ "$ALL_RPMS_IN_RPM_HOME" == "" ]; then
@@ -121,7 +121,7 @@ function are_there_any_new_dependency(){
 }
 
 function get_dependencies(){
-   _log "[INFO] Started: Get dependencies"
+   _log "[INFO] Started: Get dependencies for $1"
    local rpm_files=$1
    local target_repo=""
    local target_repo_dir=""
@@ -255,6 +255,9 @@ function post_publish(){
 function publish_3party_rpm_dependencies(){
    if [ -f "thirdparty-rpms.txt" ]; then
       _log "[INFO] Publishing third party rpms"
+      local third_parties_dir=$(dirname $(default_repo_dir))/.3parties
+      mkdir -p $third_parties_dir
+      cp thirdparty-rpms.txt ${third_parties_dir}/$(basename -s .git `git config --get remote.origin.url`)
       get_dependencies $PWD/thirdparty-rpms.txt
       return $?
    fi
