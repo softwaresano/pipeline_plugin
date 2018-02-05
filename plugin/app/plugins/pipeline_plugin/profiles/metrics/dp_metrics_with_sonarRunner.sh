@@ -92,10 +92,18 @@ function execute_without_sonar_project_file(){
    echo "sonar-scanner -Dsonar.projectBaseDir=$WORKSPACE \
    -Dproject.settings=${sonarFileconf}"
 }
+function get_sonar_project_key(){
+  git config --get remote.origin.url|grep -Po '(?<=\:).*(?=\.git$)'|sed s#/#:#g
+}
+
+function get_sonar_pr_parameters(){
+  if [[ "${CHANGE_ID}" != '' ]]; then
+    echo "-Dsonar.report.export.path=report.json -Dsonar.analysis.mode=issues -Dsonar.github.pullRequest=${CHANGE_ID}"
+  fi
+}
+ 
 function get_sonar_implicit_options(){
   local sonar_parameters=""
-  grep '^sonar.projectKey=' $sonarFileconf >/dev/null || \
-     sonar_parameters="-Dsonar.projectKey=$(git config --get remote.origin.url|grep -Po '(?<=\:).*(?=\.git$)'|sed s#/#:#g) ${sonar_parameters}"
   if [[ "${JOB_URL}" != '' ]]; then
     sonar_parameters="-Dsonar.links.ci=${JOB_URL} ${sonar_parameters}"
   fi
@@ -105,10 +113,15 @@ function get_sonar_implicit_options(){
     sonar_parameters="-Dsonar.projectVersion=$(dp_version.sh)-$(dp_release.sh) ${sonar_parameters}"
   grep '^sonar.github.repository=' $sonarFileconf >/dev/null || \
     sonar_parameters="-Dsonar.github.repository=$(git config --get remote.origin.url|grep -Po '(?<=\:).*(?=\.git$)') ${sonar_parameters}"
-  if [[ "${CHANGE_ID}" != '' ]]; then
-    sonar_parameters="-Dsonar.report.export.path=report.json -Dsonar.analysis.mode=issues -Dsonar.github.pullRequest=${CHANGE_ID} ${sonar_parameters}"
-  fi
   echo $sonar_parameters
+}
+
+function run_sonar_scanner(){
+  local sonar_command=$1
+  _log "[INFO] Sonar command: ${sonar_command}"
+  ${sonar_command} && return 0
+  _log "[ERROR] Error in sonar Runner Execution"
+  return 1
 }
 
 function execute(){
@@ -120,16 +133,19 @@ function execute(){
       command=$(execute_without_sonar_project_file)
    fi
    local sonar_implicit_options=$(get_sonar_implicit_options)
-   _log "[INFO] ${command} ${sonar_implicit_options}"
-   ${command} ${sonar_implicit_options}
-   errorCode=$?
-   if [ "$errorCode" != "0" ]; then
-      _log "[ERROR] Error in sonar Runner Execution"
-      return $errorCode
+   local sonar_project_key=$(get_sonar_project_key)
+   local sonar_command=''
+   local sonar_project_name=''
+   local change_id_prefix=''
+   if [[ "${CHANGE_ID}" != '' ]]; then
+     change_id_prefix="${CHANGE_ID}:"
+     sonar_project_name="${change_id_prefix}${sonar_project_key}"
+     sonar_command="${command} -Dsonar.projectKey=${sonar_project_name} -Dsonar.projectName=${sonar_project_name} ${sonar_implicit_options} ${get_sonar_pr_parameters}"
+     run_sonar_scanner "${sonar_command}" || return 1
    fi
-   local url_sonar_resource="$(grep ^sonar.projectKey= ${sonarFileconf}|cut -d'=' -f2)"
+   sonar_command="${command} -Dsonar.projectKey=${change_id_prefix}${sonar_project_key} ${sonar_implicit_options}"
+   run_sonar_scanner "${sonar_command}" || return 1
    _log "[INFO] Metrics calculated"
-   return $errorCode
 }
 
 return $?
