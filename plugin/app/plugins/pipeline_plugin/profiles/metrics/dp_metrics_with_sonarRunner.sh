@@ -140,7 +140,7 @@ function execute(){
    if [[ "${CHANGE_ID}" != '' ]]; then
      change_id_prefix="${CHANGE_ID}:"
      sonar_project_name="${change_id_prefix}${sonar_project_key}"
-     sonar_command="${command} -Dsonar.projectKey=${sonar_project_key} -Dsonar.projectName=${sonar_project_name} ${sonar_implicit_options} ${get_sonar_pr_parameters}"
+     sonar_command="${command} -Dsonar.projectKey=${sonar_project_key} -Dsonar.projectName=${sonar_project_name} ${sonar_implicit_options} $(get_sonar_pr_parameters)"
      run_sonar_scanner "${sonar_command}" || return 1
    fi
    sonar_command="${command} -Dsonar.projectKey=${change_id_prefix}${sonar_project_key} ${sonar_implicit_options}"
