@@ -143,6 +143,7 @@ function execute(){
      sonar_command="${command} -Dsonar.projectKey=${sonar_project_key} -Dsonar.projectName=${sonar_project_name} ${sonar_implicit_options} $(get_sonar_pr_parameters)"
      run_sonar_scanner "${sonar_command}" || return 1
    fi
+   grep '^sonar.projectName=' $sonarFileconf >/dev/null || sonar_implicit_options="-Dsonar.projectName=${change_id_prefix}${sonar_project_key} ${sonar_implicit_options}"
    sonar_command="${command} -Dsonar.projectKey=${change_id_prefix}${sonar_project_key} ${sonar_implicit_options}"
    run_sonar_scanner "${sonar_command}" || return 1
    _log "[INFO] Metrics calculated"
