@@ -17,4 +17,4 @@ fi
 source $DP_HOME/config/dp.cfg
 source $DP_HOME/profiles/publish/default/dp_publish.sh
 #echo $REPO_RPM_HOME/$(getVersionModule)
-dirname $(default_repo_dir)
+dirname $(default_repo_dir $1)
