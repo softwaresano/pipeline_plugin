@@ -23,7 +23,7 @@ function is_package_TypeCustom(){
 function is_package_TypeRedhat(){
    # For security only 6 levels
    #  Máximum submodule/src/main/rpm/SPECS/
-   if [ "`find . -maxdepth 6 -name \"*.spec\"`" != "" ]; then
+   if [ "`find . -maxdepth 7 -name \"*.spec\"`" != "" ]; then
       typePackageProject="redhat ${typePackageProject}"
    fi
 }
