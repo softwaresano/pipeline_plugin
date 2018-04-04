@@ -8,7 +8,7 @@ Packager:  %{org_acronuym}
 Group:     develenv
 BuildArch: noarch
 BuildRoot: %{_topdir}/BUILDROOT
-Requires:  /usr/sbin/useradd /usr/sbin/usermod e2fsprogs rsync curl wget subversion git mercurial rpmdevtools rpm-build createrepo rpm-python ss-develenv-maven ss-develenv-ant ss-develenv-sonar-runner make yum-utils libxslt perl python-demjson
+Requires:  /usr/sbin/useradd /usr/sbin/usermod e2fsprogs rsync curl wget subversion git mercurial rpmdevtools rpm-build createrepo repoview rpm-python ss-develenv-maven ss-develenv-ant ss-develenv-sonar-runner make yum-utils libxslt perl python-demjson
 AutoReq:   No
 Vendor:    %{vendor}
 
