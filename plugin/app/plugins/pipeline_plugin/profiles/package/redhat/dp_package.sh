@@ -94,7 +94,7 @@ function exitError(){
 function createChangeLog(){
    #Si no existe el changelog se genera a partir de los logs del SCM
    if [ "`cat $modifiedSpecFile|egrep \"^%changelog\"`" == "" ]; then
-      if [ "$scmtype" == "mercurial" ]; then
+      if [ "$scmtype" == "git" ]; then
          echo "%changelog" >> $modifiedSpecFile
          export authors=`hg log|grep "^user:" |uniq|sed s:"user\:\( \)*":"":g`
          echo "* `date "+%a %b %d %Y"` $authors" >> $modifiedSpecFile
