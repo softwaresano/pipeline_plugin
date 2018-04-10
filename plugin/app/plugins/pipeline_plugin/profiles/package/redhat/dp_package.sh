@@ -96,7 +96,9 @@ function createChangeLog(){
    if [ "`cat $modifiedSpecFile|egrep \"^%changelog\"`" == "" ]; then
       if [ "$scmtype" == "git" ]; then
          echo "%changelog" >> $modifiedSpecFile
-         git log $(get_version)/KO..HEAD --format="%ad - %aE %h %s %b"|grep "Merge pull request #"|awk '{print "* "$1" "$2" "$3" "$5" - "$8" - "$9;print "  - "$15;out="  ";for(i=16;i<=NF;i++){out=out" "$i}; print out}' >> $modifiedSpecFile
+         local current_version=$(get_version)
+         git log ${current_version}/KO..HEAD --format="%ad - %aE %h %s %b"|grep "Merge pull request #"|awk -v current_version="$current_version" '{print "* "$1" "$2" "$3" "$5" - "$8" - "current_version;print "  - "$15;out="  ";for(i=16;i<=NF;i++){out=out" "$i}; print out}'|head -1 >> $modifiedSpecFile
+         git log ${current_version}/KO..HEAD --format="%ad - %aE %h %s %b"|grep "Merge pull request #"|awk '{print "  - "$15" - "$9;out="  ";for(i=16;i<=NF;i++){out=out" "$i}; print out}' >> $modifiedSpecFile
       fi
    fi
 }
