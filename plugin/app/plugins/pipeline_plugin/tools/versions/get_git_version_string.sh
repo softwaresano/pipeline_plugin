@@ -52,9 +52,10 @@ get_version_string()
         develop|master|unstable)
            ## if we are in develop use the total count of commits
            version=$(git describe --tags --long --match */KO)
-           local major_version=$(grep -rl $(cat $(git rev-parse --show-toplevel)/.git/refs/tags/$(git describe --tags --long --match */KO|cut -d'/' -f1)/KO 2>/dev/null) $(git rev-parse --show-toplevel)/.git/refs/tags|tail -1|grep -Po "(?<=\.git/refs/tags/).*(?=/KO)")
+           git_root_dir=$(git rev-parse --show-toplevel)
+           local major_version=$(grep -rl $(cat ${git_root_dir}/.git/refs/tags/$(git describe --tags --long --match */KO|cut -d'/' -f1)/KO 2>/dev/null) ${git_root_dir}/.git/refs/tags|tail -1|grep -Po "(?<=\.git/refs/tags/).*(?=/KO)")
            if [[ "${major_version}" == "" ]]; then
-             major_version=$(grep $(grep refs/tags/$(git describe --tags --long --match */KO|cut -d'/' -f1)/KO .git/packed-refs|awk '{print $1}') .git/packed-refs |grep -Po "(?<=refs/tags/).*(?=/KO)"|tail -1)
+             major_version=$(grep $(grep refs/tags/$(git describe --tags --long --match */KO|cut -d'/' -f1)/KO ${git_root_dir}/.git/packed-refs|awk '{print $1}') ${git_root_dir}/.git/packed-refs |grep -Po "(?<=refs/tags/).*(?=/KO)"|tail -1)
            fi
            echo "${major_version}-${version#*KO-}"
         ;;
