@@ -33,13 +33,13 @@ if [ -f .gitignore ]; then
 fi
 mkdir -p target/reports
 >target/reports/cloc.txt
-$DP_HOME/profiles/metrics/tools/cloc-1.62.pl . \
+$DP_HOME/profiles/metrics/tools/cloc-1.64.pl . \
     --out=target/reports/cloc.txt \
      --exclude-dir=${default_ignore_dirs},${exclude_dirs}
 
 cat target/reports/cloc.txt
 
-$DP_HOME/profiles/metrics/tools/cloc-1.62.pl . \
+$DP_HOME/profiles/metrics/tools/cloc-1.64.pl . \
      --by-file --xml --out=target/reports/cloc.xml \
      --exclude-dir=${default_ignore_dirs},${exclude_dirs}
 #Sloccount format for jenkins
