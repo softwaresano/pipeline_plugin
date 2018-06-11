@@ -15,19 +15,38 @@ function get_validator(){
   esac
 }
 
+function check_non_printable_chars(){
+  local file_name=$1
+  local type_file=$(file --mime $file_name|awk '{print $2}')
+  local encoding_validator=""
+  case $type_file in
+    "text/x-makefile;");;
+    *) if [[ $type_file == text/* ]]; then
+          encoding_validator="non_ascii"
+       fi 
+  esac
+  if [[ "$encoding_validator" != "" ]]; then
+     source "${validator_dir}/${encoding_validator}.sh"
+     is_ascii
+  fi
+}
 validator_dir=$(dirname $0)/validators
 while read file_name; do
+  check_non_printable_chars $file_name
+  result_code=$?
+  if [[ "${result_code}" == 0 ]]; then
     validator_file=$validator_dir/$(get_validator).sh
     if [[ -f $validator_file ]]; then
-       source $validator_file
-       validation_error=$(validate)
-       result_code=$?
+      source $validator_file
+      validation_error=$(validate)
+      result_code=$?
     else
-       result_code=126
+      result_code=126
     fi
-    case $result_code in
-      126) echo "[WARNING] There isn´t any validator for $file_name";;
-      0) echo "[OK] $file_name";;
-      *) echo "[KO] $file_name $([[ "$validation_error" != "" ]] && echo -en --- $validation_error)" && exit 1;;
-    esac
+  fi
+  case $result_code in
+    126) echo "[WARNING] There is not any validator for $file_name";;
+    0) echo "[OK] $file_name";;
+    *) echo "[KO] $file_name $([[ "$validation_error" != "" ]] && echo -en --- $validation_error)" && exit 1;;
+  esac
 done < <(git status --porcelain|egrep '^AM |^ M |^M |^A '|awk '{print $2}')
