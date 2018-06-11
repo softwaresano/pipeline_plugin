@@ -5,7 +5,7 @@ if [ "$DEBUG_PIPELINE" == "TRUE" ]; then
 else
    set +x
 fi
-### HELP section
+### HELP section
 #This script contain commons functions for the all artifacts types.
 dp_help_message=" "
 source $DP_HOME/dp_help.sh $*
@@ -34,7 +34,7 @@ function is_blocked(){
 }
 
 
-# When starts the publication of an artifact, block repo
+# When starts the publication of an artifact, block repo
 function block_publish(){
     local block_directory=$(get_block_directory)
     _log "[INFO] Avoid new publications in $block_directory directory"
@@ -42,7 +42,7 @@ function block_publish(){
     echo "" > $block_directory/$DP_PUBLISH_LOCK_FILE
 }
 
-# When ends the publication of an artifact, unblock repo
+# When ends the publication of an artifact, unblock repo
 function unblock_publish(){
     local block_directory=$(get_block_directory)
     _log "[INFO] Enable new publications in $block_directory directory"
@@ -94,9 +94,11 @@ function publish_artifact(){
    local metadata_dir="$(dirname $target_repo)/.$(basename $target_repo)"
    local metadata_file="$metadata_dir/$artifact_name"
    mkdir -p $metadata_dir
+   local branch_type=$(dp_branch_type.sh)
    if [ -f $metadata_file ]; then
+     if [[ "${branch_type}" != 'release' ]]; then
       if [ '$(echo $N_RPMS_FOR_COMPONENT|egrep "^[0-9]+$")' != '' ]; then
-         # Only the last (n_entry) 
+         # Only the last (n_entry) 
          n_entry=$N_RPMS_FOR_COMPONENT
          k=$(expr $(cat $metadata_file|wc -l) - $n_entry + 1)
          if [ $k -gt 0 ]; then
@@ -107,6 +109,7 @@ function publish_artifact(){
             mv $metadata_file.tmp $metadata_file
          fi
       fi
+     fi
    fi
    echo $(basename $artifact_file) >>$metadata_file
    cp "$artifact_file" "${target_repo}"
@@ -135,7 +138,7 @@ function publish_artifacts(){
    IFS=$oldIFS
 }
 
-# Publish artifact in a concrete repository. This repo depends on artifact_type
+# Publish artifact in a concrete repository. This repo depends on artifact_type
 # (iso or rpm) and the tag version in scm
 function publish(){
    # Check it is generated from a scm repo
