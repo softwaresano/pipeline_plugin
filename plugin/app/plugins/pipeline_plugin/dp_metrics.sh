@@ -25,7 +25,6 @@ if [ "$errorCode" != 0 ]; then
    _log "[ERROR] In metric phase"
    exit $errorCode
 fi
-$DP_HOME/dp_cloc.sh
 
 $DP_HOME/profiles/metrics/dp_build_metricsOk.sh
 errorCode=$?
