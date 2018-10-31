@@ -170,7 +170,7 @@ name-[version].[x86_64|noarch].rpm[:el5,:el6]"
    install_root_dir=/var/tmp/install-root
    rm -Rf "/var/tmp/yum-$(id -un)-*" $install_root_dir
    mkdir -p $install_root_dir
-   tmp_yumdownloader_log=$(mktemp)
+   tmp_yumdownloader_log=$(mktemp -p /tmp)
    eval yumdownloader -t -c $YUM_CONF_FILE --installroot $install_root_dir --destdir $target_repo_dir --resolve $rpm_names|tee $tmp_yumdownloader_log
    status_yum_downloader=${PIPESTATUS[0]}
    errors=$(grep 'No Match for argument' $tmp_yumdownloader_log|wc -l)
