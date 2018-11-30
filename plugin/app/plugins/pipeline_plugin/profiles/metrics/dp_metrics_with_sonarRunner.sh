@@ -93,7 +93,7 @@ function execute_without_sonar_project_file(){
    -Dproject.settings=${sonarFileconf}"
 }
 function get_sonar_project_key(){
-  git config --get remote.origin.url|grep -Po '(?<=\:).*(?=\.git$)'|sed s#/#:#g
+  echo "$(git config --get remote.origin.url|grep -Po '(?<=\:).*(?=\.git$)'|sed s#/#:#g):$(dp_version.sh)"
 }
 
 function get_sonar_pr_parameters(){
