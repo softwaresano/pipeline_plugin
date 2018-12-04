@@ -113,7 +113,9 @@ function get_sonar_implicit_options(){
     sonar_parameters="-Dsonar.projectVersion=$(dp_version.sh)-$(dp_release.sh) ${sonar_parameters}"
   grep '^sonar.github.repository=' $sonarFileconf >/dev/null || \
     sonar_parameters="-Dsonar.github.repository=$(git config --get remote.origin.url|grep -Po '(?<=\:).*(?=\.git$)') ${sonar_parameters}"
-  echo $sonar_parameters
+  local sonar_cnes_report_property=''
+  [[ -s "${CNES_REPORT}" ]] && sonar_cnes_report_property=" -Dsonar.icode.reports.path=${CNES_REPORT}"
+  echo "${sonar_parameters}${sonar_cnes_report_property}"
 }
 
 function run_sonar_scanner(){
@@ -124,8 +126,22 @@ function run_sonar_scanner(){
   return 1
 }
 
+function run_shell_script_analysis(){
+  local sh_files=$(find * -name "*.sh")
+  [[ "${sh_files}" == '' ]] && return 0
+  local icode_executable=/opt/ss/develenv/platform/i-CodeCNES/icode
+  ! [[ -x "${icode_executable}" ]] && return 0
+  mkdir -p "$(dirname "${CNES_REPORT}")"
+  rm -f "${CNES_REPORT}"
+  
+  _log "[INFO] Running shell script_analysis:"
+  _log "[INFO] ${icode_executable} $sh_files -o ${CNES_REPORT}"
+  ${icode_executable} $sh_files -o "${CNES_REPORT}"
+}
 function execute(){
    local command=""
+   CNES_REPORT=target/reports/CNES.xml
+   run_shell_script_analysis
    sonarFileconf="sonar-project.properties"
    if [ -f "$sonarFileconf" ]; then
       command=$(execute_with_sonar_project_file)
