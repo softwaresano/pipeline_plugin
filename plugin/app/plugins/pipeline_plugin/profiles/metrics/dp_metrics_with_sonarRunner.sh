@@ -141,7 +141,7 @@ function run_shell_script_analysis(){
 function execute(){
    local command=""
    CNES_REPORT=target/reports/CNES.xml
-   run_shell_script_analysis
+   #run_shell_script_analysis
    sonarFileconf="sonar-project.properties"
    if [ -f "$sonarFileconf" ]; then
       command=$(execute_with_sonar_project_file)
