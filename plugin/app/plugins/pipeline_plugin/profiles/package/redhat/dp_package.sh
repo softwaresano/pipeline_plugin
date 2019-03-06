@@ -541,8 +541,8 @@ env >%{_debug_dir}/env_${logPhase}\
 %define _default_exclude_files \
 cd $RPM_BUILD_ROOT\
 [ $? != 0 ] && exit 2 \
-exludeFiles=".svn .svnignore .cvs .cvsignore .hg .hgignore .git .gitignore .classpath .settings .project *.bak *.*~"\
-for excludeFile in $exludeFiles; do\
+excludeFiles=".svn .svnignore .cvs .cvsignore .hg .hgignore .git .gitignore .classpath .settings .project *.bak *.*~"\
+for excludeFile in $excludeFiles; do\
    rm -rf `find . -name "$excludeFile"`\
 done;\
 cd -

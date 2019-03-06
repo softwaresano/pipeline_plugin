@@ -46,7 +46,6 @@ function externalConfiguration(){
       JENKINS_URL=http://$(hostname)/jenkins
       popd >/dev/null
    fi
-
 }
 
 function execute_with_sonar_project_file(){
@@ -120,8 +119,17 @@ function get_sonar_implicit_options(){
 
 function run_sonar_scanner(){
   local sonar_command=$1
+  local parse_errors
+  local ret_val
   _log "[INFO] Sonar command: ${sonar_command}"
-  ${sonar_command} && return 0
+  mkdir -p target/logs 
+  ${sonar_command}|tee target/logs/sonar.log && ret_val="${PIPESTATUS[0]}"
+  parse_errors=$(grep "ERROR: Unable to parse file" target/logs/sonar.log)
+  if [[ "${parse_errors}" != '' ]]; then
+    _log "[ERROR] Error. Sonar can not parse file: ${parse_errors}"
+    return 1
+  fi
+  [[ $ret_val == 0 ]] && return 0
   _log "[ERROR] Error in sonar Runner Execution"
   return 1
 }
