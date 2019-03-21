@@ -124,7 +124,7 @@ function run_sonar_scanner(){
   _log "[INFO] Sonar command: ${sonar_command}"
   mkdir -p target/logs 
   ${sonar_command}|tee target/logs/sonar.log && ret_val="${PIPESTATUS[0]}"
-  parse_errors=$(grep "ERROR: Unable to parse file" target/logs/sonar.log)
+  parse_errors=$(egrep "^(ERROR: Unable to parse file|INFO: Compilation failed)" target/logs/sonar.log)
   if [[ "${parse_errors}" != '' ]]; then
     _log "[ERROR] Error. Sonar can not parse file: ${parse_errors}"
     return 1
