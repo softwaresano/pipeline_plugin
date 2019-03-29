@@ -18,7 +18,7 @@ function publish_pys(){
    for python_component in $python_components; do
       pushd . >/dev/null
       devpi-upload.sh && \
-            echo "[INFO] Python component successfully deployed in devpi server" || \
+            echo "[INFO] Python component successfully deployed in devpi server" || \
             echo "[WARNING] Python component has not been deployed"
       popd >/dev/null
    done;
