@@ -57,6 +57,18 @@ function unblock_publish(){
     rm -f $block_directory/$DP_PUBLISH_LOCK_FILE
 }
 
+function copy_repodata(){
+  local source_file=$1
+  local target=$2
+  local type=$3
+  local target_repodata="${target}/${type}/repodata"
+   if [[ -d $target_repodata ]]; then
+      _log "[INFO] Copying ${source_file}/${type}/repodata to ${source_file}/${type}/repodata"
+      rm -Rf "$target_repodata"
+      cp -r "${source_file}/${type}/repodata" "${target_repodata}"
+   fi
+}
+
 function copy_artifact(){
     local source_file=$1
     local target=$2
@@ -78,6 +90,9 @@ function copy_artifact(){
     rm -rf $target
     mkdir -p $(dirname $target)
     cp -rl $source_file $target
+    copy_repodata "${source_file}" "${target}" 'initiative/noarch'
+    copy_repodata "${source_file}" "${target}" 'initiative/x86_64'
+    copy_repodata "${source_file}" "${target}" '3party'
     # Remove extra metadata
     rm -rf $target/.dependencies $target/ur\@* $target/initiative/.noarch $target/initiative/.x86_64
     local error_code=$?
