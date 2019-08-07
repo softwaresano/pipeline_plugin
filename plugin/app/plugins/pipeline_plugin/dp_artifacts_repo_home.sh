@@ -1,6 +1,6 @@
 #!/bin/bash
-[ -z $DP_HOME ] && export DP_HOME=$(python -c 'import os,sys;print os.path.realpath(sys.argv[1])' $(which dp_package.sh)/..)
-### HELP section
+[ -z $DP_HOME ] && export DP_HOME=$(python2 -c 'import os,sys;print os.path.realpath(sys.argv[1])' $(which dp_package.sh)/..)
+###HELP section
 dp_help_message='Returns repo_home path
 
 Usage: dp_artifacts_repo_home.sh'
