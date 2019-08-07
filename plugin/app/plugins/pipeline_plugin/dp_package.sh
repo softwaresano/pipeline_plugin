@@ -1,6 +1,6 @@
 #!/bin/bash
 [ -z $DP_HOME ] && export DP_HOME=$(python2 -c 'import os,sys;print os.path.realpath(sys.argv[1])' $(which dp_package.sh)/..)
-### HELP section
+###HELP section
 dp_help_message='It creates a package of the project
 
 Usage: dp_package.sh'
