@@ -1,7 +1,7 @@
 #!/bin/bash
 #Publish all artifacts stored in the tree directory. At the moment only rpms
-[ -z $DP_HOME ] && export DP_HOME=$(python -c 'import os,sys;print os.path.realpath(sys.argv[1])' $0/..)
-### HELP section
+[ -z $DP_HOME ] && export DP_HOME=$(python2 -c 'import os,sys;print os.path.realpath(sys.argv[1])' $0/..)
+### HELP section
 dp_help_phase="publish"
 dp_help_message='This command has not any help
 
