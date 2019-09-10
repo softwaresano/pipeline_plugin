@@ -1,6 +1,6 @@
 #!/bin/bash
 if [[ -z "$DP_HOME" ]]; then
-   DP_HOME=$(python -c 'import os,sys;print os.path.realpath(sys.argv[1])' $(which dp_package.sh 2>/dev/null)/..)
+   DP_HOME=$(python2 -c 'import os,sys;print os.path.realpath(sys.argv[1])' $(which dp_package.sh 2>/dev/null)/..)
    [[ -z "$DP_HOME" ]] && echo "[ERROR] DP_HOME must be defined" && exit 1
 fi
 

@@ -73,11 +73,11 @@ function extractMetrics(){
    _log "XMLs Obtained, Extracting results..." 
    # New way
    local date=`date +%Y-%m-%d`
-   local ncloc=`cat tmp/$PROJECT_NAME.metrics.json | python -c 'from simplejson.tool import main; main()' | \
+   local ncloc=`cat tmp/$PROJECT_NAME.metrics.json | python2 -c 'from simplejson.tool import main; main()' | \
                          grep -A1 ncloc | grep val | awk '{ print $2 }'`
-   local dupes=`cat tmp/$PROJECT_NAME.metrics.json | python -c 'from simplejson.tool import main; main()' | \
+   local dupes=`cat tmp/$PROJECT_NAME.metrics.json | python2 -c 'from simplejson.tool import main; main()' | \
                          grep -A1 duplicated_lines_density | grep val | awk '{ print $2 }'`
-   local coverage=`cat tmp/$PROJECT_NAME.metrics.json | python -c 'from simplejson.tool import main; main()' | \
+   local coverage=`cat tmp/$PROJECT_NAME.metrics.json | python2 -c 'from simplejson.tool import main; main()' | \
                grep -A1 coverage | grep val | awk '{ print $2 }'`
    #do_metrics_extract
       local cC=`cat tmp/$PROJECT_NAME.cc.xml | sed s:"</violation>":"&\r\n":g | grep -v violations | wc -l`
