@@ -73,9 +73,9 @@ function prepareRepos(){
    fi
    if  [ "$reposDevelenv" != "noarch src x86_64" -o "$exitsRPMRepo" == "" ]; then
       if [ "$exitsRPMRepo" != "" ]; then
-         yum remove ${develenv_repo_rpm} -y
+         dnf remove ${develenv_repo_rpm} -y
       fi
-      yum install wget -y
+      dnf install wget -y
       [ $? != 0 ] && installationError "No se puede instalar wget. Comprueba acceso a los repositorios de rpms"
       rpm -Uvh $develenvRepoHost/noarch/${develenv_repo_rpm}-1.0-0.0.noarch.rpm
       [ $? != 0 ] && installationError "No se puede instalar [${repoRpmName}.noarch.rpm]. Comprueba acceso al repo"
@@ -126,20 +126,20 @@ function installInHost(){
    organization="$4"
    enviroment="$5"
    prepareHostDeploy ${develenvRepoHost} ${pipelineId} ${organization} ${enviroment}
-   yum -y --enablerepo=ss-develenv-noarch clean metadata
+   dnf -y --enablerepo=ss-develenv-noarch clean metadata
    if [ "$?" != 0 ]; then
-      installationError "yum -y --enablerepo=ss-develenv-noarch clean metadata"
+      installationError "dnf -y --enablerepo=ss-develenv-noarch clean metadata"
    fi
    #Workaround for Centos 5.8 (In Centos 6.8 doesn't appear the arch)
    rpm -qa >$DP_DIR/allPackages
    grep "\.noarch$" $DP_DIR/allPackages >/dev/null
    [ $? == 0 ] && isArchPresent="true" || isArchPresent="false"
    for package in $packagesToInstall; do
-     yum info $package >${YUM_INFO_FILE}
+     dnf info $package >${YUM_INFO_FILE}
      [ "$?" != "0" ] && installationError "No se puede encontrar el paquete [$package]" && return 1
      packageVersionToInstall="$(getPackageVersionToInstall)"
      namePackage="`grep -n "^Name" $YUM_INFO_FILE|head -1|awk '{print $3}'`"
-     ! [ "$namePackage" == "$package" ] && yum info $namePackage >$YUM_INFO_FILE
+     ! [ "$namePackage" == "$package" ] && dnf info $namePackage >$YUM_INFO_FILE
      installedPackageVersion="$(getInstalledPackageVersion)";
      local compareVersion=$packageVersionToInstall
      if [[ "$isArchPresent" == "false" ]]; then
@@ -151,9 +151,9 @@ function installInHost(){
      #Si el paquete no está instalado ya previamente
      [ $"$installedPackageVersion" != "$packageVersionToInstall" ] && echo ${namePackage}-${packageVersionToInstall} >> ${PACKAGES_VERSIONS_FILE}
    done;
-   [ -f "$PACKAGES_REMOVE_FILE" ] && yum remove -y `cat $PACKAGES_REMOVE_FILE`
+   [ -f "$PACKAGES_REMOVE_FILE" ] && dnf remove -y `cat $PACKAGES_REMOVE_FILE`
    ! [ -f "$PACKAGES_VERSIONS_FILE" ] && _log "[DP_WARNING] There aren't any package to install" && return 0
-   yum install -y `cat $PACKAGES_VERSIONS_FILE`
+   dnf install -y `cat $PACKAGES_VERSIONS_FILE`
    errorCode="$?"
    [ "$errorCode" != "0" ] && _log "[DP_ERROR] Error deploying `cat $PACKAGES_VERSIONS_FILE|tr '\n' ' '`" && exit $errorCode
    rm -Rf $DP_DIR/notInstalled
@@ -163,7 +163,7 @@ function installInHost(){
       grep "^${searchRpmFile}" $DP_DIR/allPackages
       errorCode=$?
       [ $errorCode != 0 ] && echo $rpmFile >> $DP_DIR/notInstalled
-      [ $errorCode == 0 ] && yum info $rpmFile|egrep "^Name|^Version|^Release|^Arch"|sort|cut -d':' -f2|awk  ' {print $1} '|awk ' BEGIN { RS="{"} {print $2"="$4"-"$3"."$1} ' >> $DP_DIR/packagesInstalled
+      [ $errorCode == 0 ] && dnf info $rpmFile|egrep "^Name|^Version|^Release|^Arch"|sort|cut -d':' -f2|awk  ' {print $1} '|awk ' BEGIN { RS="{"} {print $2"="$4"-"$3"."$1} ' >> $DP_DIR/packagesInstalled
    done;
    [ -f $DP_DIR/notInstalled ] && _log "[DP_ERROR] Error deploying `cat $PACKAGES_VERSIONS_FILE`|tr '\n' ' '" && exit 1
    _log "[DP_INFO] SUCCESS INSTALLATION" && cat $DP_DIR/packagesInstalled

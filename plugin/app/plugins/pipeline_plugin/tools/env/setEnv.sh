@@ -74,11 +74,11 @@ installationInRedHat(){
             installationInRedHat6
         fi
         [ "$CONFIGURE_REPOS" == "" ] &&\
-        CONFIGURE_REPOS="yum update yum -y;yum install mysql-server -y" ||\
-        CONFIGURE_REPOS="$CONFIGURE_REPOS;yum update yum -y;yum install mysql-server -y"
+        CONFIGURE_REPOS="dnf update dnf -y;dnf install mysql-server -y" ||\
+        CONFIGURE_REPOS="$CONFIGURE_REPOS;dnf update dnf -y;dnf install mysql-server -y"
     fi
     CONFIGURE_REPOS="$CONFIGURE_REPOS; rpm -Uvh http://thirdparty2-develenv-softwaresano.googlecode.com/svn/tags/develenv-24/src/site/resources/tools/rpms/noarch/ss-thirdparty-develenv-repo-1.0-0.0.noarch.rpm"
-    INSTALL_PACKAGE="yum install"
+    INSTALL_PACKAGE="dnf install"
     PRE_INSTALLATION_PACKAGES="bind-utils"
     NEW_PACKAGES="bind-utils subversion mercurial git httpd mysql-server php wget xorg-x11-server-Xvfb curl openssh-clients rpm-build rpmdevtools createrepo firefox lcov google-chrome-stable sloccount"
     APACHE2_MODULES=""

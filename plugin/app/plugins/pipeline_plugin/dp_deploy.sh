@@ -23,7 +23,7 @@ if [ "$errorCode" != 0 ]; then
    exit $errorCode
 fi
 
-sudo yum clean all
+sudo dnf clean all
 $DP_HOME/profiles/deploy/${typeDeployProject}/dp_deploy.sh $*
 #install develop \
 #   sprayer1 1 sprayer2 1 sprayer3 1 

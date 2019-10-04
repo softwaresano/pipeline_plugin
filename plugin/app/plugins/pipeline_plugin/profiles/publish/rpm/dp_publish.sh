@@ -271,7 +271,7 @@ function publish_3party_rpm_dependencies(){
 }
 
 function execute(){
-   sudo /usr/bin/yum clean all
+   sudo /usr/bin/dnf clean all
    publish "*.rpm"
    local error_code=$?
    if [ $error_code != 0 ]; then
