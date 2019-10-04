@@ -52,7 +52,7 @@ get_version_string()
         develop|master|unstable)
            ## if we are in develop use the total count of commits
            ###  version=$(git describe --tags --long --match */KO)
-           version=$(for i in $(git tag|grep "/KO"|sort -Vr); do git describe --tags --long --match $i && break; done;)
+           version=$(for i in $(git tag|grep "/KO"|sort -Vr); do git describe --tags --long --match $i 2>/dev/null && break; done;)
            git_root_dir=$(git rev-parse --show-toplevel)
            local major_version=$(grep -rl $(cat ${git_root_dir}/.git/refs/tags/$(echo ${version}|cut -d'/' -f1)/KO 2>/dev/null) ${git_root_dir}/.git/refs/tags|tail -1|grep -Po "(?<=\.git/refs/tags/).*(?=/KO)")
            if [[ "${major_version}" == "" ]]; then 
