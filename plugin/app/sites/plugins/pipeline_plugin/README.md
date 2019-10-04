@@ -28,7 +28,7 @@ La deployment pipeline viene instalada con ![develenv] (http://develenv.software
 utilizarla fuera de [develenv] (http://develenv.softwaresano.com) se puede hacer:
 
   * Utilizando el rpm que está disponible en el repositorio de develenv: 
-`yum install ss-develenv-dp`
+`dnf install ss-develenv-dp`
   * Descargando los fuentes directamente los fuentes
 `svn co http://develenv-pipeline-plugin.googlecode.com/svn/trunk/pipeline_plugin/plugin/app/plugins/pipeline_plugin
  cd pipeline_plugin

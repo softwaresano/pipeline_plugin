@@ -61,7 +61,7 @@ El script [${onlyFileName}](${onlyFileName}) contiene el
 repositorio con todos los paquetes para instalar el producto. 
 Después de la ejecución de éste script todos los paquetes estarán disponibles 
 para su instalación en el directorio **${dir_repo}** y serán 
-instalables a partir del comando *yum install <nombre_paquete>* ya que se ha 
+instalables a partir del comando *dnf install <nombre_paquete>* ya que se ha 
 configurado el acceso a los repos en **${def_repo}**
 
 
@@ -93,7 +93,7 @@ Instalación de paquetes del repositorio
 Para instalar un paquete. Por ejemplo (`basename $(rpm -qlp $fileName|grep \"\.rpm\"|head -1)|sed s:\"\.rpm$\":\"\":g`) 
 
 \`\`\`
-   yum install `basename $(rpm -qlp $fileName|grep \"\.rpm\"|head -1)|sed s:\"\.rpm$\":\"\":g`
+   dnf install `basename $(rpm -qlp $fileName|grep \"\.rpm\"|head -1)|sed s:\"\.rpm$\":\"\":g`
 \`\`\`
 
 Paquetes que contiene el repositorio
@@ -116,7 +116,7 @@ Paquetes que contiene el repositorio
    echo "      rpm -qa|grep \"$rpmName\"" >> target/README.txt
    echo "Para instalar un paquete: 
    Ejemplo:
-      yum install `basename $(rpm -qlp $fileName|grep \"\.rpm\"|head -1)|sed s:\"\.rpm$\":\"\":g`
+      dnf install `basename $(rpm -qlp $fileName|grep \"\.rpm\"|head -1)|sed s:\"\.rpm$\":\"\":g`
    " >> target/README.txt
    echo "Los paquetes contenidos en este repositorio son:" >> target/README.txt
    rpm -qlp $fileName|grep -v "repodata"|grep "\.rpm" >> target/README.txt

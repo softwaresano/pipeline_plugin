@@ -59,7 +59,7 @@ COMPONENT_LOCAL_CONFIG_SUFFIX="neore/config/component.local.cfg"
 VALIDATE_CMD="command -v"
 
 # RPMs installation constants
-YUM_INSTALL_CMD="yum install -y"
+YUM_INSTALL_CMD="dnf install -y"
 
 # Virtualenv constants
 VIRTUALENV_CMD="virtualenv"

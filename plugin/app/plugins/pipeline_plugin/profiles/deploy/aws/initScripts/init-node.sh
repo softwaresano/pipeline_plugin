@@ -1,10 +1,10 @@
 #!/bin/bash
 
 echo 0 > /selinux/enforce
-yum update-minimal
+dnf update-minimal
 rpm -ivh http://yum.puppetlabs.com/el/6/products/i386/puppetlabs-release-6-7.noarch.rpm
-yum updateinfo -y
-yum install puppet -y
+dnf updateinfo -y
+dnf install puppet -y
 
 echo "@NODE_TAG-aws-@USER-$(hostname)" > /etc/hostname
 hostname $(cat /etc/hostname) >> /var/log/syslog

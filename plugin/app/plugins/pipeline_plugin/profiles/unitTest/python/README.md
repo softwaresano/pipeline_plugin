@@ -112,7 +112,7 @@ The available configurable options are:
    * **PROJECT_NAME**: Name of the project
    * **COMPONENT_NAME**: Name of the component (by default it takes the name of the parent folder where it is launched).
  * RPM dependencies settings:
-   * **BUILD_RPM_DEPENDENCIES**: String with all the RPMs to be installed (to execute `yum install -y $BUILD_RPM_DEPENDENCIES`). If empty, this step is skipped.
+   * **BUILD_RPM_DEPENDENCIES**: String with all the RPMs to be installed (to execute `dnf install -y $BUILD_RPM_DEPENDENCIES`). If empty, this step is skipped.
    * **BUILD_USE_SUDO_YUM**: Boolean specifying if `yum` must be used with `sudo` (true by default)
  * Virtualenv settings:
    * **VENVS_ROOT**: Path where the virtualenvs are created ("/tmp/build_venvs" by default).

@@ -5,10 +5,10 @@ mkdir /etc/puppet
 mkdir /etc/puppet/files
 
 # Install PuppetDB to store Node fact information
-yum update-minimal
+dnf update-minimal
 rpm -ivh http://yum.puppetlabs.com/el/6/products/i386/puppetlabs-release-6-7.noarch.rpm
-yum updateinfo -y
-yum install puppet puppetdb puppet-server puppetdb-terminus dos2unix -y
+dnf updateinfo -y
+dnf install puppet puppetdb puppet-server puppetdb-terminus dos2unix -y
 
 # Change the permissions of the puppet folder to enable code-updating
 chmod 777 /etc/puppet/files
