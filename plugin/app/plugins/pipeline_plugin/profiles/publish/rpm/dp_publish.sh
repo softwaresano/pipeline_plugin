@@ -50,45 +50,6 @@ function get_repo_dir(){
    fi
 }
 
-function enable_new_repo(){
-    local thirdparty_repo=$(get_3party_builder_repo)
-    if ! [ -d $thirdparty_repo/repodata ]; then
-       createrepo $thirdparty_repo
-    fi
-    echo "
-[main]
-keepcache=0
-debuglevel=2
-logfile=/var/log/yum.log
-exactarch=1
-obsoletes=1
-gpgcheck=1
-plugins=1
-installonly_limit=3
-[3party-builder]
-baseurl=file://$thirdparty_repo
-gpgcheck=0
-name=Packages for 3party in builders
-enabled=1
-metadata_expire=0
-" >$YUM_CONF_FILE
-
-    echo "
-[dependencies]
-baseurl=file://$(dirname $1)/$(uname -i)
-gpgcheck=0
-name=Packages dependencies for $(uname -i)
-enabled=1
-metadata_expire=0
-[dependencies-noarch]
-baseurl=file://$(dirname $1)/noarch
-gpgcheck=0
-name=Package dependencies for noarch
-enabled=1
-metada_expire=0
-"  >>$YUM_CONF_FILE
-  }
-
 function extract_dependencies(){
   local rpm_files=$1
   local line
@@ -153,7 +114,6 @@ name-[version].[x86_64|noarch].rpm[:el5,:el6]"
           return 1
       fi
    done;
-   enable_new_repo $target_repo
    if [ "$ALL_RPMS_IN_RPM_HOME" != "" ]; then
       target_repo_dir=$(dirname $target_repo)/3party
       initiative_rpm_dirs=$(dirname $target_repo)
@@ -171,20 +131,21 @@ name-[version].[x86_64|noarch].rpm[:el5,:el6]"
    rm -Rf "/var/tmp/yum-$(id -un)-*" $install_root_dir
    mkdir -p $install_root_dir
    tmp_yumdownloader_log=$(mktemp -p /tmp)
-   eval yumdownloader -c $YUM_CONF_FILE --setopt=module_platform_id=platform:el8 \
+   sudo /usr/bin/dnf clean all
+   eval yumdownloader --setopt=module_platform_id=platform:el8 \
           --installroot $install_root_dir \
           --destdir $target_repo_dir \
-          --resolve $rpm_names|tee $tmp_yumdownloader_log
+          --resolve $rpm_names 2>&1|tee $tmp_yumdownloader_log
    status_yum_downloader=${PIPESTATUS[0]}
-   errors=$(grep 'No Match for argument' $tmp_yumdownloader_log|wc -l)
+   errors=$(egrep '^Error in resolve of packages|No Match for argument' $tmp_yumdownloader_log|wc -l)
    if [[ "$errors" != '0' ]]; then
      _log "[ERROR] ERROR downloading:"
-     grep 'No Match for argument' $tmp_yumdownloader_log
+     egrep '^Error in resolve of packages|No Match for argument' $tmp_yumdownloader_log
    fi
-   rm $tmp_yumdownloader_log
+   rm -f $tmp_yumdownloader_log
    [[ "$errors" != '0' ]] && return 1
    [[ $status_yum_downloader != 0 ]] && _log "[ERROR] Problems downloading rpms" && return 1
-   rm $tmp_yumdownloader_log
+   rm -f $tmp_yumdownloader_log
    # Remove initiative rpms stored in 3party repo
    _log "[INFO] Remove initiative rpms stored in 3party"
    IFS=" "
