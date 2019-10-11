@@ -131,7 +131,7 @@ name-[version].[x86_64|noarch].rpm[:el5,:el6]"
    rm -Rf "/var/tmp/yum-$(id -un)-*" $install_root_dir
    mkdir -p $install_root_dir
    tmp_yumdownloader_log=$(mktemp -p /tmp)
-   sudo /usr/bin/dnf clean all
+   /usr/bin/dnf clean all
    eval yumdownloader --setopt=module_platform_id=platform:el8 \
           --installroot $install_root_dir \
           --destdir $target_repo_dir \
@@ -232,7 +232,7 @@ function publish_3party_rpm_dependencies(){
 }
 
 function execute(){
-   sudo /usr/bin/dnf clean all
+   /usr/bin/dnf clean all
    publish "*.rpm"
    local error_code=$?
    if [ $error_code != 0 ]; then
