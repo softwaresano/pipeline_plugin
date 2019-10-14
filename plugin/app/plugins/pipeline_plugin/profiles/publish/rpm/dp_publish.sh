@@ -127,13 +127,11 @@ name-[version].[x86_64|noarch].rpm[:el5,:el6]"
    createrepo $target_repo_dir
    local rpm_names=$(echo $rpm_dependencies|sed s:"\.rpm$":"":g|sed s:"\.rpm ":" ":g)
    _log "[INFO] Downloading dependencies for $rpm_names"
-   install_root_dir=/var/tmp/install-root
-   rm -Rf "/var/tmp/yum-$(id -un)-*" $install_root_dir
-   mkdir -p $install_root_dir
+   rm -Rf "/var/tmp/yum-$(id -un)-*"
    tmp_yumdownloader_log=$(mktemp -p /tmp)
-   /usr/bin/dnf clean all
+   /usr/bin/dnf --installroot "${INSTALL_ROOT_DIR}" clean all
    eval yumdownloader --setopt=module_platform_id=platform:el8 \
-          --installroot $install_root_dir \
+          --installroot "${INSTALL_ROOT_DIR}" \
           --destdir $target_repo_dir \
           --resolve $rpm_names 2>&1|tee $tmp_yumdownloader_log
    status_yum_downloader=${PIPESTATUS[0]}
@@ -232,7 +230,7 @@ function publish_3party_rpm_dependencies(){
 }
 
 function execute(){
-   /usr/bin/dnf clean all
+   /usr/bin/dnf --installroot ${INSTALL_ROOT_DIR} clean all
    publish "*.rpm"
    local error_code=$?
    if [ $error_code != 0 ]; then
@@ -249,6 +247,8 @@ function main(){
                && post_publish $* \
                && exit $?
 }
+
+INSTALL_ROOT_DIR=/var/tmp/install-root
 
 if [ "$DEBUG_PIPELINE" == "TRUE" ]; then
    main --debug $*
