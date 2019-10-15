@@ -15,13 +15,18 @@ function publish_pys(){
       _log "[WARNING] devpi client is not installed."
       return 0
    fi
+   local error_code=0
    for python_component in $python_components; do
       pushd . >/dev/null
-      devpi-upload.sh && \
-            echo "[INFO] Python component successfully deployed in devpi server" || \
-            echo "[WARNING] Python component has not been deployed"
+      if devpi-upload.sh; then
+         _log '[INFO] Python component successfully deployed in devpi server'
+      else
+         _log '[ERROR] Python component has not been deployed'
+         error_code=1
+      fi
       popd >/dev/null
    done;
+   return $error_code
 }
 
 function execute(){

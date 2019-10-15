@@ -163,8 +163,9 @@ function publish(){
    done;
    [[ ! -f $published_artifacts ]] && _log "[WARNING] There are any artifact to publish" && return 0
    block_publish
-   local error_code=$?
+   local error_code=0
    publish_${artifact_type}s $published_artifacts
+   error_code=$?
    unblock_publish
    rm -f $published_artifacts
    return $error_code
