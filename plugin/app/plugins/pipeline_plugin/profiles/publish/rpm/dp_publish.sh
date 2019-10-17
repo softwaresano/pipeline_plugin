@@ -81,6 +81,16 @@ function are_there_any_new_dependency(){
   fi
 }
 
+function yumdownloader_options(){
+  local enablerepos_option=''
+  if [[ "$(is_stable_branch)" == "true" ]]; then
+     enablerepos_options='local-stable*'
+  else
+     enablerepos_options='local-unstable*'
+  fi
+  echo "--enablerepo \"${enablerepos_options}\" --disablerepo \"tid-cdn-service*\""
+}
+
 function get_dependencies(){
    _log "[INFO] Started: Get dependencies for $1"
    local rpm_files=$1
@@ -133,6 +143,7 @@ name-[version].[x86_64|noarch].rpm[:el5,:el6]"
    eval yumdownloader --setopt=module_platform_id=platform:el8 \
           --installroot "${INSTALL_ROOT_DIR}" \
           --destdir $target_repo_dir \
+          $(yumdownloader_options) \
           --resolve $rpm_names 2>&1|tee $tmp_yumdownloader_log
    status_yum_downloader=${PIPESTATUS[0]}
    errors=$(egrep '^Error in resolve of packages|No Match for argument' $tmp_yumdownloader_log|wc -l)
