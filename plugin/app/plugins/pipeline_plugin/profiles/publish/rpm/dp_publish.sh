@@ -83,7 +83,7 @@ function are_there_any_new_dependency(){
 
 function yumdownloader_options(){
   local enablerepos_option=''
-  if [[ "$(is_stable_branch)" == "true" ]]; then
+  if [[ "$(is_stable_branch)" == "true" ]]; then
      enablerepos_options='local-stable*'
   else
      enablerepos_options='local-unstable*'
@@ -140,11 +140,14 @@ name-[version].[x86_64|noarch].rpm[:el5,:el6]"
    rm -Rf "/var/tmp/yum-$(id -un)-*"
    tmp_yumdownloader_log=$(mktemp -p /tmp)
    /usr/bin/dnf --installroot "${INSTALL_ROOT_DIR}" clean all
-   eval yumdownloader --setopt=module_platform_id=platform:el8 \
-          --installroot "${INSTALL_ROOT_DIR}" \
-          --destdir $target_repo_dir \
+   /usr/bin/dnf --installroot "${INSTALL_ROOT_DIR}" clean all
+   local yumdownloader_command="yumdownloader --setopt=module_platform_id=platform:el8 \
+          --installroot \"${INSTALL_ROOT_DIR}\" \
+          --destdir \"$target_repo_dir\" \
           $(yumdownloader_options) \
-          --resolve $rpm_names 2>&1|tee $tmp_yumdownloader_log
+          --resolve ${rpm_names}"
+   echo "$yumdownloader_command"
+   eval "${yumdownloader_command}" 2>&1|tee $tmp_yumdownloader_log
    status_yum_downloader=${PIPESTATUS[0]}
    errors=$(egrep '^Error in resolve of packages|No Match for argument' $tmp_yumdownloader_log|wc -l)
    if [[ "$errors" != '0' ]]; then
