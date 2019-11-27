@@ -139,10 +139,8 @@ name-[version].[x86_64|noarch].rpm[:el5,:el6]"
    _log "[INFO] Downloading dependencies for $rpm_names"
    rm -Rf "/var/tmp/yum-$(id -un)-*"
    tmp_yumdownloader_log=$(mktemp -p /tmp)
-   /usr/bin/dnf --installroot "${INSTALL_ROOT_DIR}" clean all
-   /usr/bin/dnf --installroot "${INSTALL_ROOT_DIR}" clean all
+   sudo /usr/bin/dnf clean all
    local yumdownloader_command="yumdownloader --setopt=module_platform_id=platform:el8 \
-          --installroot \"${INSTALL_ROOT_DIR}\" \
           --destdir \"$target_repo_dir\" \
           $(yumdownloader_options) \
           --resolve ${rpm_names}"
