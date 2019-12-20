@@ -1,0 +1,2 @@
+%versionModule %(dp_version.sh)
+%releaseModule %(dp_release.sh)
