@@ -38,6 +38,8 @@ for resource in $(ls|egrep -v "^target$|^rpm$"); do
       cp -R $resource %{buildroot}/%{_home_dir_}
    fi
 done;
+mkdir -p %{buildroot}/usr/lib/rpm/macros.d/
+mv %{buildroot}/%{_home_dir_}/profiles/package/redhat/macros.dp %{buildroot}/usr/lib/rpm/macros.d/
 
 %clean
 # ---------------------------------------------------------------------------- #
@@ -49,6 +51,7 @@ done;
 %files
 %defattr(-,%{develenv_project_id},%{develenv_project_id},-)
 %{_home_dir_}
+/usr/lib/rpm/macros.d/macros.dp
 %config(noreplace) %{_home_dir_}/config
 
 
