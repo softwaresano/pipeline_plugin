@@ -9,7 +9,7 @@ function get_git_prefix_message(){
   jira_prefix=$2
   repo_project_name=$(get_repo_project_name)
   [[ "$repo_project_name" != "$project_name" ]] && return 0
-  jira_prefix_id="$jira_prefix-[0-9]+"
+  jira_prefix_id="$jira_prefix-[0-9]+_"
   current_branch=$(git rev-parse --abbrev-ref HEAD)
   branch_stability_type=$(dp_branch_type.sh)
   if [[ "$branch_stability_type" == "unstable" || "$branch_stability_type" == "other" ]]; then
@@ -39,7 +39,7 @@ jira_prefix=$(cat $jira_prefix_file 2>/dev/null)
 
 if [[ "$jira_prefix" == "" ]]; then
   if [[ "$project_name" == "cdn" ]]; then
-    jira_prefix="^PTWOPCDN|^PTWOPCDNTC|^TCDNOPTSCB"
+    jira_prefix="^(PTWOPCDN|PTWOPCDNTC|TCDNOPTSCB)"
   else
     dp_log.sh "[ERROR] There aren't any jira_prefix for $project_name organization"
     dp_log.sh "[ERROR] Add jira-prefix (Ex: PTWOPCDN) in $jira_prefix_file file or assigns WITHOUT_JIRA to disable jira_prefix"
