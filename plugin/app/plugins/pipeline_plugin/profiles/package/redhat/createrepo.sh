@@ -6,6 +6,8 @@ function createrepo(){
       eval "$REMOTE_COMMAND /usr/bin/createrepo -s sha -d --update $directory"
     [[ $? != 0 ]] && return 1
     if which repoview 2>/dev/null; then
-      eval "$REMOTE_COMMAND 'rm -rf $directory/repoview;/usr/bin/repoview $directory'"
+      repoview_command="rm -rf $directory/repoview
+/usr/bin/repoview $directory"
+      eval "$REMOTE_COMMAND $repoview_command"
     fi
 }
