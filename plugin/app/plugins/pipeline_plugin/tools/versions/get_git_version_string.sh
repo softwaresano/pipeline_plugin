@@ -15,8 +15,7 @@ function get_git_branch_type(){
     local branch=$1
     case $branch in
         feature/*|bug/*|hotfix/*|task/*|test/*) echo "unstable";;
-        release/*) echo "release";;
-        +(+([[:digit:]])\.)+([[:digit:]]) ) echo "release" ;;
+        release/+(+([[:digit:]])\.)+([[:digit:]]) ) echo "release" ;;
         develop) echo "develop";;
         master) echo "master";;
         *) echo "other";;
