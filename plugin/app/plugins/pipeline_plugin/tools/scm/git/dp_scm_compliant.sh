@@ -39,7 +39,7 @@ jira_prefix=$(cat $jira_prefix_file 2>/dev/null)
 
 if [[ "$jira_prefix" == "" ]]; then
   if [[ "$project_name" == "cdn" ]]; then
-    jira_prefix="^(PTWOPCDN|PTWOPCDNTC|TCDNOPTSCB)"
+    jira_prefix="^(PTWOPCDN|PTWOPCDNTC|TCDNOPTSCB|GMETRICS)"
   else
     dp_log.sh "[ERROR] There aren't any jira_prefix for $project_name organization"
     dp_log.sh "[ERROR] Add jira-prefix (Ex: PTWOPCDN) in $jira_prefix_file file or assigns WITHOUT_JIRA to disable jira_prefix"
