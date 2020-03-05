@@ -82,13 +82,16 @@ function are_there_any_new_dependency(){
 }
 
 function yumdownloader_options(){
-  local enablerepos_option=''
+  local repo_type
+  local enablerepos_options
+  repo_type='developers'
   if [[ "$(is_stable_branch)" == "true" ]]; then
-     enablerepos_options='local-stable*'
-  else
-     enablerepos_options='local-unstable*'
+     repo_type='rc'
   fi
-  echo "--enablerepo \"${enablerepos_options}\" --disablerepo \"tid-cdn-service*\""
+  for ini_repo in $1; do
+    enablerepos_options="${enablerepos_options} --repofrompath '$(basename "$ini_repo"),$ini_repo'"
+  done;
+  echo "${enablerepos_options} --disablerepo \"tid-cdn-service*\""
 }
 
 function get_dependencies(){
@@ -144,7 +147,7 @@ name-[version].[x86_64|noarch].rpm[:el5,:el6]"
           --releasever 8 \
           --installroot \"${INSTALL_ROOT_DIR}\" \
           --destdir \"$target_repo_dir\" \
-          $(yumdownloader_options) \
+          $(yumdownloader_options "${initiative_rpm_dirs}") \
           --resolve ${rpm_names}"
    echo "$yumdownloader_command"
    eval "${yumdownloader_command}" 2>&1|tee $tmp_yumdownloader_log
