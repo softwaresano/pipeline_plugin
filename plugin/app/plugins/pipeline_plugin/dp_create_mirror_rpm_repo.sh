@@ -1,5 +1,5 @@
 #!/bin/bash
-[ -z $DP_HOME ] && DP_HOME=$(python2 -c 'import os,sys;print os.path.realpath(sys.argv[1])' $0/..)
+[ -z $DP_HOME ] && DP_HOME=$(python3 -c 'import os,sys;print (os.path.realpath(sys.argv[1]))' $0/..)
 dp_help_message='Create a mirror of a rpm repo
 
 Usage: dp_create_mirror_rpm_repo.sh <id_repo> <url_repo> <base_url>

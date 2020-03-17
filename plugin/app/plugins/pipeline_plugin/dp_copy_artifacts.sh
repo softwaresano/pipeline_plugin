@@ -1,6 +1,6 @@
 #!/bin/bash
 #Publish all artifacts stored in the tree directory. At the moment only rpms
-[ -z $DP_HOME ] && export DP_HOME=$(python2 -c 'import os,sys;print os.path.realpath(sys.argv[1])' $(which dp_package.sh)/..)
+[ -z $DP_HOME ] && export DP_HOME=$(python3 -c 'import os,sys;print (os.path.realpath(sys.argv[1]))' $(which dp_package.sh)/..)
 ### HELP section
 dp_help_message='Copy a source to target directory. This copy assures that nobody is publishing any artifact
 
