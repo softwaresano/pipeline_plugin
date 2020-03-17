@@ -8,7 +8,7 @@ Packager:  %{org_acronuym}
 Group:     develenv
 BuildArch: noarch
 BuildRoot: %{_topdir}/BUILDROOT
-Requires:  rpm-build createrepo python2
+Requires:  rpm-build createrepo python%{python3_version_nodots} python3-simplejson
 AutoReq:   No
 Vendor:    %{vendor}
 
