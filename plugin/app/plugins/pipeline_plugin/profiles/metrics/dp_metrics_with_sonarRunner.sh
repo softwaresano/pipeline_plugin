@@ -95,12 +95,6 @@ function get_sonar_project_key(){
   echo "$(git config --get remote.origin.url|grep -Po '(?<=\:).*(?=\.git$)'|sed s#/#:#g):$(dp_version.sh)"
 }
 
-function get_sonar_pr_parameters(){
-  if [[ "${CHANGE_ID}" != '' ]]; then
-    echo "-Dsonar.report.export.path=report.json -Dsonar.analysis.mode=issues -Dsonar.github.pullRequest=${CHANGE_ID}"
-  fi
-}
- 
 function get_sonar_implicit_options(){
   local sonar_parameters=""
   if [[ "${JOB_URL}" != '' ]]; then
