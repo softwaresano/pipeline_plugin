@@ -159,13 +159,9 @@ function execute(){
    local sonar_implicit_options=$(get_sonar_implicit_options)
    local sonar_project_key=$(get_sonar_project_key)
    local sonar_command=''
-   local sonar_project_name=''
    local change_id_prefix=''
    if [[ "${CHANGE_ID}" != '' ]]; then
      change_id_prefix="${CHANGE_ID}:"
-     sonar_project_name="${change_id_prefix}${sonar_project_key}"
-     sonar_command="${command} -Dsonar.projectKey=${sonar_project_key} -Dsonar.projectName=${sonar_project_name} ${sonar_implicit_options} $(get_sonar_pr_parameters)"
-     run_sonar_scanner "${sonar_command}" || return 1
    fi
    grep '^sonar.projectName=' $sonarFileconf >/dev/null || sonar_implicit_options="-Dsonar.projectName=${change_id_prefix}${sonar_project_key} ${sonar_implicit_options}"
    sonar_command="${command} -Dsonar.projectKey=${change_id_prefix}${sonar_project_key} ${sonar_implicit_options}"
