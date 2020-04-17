@@ -31,6 +31,7 @@ function check_non_printable_chars(){
   fi
 }
 validator_dir=$(dirname $0)/validators
+n_errors=0
 while read file_name; do
   check_non_printable_chars $file_name
   result_code=$?
@@ -47,6 +48,15 @@ while read file_name; do
   case $result_code in
     126) echo "[WARNING] There is not any validator for $file_name";;
     0) echo "[OK] $file_name";;
-    *) echo "[KO] $file_name $([[ "$validation_error" != "" ]] && echo -en --- $validation_error)" && exit 1;;
+    *) echo "[KO] $file_name"
+       echo "==================================================================="
+       echo -en "${validation_error}\n" 
+       n_errors=$((n_errors+1))
+       echo "==================================================================="
+       ;;
   esac
 done < <(git status --porcelain|egrep '^AM |^ M |^M |^A '|awk '{print $2}')
+[[ "${n_errors}" == "0" ]] && exit 0
+echo "
+Errors: ${n_errors}"
+exit 1
