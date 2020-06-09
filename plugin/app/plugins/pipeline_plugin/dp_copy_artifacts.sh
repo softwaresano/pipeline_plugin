@@ -63,7 +63,7 @@ function copy_repodata(){
   local type=$3
   local target_repodata="${target}/${type}/repodata"
    if [[ -d $target_repodata ]]; then
-      _log "[INFO] Copying ${source_file}/${type}/repodata to ${source_file}/${type}/repodata"
+      _log "[INFO] Copying ${source_file}/${type}/repodata to ${target_repodata}"
       rm -Rf "$target_repodata"
       cp -r "${source_file}/${type}/repodata" "${target_repodata}"
    fi
