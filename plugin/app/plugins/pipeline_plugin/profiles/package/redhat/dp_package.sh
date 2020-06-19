@@ -415,7 +415,7 @@ function buildRPMS(){
    rm -Rf $TOPDIR
    mkdir -p $TOPDIR
    # Genera un rpm por cada fichero de *.spec
-   for specFile in "$(find . -maxdepth 7 -name "*.spec"  -not -path "./target/*" -not -path "./external/*" -not -path "./.git/*" -not -path "./.scannerwork/*"|sort)"; do
+   for specFile in $(find . -maxdepth 7 -name "*.spec"  -not -path "./target/*" -not -path "./external/*" -not -path "./.git/*" -not -path "./.scannerwork/*"|sort); do
       createRPM "$specFile"
       if [ "$?" == "0" ]; then
          echo $rpmGeneratedName >>$generated_rpms
