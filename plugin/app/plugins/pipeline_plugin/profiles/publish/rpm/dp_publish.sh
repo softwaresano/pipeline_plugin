@@ -140,7 +140,7 @@ name-[version].[x86_64|noarch].rpm[:el5,:el6]"
    createrepo $target_repo_dir
    local rpm_names=$(echo $rpm_dependencies|sed s:"\.rpm$":"":g|sed s:"\.rpm ":" ":g)
    _log "[INFO] Downloading dependencies for $rpm_names"
-   rm -Rf "/var/tmp/yum-$(id -un)-*"
+   rm -Rf "/var/tmp/dnf-$(id -un)-*"
    tmp_yumdownloader_log=$(mktemp -p /tmp)
    /usr/bin/dnf --installroot "${INSTALL_ROOT_DIR}" clean all
    local yumdownloader_command="yumdownloader --setopt=module_platform_id=platform:el8 \
@@ -181,7 +181,8 @@ name-[version].[x86_64|noarch].rpm[:el5,:el6]"
      _log "[INFO] Remove 3party deprecated rpm versions"
      dp_remove_rpm_deprecated_versions.sh $target_repo_dir
    fi
-   createrepo $target_repo_dir
+   createrepo "$target_repo_dir" || exit 1
+   rm -rf "$target_repo_dir"/.repodata
    _log "[INFO] End: Get dependencies"
 }
 
