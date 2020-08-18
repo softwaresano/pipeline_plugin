@@ -176,11 +176,8 @@ name-[version].[x86_64|noarch].rpm[:el5,:el6]"
          popd >/dev/null
       fi
    done;
-   local branch_type=$(dp_branch_type.sh)
-   if [[ "${branch_type}" != "release" ]]; then
-     _log "[INFO] Remove 3party deprecated rpm versions"
-     dp_remove_rpm_deprecated_versions.sh $target_repo_dir
-   fi
+   _log "[INFO] Remove 3party deprecated rpm versions"
+   dp_remove_rpm_deprecated_versions.sh $target_repo_dir
    createrepo $target_repo_dir
    _log "[INFO] End: Get dependencies"
 }
