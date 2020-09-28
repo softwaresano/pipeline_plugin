@@ -1,8 +1,8 @@
 #!/bin/bash 
 # Return the function to file validate
-
 function get_validator(){
-  type_file=$(file $file_name|cut -d':' -f2)
+  local type_file
+  [[ $file_name =~ ^Makefile ]] && type_file='Makefile' || type_file=$(file $file_name|cut -d':' -f2)
   case $type_file in
     " Bourne-Again shell script, ASCII text executable") echo "bash";;
     " Bourne-Again shell script text executable, ASCII text") echo "bash";;
@@ -15,12 +15,16 @@ function get_validator(){
   esac
 }
 
+
 function check_non_printable_chars(){
-  local file_name=$1
-  local type_file=$(file --mime $file_name|awk '{print $2}')
-  local encoding_validator=""
+  local file_name
+  local encoding_validator
+  local type_file
+  file_name=$1
+  encoding_validator=""
+  [[ $file_name =~ ^Makefile ]] && type_file='text/x-makefile' || type_file=$(file --mime $file_name|awk '{print $2}')
   case $type_file in
-    "text/x-makefile;");;
+    "text/x-makefile");;
     *) if [[ $type_file == text/* ]]; then
           encoding_validator="non_ascii"
        fi 
