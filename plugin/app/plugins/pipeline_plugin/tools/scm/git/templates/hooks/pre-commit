@@ -2,7 +2,7 @@
 # Return the function to file validate
 function get_validator(){
   local type_file
-  [[ $file_name =~ ^Makefile ]] && type_file='Makefile' || type_file=$(file $file_name|cut -d':' -f2)
+  [[ $file_name =~ ^Makefile ]] && type_file='makefile' || type_file=$(file $file_name|cut -d':' -f2)
   case $type_file in
     " Bourne-Again shell script, ASCII text executable") echo "bash";;
     " Bourne-Again shell script text executable, ASCII text") echo "bash";;
