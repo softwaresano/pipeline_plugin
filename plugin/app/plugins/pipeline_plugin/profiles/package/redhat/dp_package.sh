@@ -186,6 +186,10 @@ function changeSections(){
    fi
    changeSection "description" "----------------------------------rpmBuild--------------------------------------"
    changeSection "description"  "$rpmBuildCommand"
+   if [[ -f target/reports/cdn-build-info.txt ]]; then
+     changeSection "description" "----------------------------------cdnBuild--------------------------------------"
+     changeSection "description" "$(cat target/reports/cdn-build-info.txt)"
+   fi
    changeSection "description" "-------------------------------------SCM----------------------------------------"
    insert_scm_info
    rm -Rf $auxTmpFile
