@@ -240,6 +240,7 @@ function publish_3party_rpm_dependencies(){
       _log "[INFO] Publishing third party rpms"
       local third_parties_dir=$(dirname $(default_repo_dir))/.3parties
       mkdir -p $third_parties_dir
+      rm -f ${third_parties_dir}/$(basename -s .git `git config --get remote.origin.url`)
       cp thirdparty-rpms.txt ${third_parties_dir}/$(basename -s .git `git config --get remote.origin.url`)
       get_dependencies $PWD/thirdparty-rpms.txt
       return $?
