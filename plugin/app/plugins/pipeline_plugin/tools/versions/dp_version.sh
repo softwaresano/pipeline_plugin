@@ -17,7 +17,7 @@ function load_cache_version(){
   git_home="$(git rev-parse --show-toplevel)" || return 1
   last_commit=$(cat "${git_home}/.git/$(cat "${git_home}/.git/HEAD"|awk '{print $2}')")
   cache_version_file="${git_home:?}/.git/version_file"
-  cache_commit=$(grep -Po "(?<=cache_commit=).*" "${cache_version_file:?}")
+  cache_commit=$(grep -Po "(?<=cache_commit=).*" "${cache_version_file:?}" 2>/dev/null)
   [[ "${cache_commit}" != "${last_commit}" ]] && rm -f "${cache_version_file}" \
       && cache_commit="${last_commit}" && setCacheProperty 'cache_commit' >/dev/null
   source "${cache_version_file}"
@@ -368,4 +368,17 @@ function getPrefixOrganization(){
 function getProjectModule(){
    getVersionProperties
    echo $MODULE_PROJECT
+}
+
+function getScmStatusUrl(){
+  local scm_api_url
+  local scm_org
+  getCacheProperty 'cache_scm_status_url' && return 0
+  scm_api_url=${1:?}
+  scm_org=${2:?}
+  cache_scm_status_url=''
+  if [[ "$(git branch -r --contains "${cache_commit}")" != '' ]]; then
+    cache_scm_status_url="${scm_api_url}/repos/${scm_org}/$(git config --get remote.origin.url|grep -Po '(?<=/).*(?=\.git)')/statuses/${cache_commit}"
+  fi
+  setCacheProperty 'cache_scm_status_url'
 }
