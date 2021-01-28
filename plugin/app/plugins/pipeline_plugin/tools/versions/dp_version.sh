@@ -1,5 +1,30 @@
 #!/bin/bash
 [ -z "$DP_HOME" ] && echo "[ERROR] DP_HOME must be defined" && exit 1
+
+function getCacheProperty(){
+  [[ "${!1}"  != '' ]] && echo "${!1}"
+}
+
+function setCacheProperty(){
+  echo "$1=${!1}" >> "${cache_version_file:?}"
+  echo "${!1}"
+}
+
+
+function load_cache_version(){
+  local git_home
+  local last_commit
+  git_home="$(git rev-parse --show-toplevel)" || return 1
+  last_commit=$(cat "${git_home}/.git/$(cat "${git_home}/.git/HEAD"|awk '{print $2}')")
+  cache_version_file="${git_home:?}/.git/version_file"
+  cache_commit=$(grep -Po "(?<=cache_commit=).*" "${cache_version_file:?}")
+  [[ "${cache_commit}" != "${last_commit}" ]] && rm -f "${cache_version_file}" \
+      && cache_commit="${last_commit}" && setCacheProperty 'cache_commit' >/dev/null
+  source "${cache_version_file}"
+}
+
+load_cache_version
+
 source $DP_HOME/dp_setEnv.sh
 source $SET_ENV_FILE
 source $DP_HOME/tools/versions/get_git_version_string.sh
@@ -257,6 +282,7 @@ function mavenVersion(){
 }
 
 function getVersionModule(){
+   getCacheProperty 'cache_version' && return 0
    getVersionProperties
    if [ "$VERSION_PROJECT" != "" ]; then
       echo $VERSION_PROJECT
@@ -271,20 +297,25 @@ function getVersionModule(){
          versionFileError " " 1
       fi
    fi
-   echo $VERSION_PROJECT
+   cache_version=$VERSION_PROJECT
+   setCacheProperty 'cache_version'
 }
 
 # It returns "true" if its a stable branch
 function is_stable_branch(){
+    getCacheProperty 'cache_stable_branch' && return 0
     local branch="$(get_scm_branch_type)"
+    local stable
     case $branch in
-        feature|bug|hotfix|task|test) echo "false";;
-        release) echo "true";;
-        +(+([[:digit:]])\.)+([[:digit:]]) ) echo "true" ;;
-        develop) echo "true";;
-        master) echo "true";;
-        *) echo "false";;
+        feature|bug|hotfix|task|test) stable="false";;
+        release) stable="true";;
+        +(+([[:digit:]])\.)+([[:digit:]]) ) stable="true" ;;
+        develop) stable="true";;
+        master) stable="true";;
+        *) stable="false";;
     esac
+    cache_stable_branch="${stable}"
+    setCacheProperty 'cache_stable_branch'
 }
 
 function get_os_release(){
@@ -296,10 +327,13 @@ function get_os_release(){
 }
 
 function getReleaseModule(){
-   echo $(get_scm_revision_$(getSCM)).$(get_os_release)
+   getCacheProperty 'cache_release' && return 0
+   cache_release="$(get_scm_revision_$(getSCM)).$(get_os_release)"
+   setCacheProperty 'cache_release'
 }
 
 function getPrefixProject(){
+   getCacheProperty 'cache_project' && return 0
    getVersionProperties
    #Trying with git
    if [[ "$PREFIX_PROJECT" == "" ]]; then
@@ -309,10 +343,12 @@ function getPrefixProject(){
          PREFIX_PROJECT=`grep "<artifactId>" pom.xml 2>/dev/null|head -1|sed s:"</\?artifactId>":"":g|awk ' {print $1} '`
       fi
    fi
-   echo $PREFIX_PROJECT
+   cache_project="${PREFIX_PROJECT}"
+   setCacheProperty 'cache_project'
 }
 
 function getPrefixOrganization(){
+   getCacheProperty 'cache_organization' && return 0
    getVersionProperties
    #Trying with git
    if [[ "$PREFIX_ORGANIZATION" == "" ]]; then
@@ -325,7 +361,8 @@ function getPrefixOrganization(){
       fi
       [[ -z $PREFIX_ORGANIZATION ]] && PREFIX_ORGANIZATION="$DEFAULT_PREFIX_ORGANIZATION"
    fi
-   echo $PREFIX_ORGANIZATION
+   cache_organization="${PREFIX_ORGANIZATION}"
+   setCacheProperty 'cache_organization'
 }
 
 function getProjectModule(){
