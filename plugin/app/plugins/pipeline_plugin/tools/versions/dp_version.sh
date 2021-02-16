@@ -2,7 +2,7 @@
 [ -z "$DP_HOME" ] && echo "[ERROR] DP_HOME must be defined" && exit 1
 
 function getCacheProperty(){
-  [[ "${!1}"  != '' ]] && echo "${!1}"
+  [[ "${!1}" != '' ]] && echo "${!1}"
 }
 
 function setCacheProperty(){
@@ -14,7 +14,7 @@ function setCacheProperty(){
 function load_cache_version(){
   local git_home
   local last_commit
-  git_home="$(git rev-parse --show-toplevel)" || return 1
+  git_home="$(git rev-parse --show-toplevel 2>/dev/null)" || return 1
   last_commit=$(cat "${git_home}/.git/$(cat "${git_home}/.git/HEAD"|awk '{print $2}')")
   cache_version_file="${git_home:?}/.git/version_file"
   cache_commit=$(grep -Po "(?<=cache_commit=).*" "${cache_version_file:?}" 2>/dev/null)
