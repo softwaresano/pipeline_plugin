@@ -30,7 +30,7 @@ function get_git_prefix_message(){
   fi
 }
 project_name=$(get_repo_project_name)
-projects_id_dir=$(git rev-parse --show-toplevel)/.git/hooks/projects_id
+projects_id_dir=$(git rev-parse --show-toplevel || exit 1)/.git/hooks/projects_id
 jira_prefix_file=$projects_id_dir/$project_name/jira_prefix
 jira_prefix=$(cat $jira_prefix_file 2>/dev/null)
 
