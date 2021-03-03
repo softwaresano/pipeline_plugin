@@ -378,7 +378,7 @@ function getScmStatusUrl(){
   scm_org=${2:?}
   cache_scm_status_url=''
   if [[ "$(git branch -r --contains "${cache_commit}")" != '' ]]; then
-    cache_scm_status_url="${scm_api_url}/repos/${scm_org}/$(git config --get remote.origin.url|grep -Po '(?<=/).*(?=\.git)')/statuses/${cache_commit}"
+    cache_scm_status_url="${scm_api_url}/repos/${scm_org}/$(dp_scm_url.sh|grep -Po '(?<=/).*(?=\.git)')/statuses/${cache_commit}"
   fi
   setCacheProperty 'cache_scm_status_url'
 }

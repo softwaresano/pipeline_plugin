@@ -5,7 +5,7 @@ item=$(git log -1|egrep  "Merge pull request #[0-9]+ from"|sed s:"    Merge pull
 source $DP_HOME/profiles/publish/rpm/dp_publish.sh
 version=$(dp_version.sh)
 filename="$(dirname $(get_repo_dir))/release-notes-$version.txt"
-repo=$(git config --get remote.origin.url)
+repo=$(dp_scm_url.sh)
 date=$(git log -1|git log --pretty=format:'%ci' -1)
 line="${repo}\t$(git log --pretty=format:'%h' -1)\t${date}\t${item}"
 if [[ -f $filename ]]; then
