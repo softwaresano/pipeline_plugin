@@ -92,7 +92,7 @@ function execute_without_sonar_project_file(){
    -Dproject.settings=${sonarFileconf}"
 }
 function get_sonar_project_key(){
-  echo "$(git config --get remote.origin.url|grep -Po '(?<=\:).*(?=\.git$)'|sed s#/#:#g):$(dp_version.sh)"
+  echo "$(dp_scm_url.sh|grep -Po '(?<=\:).*(?=\.git$)'|sed s#/#:#g):$(dp_version.sh)"
 }
 
 function get_sonar_implicit_options(){
@@ -101,11 +101,11 @@ function get_sonar_implicit_options(){
     sonar_parameters="-Dsonar.links.ci=${JOB_URL} ${sonar_parameters}"
   fi
   grep '^sonar.links.scm=' $sonarFileconf >/dev/null || \
-    sonar_parameters="-Dsonar.links.scm=$(git config --get remote.origin.url) ${sonar_parameters}"
+    sonar_parameters="-Dsonar.links.scm=$(dp_scm_url.sh) ${sonar_parameters}"
   grep '^sonar.projectVersion=' $sonarFileconf >/dev/null || \
     sonar_parameters="-Dsonar.projectVersion=$(dp_version.sh)-$(dp_release.sh) ${sonar_parameters}"
   grep '^sonar.github.repository=' $sonarFileconf >/dev/null || \
-    sonar_parameters="-Dsonar.github.repository=$(git config --get remote.origin.url|grep -Po '(?<=\:).*(?=\.git$)') ${sonar_parameters}"
+    sonar_parameters="-Dsonar.github.repository=$(dp_scm_url.sh|grep -Po '(?<=\:).*(?=\.git$)') ${sonar_parameters}"
   local sonar_cnes_report_property=''
   [[ -s "${CNES_REPORT}" ]] && sonar_cnes_report_property=" -Dsonar.icode.reports.path=${CNES_REPORT}"
   echo "${sonar_parameters}${sonar_cnes_report_property}"
