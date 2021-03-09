@@ -7,6 +7,7 @@ function get_validator(){
     " Bourne-Again shell script, ASCII text executable") echo "bash";;
     " Bourne-Again shell script text executable, ASCII text") echo "bash";;
     " Bourne-Again shell script text executable") echo "bash";;
+    " Bourne-Again shell script, ASCII text executable, with very long lines") echo "bash";;
     " POSIX shell script text executable") echo "sh";;
     "makefile") echo "makefile";;
     *) # By default, it uses the extension file to identify file type 
