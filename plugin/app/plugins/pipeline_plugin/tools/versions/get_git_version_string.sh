@@ -27,10 +27,15 @@ get_branch_type()
     get_git_branch_type "$(get_branch)"
 }
 
+get_stable_parent_branch() {
+  git show-branch -a |grep '\*'|grep -E ' \[(develop|release/.*|master)] '|\
+    head -1|grep -Po '(?<=\[).*(?=])'|sed 's/\^.*//'
+}
+
 get_target_branch_type()
 {
     if [ -z $ghprbTargetBranch ]; then
-        get_branch_type
+        get_branch_type "$(get_stable_parent_branch)"
     else
         get_git_branch_type $ghprbTargetBranch
     fi
