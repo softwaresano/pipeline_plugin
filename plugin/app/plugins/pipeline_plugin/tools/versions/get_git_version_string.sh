@@ -76,7 +76,7 @@ get_version_string()
         ;;
         other)
             ## We are in detached mode, use the last KO tag
-            version=$(git describe --tags --long --match */KO)
+            version=$(for i in $(git tag|grep "/KO"|sort -Vr); do git describe --tags --long --match $i 2>/dev/null && break; done;)
             echo "${version%/*}-${version#*KO-}"
         ;;
         *)
