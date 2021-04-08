@@ -27,12 +27,17 @@ get_branch_type()
     get_git_branch_type "$(get_branch)"
 }
 
+get_stable_parent_branch() {
+  git show-branch -a 2>/dev/null|grep '\*'|grep -E ' \[(develop|release/|master).*] '|\
+    head -1|grep -Po '(?<=\[).*(?=])'|sed 's/[\^|~].*//'
+}
+
 get_target_branch_type()
 {
     if [ -z $ghprbTargetBranch ]; then
-        get_branch_type
+        get_git_branch_type "$(get_stable_parent_branch)"
     else
-        get_git_branch_type $ghprbTargetBranch
+        get_git_branch_type "$ghprbTargetBranch"
     fi
 }
 
@@ -71,7 +76,7 @@ get_version_string()
         ;;
         other)
             ## We are in detached mode, use the last KO tag
-            version=$(git describe --tags --long --match */KO)
+            version=$(for i in $(git tag|grep "/KO"|sort -Vr); do git describe --tags --long --match $i 2>/dev/null && break; done;)
             echo "${version%/*}-${version#*KO-}"
         ;;
         *)
