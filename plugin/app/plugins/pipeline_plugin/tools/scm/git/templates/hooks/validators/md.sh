@@ -1,5 +1,5 @@
 #!/bin/bash
-# Validate json
+# Validate markdown
 function validate(){
   which mdl 2>/dev/null >/dev/null || return 0
   if [[ -f ${CDN_BUILD_LIB}/linters/mdl.rb ]]; then
