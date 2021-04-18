@@ -28,6 +28,7 @@ get_branch_type()
 }
 
 get_stable_parent_branch() {
+  git rev-parse --abbrev-ref HEAD|grep -E '(develop|release/|master).*' && return;
   git show-branch -a 2>/dev/null|grep '\*'|grep -E ' \[(develop|release/|master).*] '|\
     head -1|grep -Po '(?<=\[).*(?=])'|sed 's/[\^|~].*//'
 }
@@ -62,12 +63,7 @@ get_version_string()
            local ko_version
            local tag_file
            ko_version=$(echo ${version}|cut -d'/' -f1)
-           major_version=""
-           tag_file="${git_root_dir}/.git/refs/tags/${ko_version}/KO"
-           [[ -f "${tag_file}" ]] && major_version=$(grep -rl $(cat "${tag_file}") ${git_root_dir}/.git/refs/tags|tail -1|grep -Po "(?<=\.git/refs/tags/).*(?=/KO)")
-           if [[ "${major_version}" == "" ]]; then
-             major_version=$(grep $(grep "refs/tags/${ko_version}" ${git_root_dir}/.git/packed-refs|awk '{print $1}') ${git_root_dir}/.git/packed-refs |grep -Po "(?<=refs/tags/).*(?=/KO)"|tail -1)
-           fi
+           major_version=$(grep $(grep "refs/tags/${ko_version}/KO" ${git_root_dir}/.git/packed-refs|awk '{print $1}') ${git_root_dir}/.git/packed-refs |grep -Po "(?<=refs/tags/).*(?=/KO)"|tail -1)
            cache_version_string="${major_version}-${version#*KO-}"
         ;;
         release)
@@ -117,7 +113,7 @@ get_revision() {
 }
 
 is_pdi_compliant()
-{   git status 2>/dev/null 1>/dev/null
+{   git rev-parse --show-toplevel 2>/dev/null 1>/dev/null
     if [ "$?" != "0" ]; then
         echo 0
         return ;
