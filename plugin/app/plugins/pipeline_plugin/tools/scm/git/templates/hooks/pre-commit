@@ -46,15 +46,16 @@ function check_non_printable_chars(){
 }
 
 function is_hook_enabled(){
-  if [[ "$DISABLE_PRECOMMIT" == "ALL" ]] || \
-     [[ "$DISABLE_PRECOMMIT" == "all" ]] || \
-     [[ "$DISABLE_PRECOMMIT" == "$1" ]]; then
+  if [[ "$DISABLE_HOOK" == "ALL" ]] || \
+     [[ "$DISABLE_HOOK" == "all" ]] || \
+     [[ "$DISABLE_HOOK" == "$1" ]]; then
     return 125
   fi
 }
 
 validator_dir=$(dirname $0)/validators
 n_errors=0
+errors_files=''
 while read file_name; do
   check_non_printable_chars $file_name
   result_code=$?
@@ -81,11 +82,21 @@ while read file_name; do
        echo "==================================================================="
        echo -en "${validation_error}\n" 
        n_errors=$((n_errors+1))
+       errors_files="${errors_files}\n  - ${file_name}"
+       error_file=${file_name}
        echo "==================================================================="
        ;;
   esac
 done < <(git status --porcelain|egrep '^AM |^ M |^M |^A '|awk '{print $2}')
 [[ "${n_errors}" == "0" ]] && exit 0
-echo "
-Errors: ${n_errors}"
+echo -en "
+
+Files with hook errors: ${n_errors}
+${errors_files}
+You can disable hook in a file using:
+DISABLE_HOOK=<file> git commit ...
+Ex: To disable hooks for ${error_file}.
+DISABLE_HOOK=${error_file} git commit ...
+"
+
 exit 1
