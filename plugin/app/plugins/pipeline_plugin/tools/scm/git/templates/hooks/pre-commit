@@ -44,33 +44,59 @@ function check_non_printable_chars(){
      is_ascii
   fi
 }
+
+function is_hook_enabled(){
+  if [[ "$DISABLE_HOOK" == "ALL" ]] || \
+     [[ "$DISABLE_HOOK" == "all" ]] || \
+     [[ "$DISABLE_HOOK" == "$1" ]]; then
+    return 125
+  fi
+}
+
 validator_dir=$(dirname $0)/validators
 n_errors=0
+errors_files=''
 while read file_name; do
   check_non_printable_chars $file_name
   result_code=$?
   if [[ "${result_code}" == 0 ]]; then
-    validator_file=$validator_dir/$(get_validator).sh
+    validator=$(get_validator)
+    validator_file="$validator_dir/${validator}.sh"
     if [[ -f $validator_file ]]; then
       source $validator_file
-      validation_error=$(validate)
-      result_code=$?
+      if is_hook_enabled "${file_name}"; then
+        validation_error=$(validate)
+        result_code=$?
+      else
+        result_code=$?
+      fi;
     else
       result_code=126
     fi
   fi
   case $result_code in
-    126) echo "[WARNING] There is not any validator for $file_name";;
-    0) echo "[OK] $file_name";;
-    *) echo "[KO] $file_name"
+    125) dp_log.sh "[WARNING] [${validator}] hook disabled for $file_name";;
+    126) dp_log.sh "[WARNING] There is not any validator for $file_name";;
+    0) dp_log.sh "[INFO]  [OK] [${validator}] $file_name";;
+    *) dp_log.sh "[ERROR] [KO] [${validator}] $file_name"
        echo "==================================================================="
        echo -en "${validation_error}\n" 
        n_errors=$((n_errors+1))
+       errors_files="${errors_files}\n  - ${file_name}"
+       error_file=${file_name}
        echo "==================================================================="
        ;;
   esac
 done < <(git status --porcelain|egrep '^AM |^ M |^M |^A '|awk '{print $2}')
 [[ "${n_errors}" == "0" ]] && exit 0
-echo "
-Errors: ${n_errors}"
+echo -en "
+
+Files with hook errors: ${n_errors}
+${errors_files}
+You can disable hook in a file using:
+DISABLE_HOOK=<file> git commit ...
+Ex: To disable hooks for ${error_file}.
+DISABLE_HOOK=${error_file} git commit ...
+"
+
 exit 1
