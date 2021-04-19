@@ -76,11 +76,13 @@ function scmUrl_none(){
 }
 
 function scm_gitInfo(){
-   echo "  == Remote URL:"
-   echo "     $(git config remote.origin.url)"
-   echo "  == Last Commit:"
-   echo "     $(git --no-pager log --max-count=1|\
-                           grep ^commit|awk '{print $2}')"
+   local https_url=$(git config remote.origin.url|sed 's#:#/#'|sed 's#^git@#https://#'|sed 's/\.git$//')
+   local scm_host=$(echo $https_url|cut -d'/' -f3)
+   local scm_repo=$(echo $https_url|cut -d'/' -f4,5)
+   local last_commit=$(git log -n1 --format='%H')
+   echo "  == Remote URL: $(git config remote.origin.url)"
+   echo "  == Commit URL: https://${scm_host}/${scm_repo}/commit/${last_commit}"
+   echo "  == Status URL: https://${scm_host}/api/v3/repos/${scm_repo}/statuses/${last_commit}"
 }
 
 function scm_mercurialInfo(){
