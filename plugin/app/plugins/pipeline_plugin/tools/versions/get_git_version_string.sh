@@ -28,6 +28,7 @@ get_branch_type()
 }
 
 get_stable_parent_branch() {
+  git rev-parse --abbrev-ref HEAD|grep -E '(develop|release/|master).*' && return;
   git show-branch -a 2>/dev/null|grep '\*'|grep -E ' \[(develop|release/|master).*] '|\
     head -1|grep -Po '(?<=\[).*(?=])'|sed 's/[\^|~].*//'
 }
@@ -43,7 +44,7 @@ get_target_branch_type()
 
 
 get_version_string()
-{
+{   getCacheProperty 'cache_version_string' && return 0
     if [[ $(is_pdi_compliant) -eq 0 ]]; then # Not PDI compliant, return a dummy version
         echo "HEAD-$(git log|grep ^commit|wc -l)-g$(git log --pretty=format:'%h' -1)"
         return
@@ -58,11 +59,12 @@ get_version_string()
            ###  version=$(git describe --tags --long --match */KO)
            version=$(for i in $(git tag|grep "/KO"|sort -Vr); do git describe --tags --long --match $i 2>/dev/null && break; done;)
            git_root_dir=$(git rev-parse --show-toplevel)
-           local major_version=$(grep -rl $(cat ${git_root_dir}/.git/refs/tags/$(echo ${version}|cut -d'/' -f1)/KO 2>/dev/null) ${git_root_dir}/.git/refs/tags|tail -1|grep -Po "(?<=\.git/refs/tags/).*(?=/KO)")
-           if [[ "${major_version}" == "" ]]; then 
-             major_version=$(grep $(grep refs/tags/$(echo ${version}|cut -d'/' -f1)/KO ${git_root_dir}/.git/packed-refs|awk '{print $1}') ${git_root_dir}/.git/packed-refs |grep -Po "(?<=refs/tags/).*(?=/KO)"|tail -1)
-           fi
-           echo "${major_version}-${version#*KO-}"
+           local major_version
+           local ko_version
+           local tag_file
+           ko_version=$(echo ${version}|cut -d'/' -f1)
+           major_version=$(grep $(grep "refs/tags/${ko_version}/KO" ${git_root_dir}/.git/packed-refs|awk '{print $1}') ${git_root_dir}/.git/packed-refs |grep -Po "(?<=refs/tags/).*(?=/KO)"|tail -1)
+           cache_version_string="${major_version}-${version#*KO-}"
         ;;
         release)
            if [ -z $ghprbTargetBranch ]; then
@@ -72,12 +74,12 @@ get_version_string()
               version=$ghprbTargetBranch
            fi
            version=$(git describe --tags --long --match ${version#release/*}/KO)
-           echo "${version%/*}-${version#*KO-}"
+           cache_version_string="${version%/*}-${version#*KO-}"
         ;;
         other)
             ## We are in detached mode, use the last KO tag
             version=$(for i in $(git tag|grep "/KO"|sort -Vr); do git describe --tags --long --match $i 2>/dev/null && break; done;)
-            echo "${version%/*}-${version#*KO-}"
+            cache_version_string="${version%/*}-${version#*KO-}"
         ;;
         *)
            # RMs don't stablish any standard here, we use seconds since 1970-01-01 00:00:00 UTC as version
@@ -86,8 +88,9 @@ get_version_string()
            branch_name=$(get_branch)
            
            rel=$(git log|grep ^commit|wc -l)_${branch_name#*/}
-           echo "${version}-${rel}-g$(git log --pretty=format:'%h' -1)"
+           cache_version_string="${version}-${rel}-g$(git log --pretty=format:'%h' -1)"
     esac
+    setCacheProperty 'cache_version_string'
 }
 
 ## Parse the version string and sanitize it
@@ -110,7 +113,7 @@ get_revision() {
 }
 
 is_pdi_compliant()
-{   git status 2>/dev/null 1>/dev/null
+{   git rev-parse --show-toplevel 2>/dev/null 1>/dev/null
     if [ "$?" != "0" ]; then
         echo 0
         return ;

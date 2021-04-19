@@ -15,11 +15,12 @@ function load_cache_version(){
   local git_home
   local last_commit
   git_home="$(git rev-parse --show-toplevel 2>/dev/null)" || return 1
-  last_commit=$(cat "${git_home}/.git/$(cat "${git_home}/.git/HEAD"|awk '{print $2}')")
+  last_commit=$(git show-ref|grep -Po ".*(?= refs/heads/$(git rev-parse --abbrev-ref HEAD))")
   cache_version_file="${git_home:?}/.git/version_file"
   cache_commit=$(grep -Po "(?<=cache_commit=).*" "${cache_version_file:?}" 2>/dev/null)
   [[ "${cache_commit}" != "${last_commit}" ]] && rm -f "${cache_version_file}" \
-      && cache_commit="${last_commit}" && setCacheProperty 'cache_commit' >/dev/null
+      && cache_commit="${last_commit}" && git pack-refs --all && \
+      setCacheProperty 'cache_commit' >/dev/null
   source "${cache_version_file}"
 }
 
