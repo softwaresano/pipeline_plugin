@@ -63,7 +63,7 @@ while read file_name; do
     validator_file="$validator_dir/${validator}.sh"
     if [[ -f $validator_file ]]; then
       source $validator_file
-      if is_hook_enabled "${validator}"; then
+      if is_hook_enabled "${file_name}"; then
         validation_error=$(validate)
         result_code=$?
       else
