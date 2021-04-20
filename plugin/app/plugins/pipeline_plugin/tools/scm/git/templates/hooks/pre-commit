@@ -57,8 +57,12 @@ validator_dir=$(dirname $0)/validators
 n_errors=0
 errors_files=''
 while read file_name; do
-  check_non_printable_chars $file_name
-  result_code=$?
+  if is_hook_enabled "${file_name}"; then
+    check_non_printable_chars "$file_name"
+    result_code=$?
+  else
+    result_code=0
+  fi
   if [[ "${result_code}" == 0 ]]; then
     validator=$(get_validator)
     validator_file="$validator_dir/${validator}.sh"
