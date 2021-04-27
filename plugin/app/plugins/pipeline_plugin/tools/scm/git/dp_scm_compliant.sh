@@ -10,7 +10,6 @@ function get_git_prefix_message(){
   repo_project_name=$(get_repo_project_name)
   [[ "$repo_project_name" != "$project_name" ]] && return 0
   jira_prefix_id="$jira_prefix-[0-9]+_"
-  current_branch=$(git rev-parse --abbrev-ref HEAD)
   branch_stability_type=$(dp_branch_type.sh)
   if [[ "$branch_stability_type" == "unstable" || "$branch_stability_type" == "other" ]]; then
     IFS="/"
@@ -43,4 +42,7 @@ if [[ "$jira_prefix" == "" ]]; then
     exit 1
   fi
 fi
+
+current_branch=$(git rev-parse --abbrev-ref HEAD)
+[[ "${current_branch}" =~ ^dependabot ]] && return 0
 get_git_prefix_message "$project_name" "$jira_prefix"
