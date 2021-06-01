@@ -138,7 +138,7 @@ name-[version].[x86_64|noarch].rpm[:el5,:el6]"
    unset IFS
    are_there_any_new_dependency $target_repo_dir || return 0
    createrepo $target_repo_dir
-   local rpm_names=$(echo $rpm_dependencies|sed s:"\.rpm$":"":g|sed s:"\.rpm ":" ":g)
+   local rpm_names=$(echo $rpm_dependencies|sed s:"\.rpm$":"":g|sed s:"\.rpm ":" ":g|sort -u)
    _log "[INFO] Downloading dependencies for $rpm_names"
    rm -Rf "/var/tmp/yum-$(id -un)-*"
    tmp_yumdownloader_log=$(mktemp -p /tmp)
