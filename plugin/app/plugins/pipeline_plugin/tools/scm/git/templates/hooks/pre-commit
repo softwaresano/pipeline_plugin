@@ -1,4 +1,5 @@
-#!/bin/bash 
+#!/bin/bash
+
 # Return the function to file validate
 function get_validator(){
   local type_file
@@ -30,12 +31,12 @@ function get_validator(){
 
 
 function check_non_printable_chars(){
-  local FILE_NAME
+  local filename
   local encoding_validator
   local type_file
-  FILE_NAME=$1
+  filename=$1
   encoding_validator=""
-  [[ "$FILE_NAME" =~ ^Makefile|\.mk$ ]] && type_file='text/x-makefile' || type_file=$(file --mime "$FILE_NAME"|awk '{print $2}')
+  [[ "$filename" =~ ^Makefile|\.mk$ ]] && type_file='text/x-makefile' || type_file=$(file --mime "$filename" | awk '{print $2}')
   case $type_file in
     "text/x-makefile");;
     *) if [[ $type_file == text/* ]]; then
