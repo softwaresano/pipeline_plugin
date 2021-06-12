@@ -7,6 +7,7 @@ function prepare_commit_message() {
   #shellcheck source=plugin/app/plugins/pipeline_plugin/tools/scm/git/templates/hooks/validators/gitlint.sh
   source "$(dirname "$0")/validators/gitlint.sh"
   validate "${commit_message}" || exit $?
+  dp_log.sh '[INFO]  [OK] [gitlint]'
   printf "%s %s" "$prefix_message" "${commit_message}" >"$1"
 }
 prepare_commit_message "$1"
