@@ -78,6 +78,7 @@ function individual_validator() {
     echo "==================================================================="
     ;;
   esac
+  return $result_code
 }
 
 function run_validator() {
