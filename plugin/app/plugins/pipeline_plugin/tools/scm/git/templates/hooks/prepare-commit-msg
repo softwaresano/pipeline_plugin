@@ -1,7 +1,12 @@
 #!/bin/bash
-prefix_message=$(dp_scm_compliant.sh)
-[[ $? != 0 ]] && exit 1
-cp $1 $1.aux
-printf "$prefix_message "> $1
-cat $1.aux >> $1
-rm $1.aux
+function prepare_commit_message() {
+  local prefix_message
+  local commit_message
+  prefix_message=$(dp_scm_compliant.sh) || exit $?
+  commit_message=$(cat "$1")
+  #shellcheck source=plugin/app/plugins/pipeline_plugin/tools/scm/git/templates/hooks/validators/run_validator.sh
+  source "$(dirname "$0")/validators/run_validator.sh"
+  validator_dir="$(dirname "$0")/validators" run_validator "${commit_message}" "gitlint" || return $?
+  printf "%s %s" "$prefix_message" "${commit_message}" >"$1"
+}
+prepare_commit_message "$1"
