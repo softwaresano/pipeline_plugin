@@ -1,59 +1,61 @@
 #!/bin/bash
 
 # Return the function to file validate
-function get_validator(){
+function get_validator() {
   local type_file
   case $(basename "$FILE_NAME") in
-    "sonar-project.properties")
-      echo "sonar-project"
-      return 0;;
-    "thirdparty-rpms.txt")
-      echo "thirdparty-rpms"
-      return 0;;
+  "sonar-project.properties")
+    echo "sonar-project"
+    return 0
+    ;;
+  "thirdparty-rpms.txt")
+    echo "thirdparty-rpms"
+    return 0
+    ;;
   esac
   case $FILE_NAME in
-    Makefile|Pipfile|Gemfile|package.json) type_file="$FILE_NAME";;
-     *) type_file=$(file "$FILE_NAME"|grep -Po '(?<=: ).*');;
+  Makefile | Pipfile | Gemfile | package.json) type_file="$FILE_NAME" ;;
+  *) type_file=$(file "$FILE_NAME" | grep -Po '(?<=: ).*') ;;
   esac
   case $type_file in
-    "Bourne-Again shell script, ASCII text executable") echo "bash";;
-    "Bourne-Again shell script text executable, ASCII text") echo "bash";;
-    "Bourne-Again shell script text executable") echo "bash";;
-    "Bourne-Again shell script, ASCII text executable, with very long lines") echo "bash";;
-    "POSIX shell script text executable") echo "sh";;
-    Makefile|Pipfile|Gemfile|package.json) echo "${type_file}";;
-    *) # By default, it uses the extension file to identify file type 
-      base_file_name=$(basename "$FILE_NAME")
-      #get last suffix
-      echo "${base_file_name##*.}";;
+  "Bourne-Again shell script, ASCII text executable") echo "bash" ;;
+  "Bourne-Again shell script text executable, ASCII text") echo "bash" ;;
+  "Bourne-Again shell script text executable") echo "bash" ;;
+  "Bourne-Again shell script, ASCII text executable, with very long lines") echo "bash" ;;
+  "POSIX shell script text executable") echo "sh" ;;
+  Makefile | Pipfile | Gemfile | package.json) echo "${type_file}" ;;
+  *) # By default, it uses the extension file to identify file type
+    base_file_name=$(basename "$FILE_NAME")
+    #get last suffix
+    echo "${base_file_name##*.}"
+    ;;
   esac
 }
 
-
-function check_non_printable_chars(){
+function check_non_printable_chars() {
   local filename
   local encoding_validator
   local type_file
   filename=$1
   encoding_validator=""
-  [[ "$filename" =~ ^Makefile|\.mk$ ]] && type_file='text/x-makefile' || type_file=$(file --mime "$filename" | awk '{print $2}')
+  [[ $filename =~ ^Makefile|\.mk$ ]] && type_file='text/x-makefile' || type_file=$(file --mime "$filename" | awk '{print $2}')
   case $type_file in
-    "text/x-makefile");;
-    *) if [[ $type_file == text/* ]]; then
-          encoding_validator="non_ascii"
-       fi 
+  "text/x-makefile") ;;
+  *) if [[ $type_file == text/* ]]; then
+    encoding_validator="non_ascii"
+  fi ;;
   esac
-  if [[ "$encoding_validator" != "" ]]; then
-      # shellcheck source=./plugin/app/plugins/pipeline_plugin/tools/scm/git/templates/hooks/validators/Jenkinsfile.sh
-     source "${VALIDATOR_DIR}/${encoding_validator}.sh"
-     is_ascii
+  if [[ $encoding_validator != "" ]]; then
+    # shellcheck source=./plugin/app/plugins/pipeline_plugin/tools/scm/git/templates/hooks/validators/Jenkinsfile.sh
+    source "${VALIDATOR_DIR}/${encoding_validator}.sh"
+    is_ascii
   fi
 }
 
-function is_hook_enabled(){
-  if [[ "$DISABLE_HOOK" == "ALL" ]] || \
-     [[ "$DISABLE_HOOK" == "all" ]] || \
-     [[ "$DISABLE_HOOK" == "$1" ]]; then
+function is_hook_enabled() {
+  if [[ $DISABLE_HOOK == "ALL" ]] ||
+    [[ $DISABLE_HOOK == "all" ]] ||
+    [[ $DISABLE_HOOK == "$1" ]]; then
     return 125
   fi
 }
@@ -68,10 +70,10 @@ while read -r "${FILE_NAME?}"; do
   else
     result_code=0
   fi
-  if [[ "${result_code}" == 0 ]]; then
+  if [[ ${result_code} == 0 ]]; then
     validator=$(get_validator)
     validator_file="$VALIDATOR_DIR/${validator}.sh"
-    if [[ -f "$validator_file" ]]; then
+    if [[ -f $validator_file ]]; then
       # shellcheck source=./plugin/app/plugins/pipeline_plugin/tools/scm/git/templates/hooks/validators/Jenkinsfile.sh
       source "$validator_file"
       if is_hook_enabled "${FILE_NAME}"; then
@@ -79,26 +81,27 @@ while read -r "${FILE_NAME?}"; do
         result_code=$?
       else
         result_code=$?
-      fi;
+      fi
     else
       result_code=126
     fi
   fi
   case $result_code in
-    125) dp_log.sh "[WARNING] [${validator}] hook disabled for $FILE_NAME";;
-    126) dp_log.sh "[WARNING] There is not any validator for $FILE_NAME";;
-    0) dp_log.sh "[INFO]  [OK] [${validator}] $FILE_NAME";;
-    *) dp_log.sh "[ERROR] [KO] [${validator}] $FILE_NAME"
-       echo "==================================================================="
-       echo -en "${validation_error}\n" 
-       n_errors=$((n_errors+1))
-       errors_files="${errors_files}\n  - ${FILE_NAME}"
-       error_file=${FILE_NAME}
-       echo "==================================================================="
-       ;;
+  125) dp_log.sh "[WARNING] [${validator}] hook disabled for $FILE_NAME" ;;
+  126) dp_log.sh "[WARNING] There is not any validator for $FILE_NAME" ;;
+  0) dp_log.sh "[INFO]  [OK] [${validator}] $FILE_NAME" ;;
+  *)
+    dp_log.sh "[ERROR] [KO] [${validator}] $FILE_NAME"
+    echo "==================================================================="
+    echo -en "${validation_error}\n"
+    n_errors=$((n_errors + 1))
+    errors_files="${errors_files}\n  - ${FILE_NAME}"
+    error_file=${FILE_NAME}
+    echo "==================================================================="
+    ;;
   esac
-done < <(git status --porcelain|grep -e '^AM |^ M |^M |^A '|awk '{print $2}')
-[[ "${n_errors}" == "0" ]] && exit 0
+done < <(git status --porcelain | grep -e '^AM |^ M |^M |^A ' | awk '{print $2}')
+[[ ${n_errors} == "0" ]] && exit 0
 echo -en "
 
 Files with hook errors: ${n_errors}
