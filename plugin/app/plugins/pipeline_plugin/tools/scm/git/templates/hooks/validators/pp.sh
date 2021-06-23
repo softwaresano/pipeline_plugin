@@ -1,6 +1,6 @@
 #!/bin/bash
 # Validate puppet
-function validate(){
+function validate() {
   # shellcheck source=./plugin/app/plugins/pipeline_plugin/tools/scm/git/templates/hooks/validators/non_ascii.sh
   source "$VALIDATOR_DIR/non_ascii.sh"
   [[ -f /opt/puppetlabs/bin/puppet ]] || return 126

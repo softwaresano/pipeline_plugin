@@ -46,7 +46,7 @@ function check_non_printable_chars() {
   fi ;;
   esac
   if [[ $encoding_validator != "" ]]; then
-    # shellcheck source=./plugin/app/plugins/pipeline_plugin/tools/scm/git/templates/hooks/validators/Jenkinsfile.sh
+    # shellcheck source=./plugin/app/plugins/pipeline_plugin/tools/scm/git/templates/hooks/validators/Gemfile.sh
     source "${VALIDATOR_DIR}/${encoding_validator}.sh"
     is_ascii
   fi
@@ -74,7 +74,7 @@ while read -r "${FILE_NAME?}"; do
     validator=$(get_validator)
     validator_file="$VALIDATOR_DIR/${validator}.sh"
     if [[ -f $validator_file ]]; then
-      # shellcheck source=./plugin/app/plugins/pipeline_plugin/tools/scm/git/templates/hooks/validators/Jenkinsfile.sh
+      # shellcheck source=./plugin/app/plugins/pipeline_plugin/tools/scm/git/templates/hooks/validators/Gemfile.sh
       source "$validator_file"
       if is_hook_enabled "${FILE_NAME}"; then
         validation_error=$(validate)
