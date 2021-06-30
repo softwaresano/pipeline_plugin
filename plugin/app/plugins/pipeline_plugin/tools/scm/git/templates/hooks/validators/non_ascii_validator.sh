@@ -1,6 +1,5 @@
 #!/bin/bash
 
 function encoding_validate(){
-  LC_CTYPE=C grep -n --color='auto' '[^[:print:]]' $file_name && echo "NON-ASCII characters" && return 1
-  return 0
+  LC_CTYPE=C $validator_dir/non-ascii-validator.py $file_name
 }
