@@ -1,0 +1,17 @@
+# Set default behaviour, in case users don't have core.autocrlf set.
+* text=auto
+
+# Explicitly declare text files we want to always be normalized and converted 
+# to native line endings on checkout.
+Jenkinsfile text
+Makefile text
+Pipfile text
+Rakefile text
+.adoc text
+.cfg text
+.md text
+.properties text
+.py text
+.rb text
+.sh text
+.spec text
