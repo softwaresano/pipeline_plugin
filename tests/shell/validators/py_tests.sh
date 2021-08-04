@@ -3,7 +3,7 @@
 source "plugin/app/plugins/pipeline_plugin/tools/scm/git/templates/hooks/validators/py.sh"
 
 PYTHON_OK="tests/shell/validators/fixtures/python_ok.py"
-PYTHON_KO="tests/shell/validators/fixtures/python_failure.py"
+PYTHON_KO="tests/shell/validators/fixtures/python_ko.py"
 
 function test_py_ok() {
   file_name="$PYTHON_OK" validate
