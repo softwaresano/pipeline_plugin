@@ -8,7 +8,7 @@ function validate_yamlint() {
 }
 
 function validate_ruby() {
-  if ruby -e "require 'yaml';puts YAML.load_file('$file_name')" != 0; then
+  if ! ruby -e "require 'yaml';puts YAML.load_file('$file_name')"; then
     return 1
   fi
   command -v yamllint >/dev/null || return 0
@@ -16,7 +16,7 @@ function validate_ruby() {
 }
 
 function validate() {
-  if command -v ruby == 0; then
+  if command -v ruby; then
     validate_ruby
   else
     validate_yamlint
