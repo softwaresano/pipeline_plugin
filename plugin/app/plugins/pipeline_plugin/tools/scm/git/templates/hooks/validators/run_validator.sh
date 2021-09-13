@@ -14,8 +14,10 @@ function get_validator() {
   local bash_validators
   local type_file
   local file_name
+  local py_validators
   file_name=$1
   bash_validators="bash shfmt shellcheck"
+  py_validators="py black"
   case $(basename "$file_name") in
   "sonar-project.properties")
     echo "sonar-project"
@@ -37,6 +39,7 @@ function get_validator() {
   "Bourne-Again shell script, ASCII text executable, with very long lines") echo "${bash_validators}" ;;
   "POSIX shell script text executable") echo "sh shfmt shellcheck" ;;
   Makefile | Pipfile | Gemfile | package.json) echo "${type_file}" ;;
+  "Python script, ASCII text executable") echo "${py_validators}" ;;
   *) # By default, it uses the extension file to identify file type
     base_file_name=$(basename "$file_name")
     #get last suffix
