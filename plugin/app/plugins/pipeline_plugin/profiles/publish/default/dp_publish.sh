@@ -80,6 +80,7 @@ function publish_in_user_story(){
     local user_story_id=$(basename $(dirname $dir_repo)|cut -d'/' -f2|cut -d'_' -f1)
     local user_story_repo=$(dirname $(dirname $(dirname $dir_repo)))/$user_story_id/initiative
     mkdir -p $dir_repo $user_story_repo
+    touch "$user_story_repo"/..
     cp $artifact_file $user_story_repo
     createrepo $user_story_repo
     rm -f $dir_repo/$rpm_file_name
