@@ -411,7 +411,7 @@ function init(){
 
 function buildRPMS(){
    TARGET_DIR=${SOURCE_DIR}/target
-   debug_dir_base=$(git rev-parse --show-toplevel)/${TARGET_DIR}/.dp_rpm
+   debug_dir_base=${TARGET_DIR}/.dp_rpm
    generated_rpms=$debug_dir_base/generated_rpms
    rm -Rf $debug_dir_base
    mkdir -p $debug_dir_base
