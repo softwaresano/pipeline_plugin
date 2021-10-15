@@ -294,7 +294,7 @@ function addRPMDirs(){
 %define _builddir %{_topdir}/BUILD\n\
 %define _rpmdir $RPM_HOME\n\
 %define _sourcedir $(readlink -f $(dirname $(dirname $specFile)))/SOURCES\n\
-%define _specdir `dirname $modifiedSpecFile`\n\
+%define _sourcedir $(readlink -f $(dirname $(dirname $specFile)))/SPECS\n\
 %define _srcrpmdir %{repository_home}/src\n\
 %define pipeline_plugin_version `cat $DP_HOME/$VERSION_FILE|grep 'Version:'|awk '{ print $2 }'`" >$modifiedSpecFile
 }
