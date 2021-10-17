@@ -27,6 +27,10 @@ function get_validator() {
     echo "thirdparty-rpms"
     return 0
     ;;
+  "Dockerfile")
+    echo "dockerfile"
+    return 0
+    ;;
   esac
   case $file_name in
   Makefile | Pipfile | Gemfile | package.json) type_file="$file_name" ;;
