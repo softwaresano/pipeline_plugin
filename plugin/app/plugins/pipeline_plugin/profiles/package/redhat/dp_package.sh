@@ -286,16 +286,16 @@ function addRPMDirs(){
     RPM_HOME=$TARGET_DIR/rpm/RPMS
     mkdir -p $RPM_HOME
     # Fijamos que los SOURCES de los RPMS estén a la misma altura
-    SOURCES_RPM_DIR=$(dirname $(dirname $specFile))
     echo -e "\n\
+%define repository_home $(git rev-parse --show-toplevel)
 %define _buildshell /bin/bash
 %define _topdir ${TOPDIR}
 %define _debug_dir_build ${debug_dir}\n\
 %define _builddir %{_topdir}/BUILD\n\
 %define _rpmdir $RPM_HOME\n\
-%define _sourcedir %{_topdir}/../../../${SOURCES_RPM_DIR}/SOURCES\n\
-%define _specdir `dirname $modifiedSpecFile`\n\
-%define _srcrpmdir %{_topdir}/../../../src\n\
+%define _sourcedir $(readlink -f $(dirname $(dirname $specFile)))/SOURCES\n\
+%define _specdir $(readlink -f $(dirname $specFile))\n\
+%define _srcrpmdir %{repository_home}/src\n\
 %define pipeline_plugin_version `cat $DP_HOME/$VERSION_FILE|grep 'Version:'|awk '{ print $2 }'`" >$modifiedSpecFile
 }
 
