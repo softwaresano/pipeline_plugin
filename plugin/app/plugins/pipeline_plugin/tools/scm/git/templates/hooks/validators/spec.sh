@@ -16,7 +16,6 @@ function validate() {
     rpmlint "$file_name"
   fi)|tee rpmlint.log
   grep -Eq "0 errors, 0 warnings\.$" rpmlint.log && exit_code=0 || exit_code=1
-  #filter by number errors. RPM_SOURCE_DIR isnot a error
   rm -f rpmlint.log
-  return exit_code
+  return $((exit_code))
 }
