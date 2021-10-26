@@ -10,14 +10,12 @@ function validate() {
   is_rpm_spec_file || return 126
   command -v rpmlint >/dev/null || return 126
   rm -f rpmlint.log
-  if [[ -f  "${CDN_BUILD_LIB}/linters/rpmlintrc" ]]; then
-    rpmlint -f  "${CDN_BUILD_LIB}/linters/rpmlintrc" "$file_name" | tee -a rpmlint.log
+  (if [[ -f  "${CDN_BUILD_LIB}/linters/rpmlintrc" ]]; then
+    rpmlint -f  "${CDN_BUILD_LIB}/linters/rpmlintrc" "$file_name"
   else
-    rpmlint "$file_name" | tee -a rpmlint.log
-  fi
-  #filter by number errors. RPM_SOURCE_DIR isnot a error
-  exit_code=$(<rpmlint.log grep -v "E: use-of-RPM_SOURCE_DIR$" | grep ":" | cut -d':' -f2- | grep -c -v " W:")
+    rpmlint "$file_name"
+  fi)|tee rpmlint.log
+  grep -Eq "0 errors, 0 warnings\.$" rpmlint.log && exit_code=0 || exit_code=1
   rm -f rpmlint.log
-  #string to integer
   return $((exit_code))
 }
