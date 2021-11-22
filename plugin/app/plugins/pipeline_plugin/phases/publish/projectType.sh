@@ -21,7 +21,7 @@ function is_publish_TypeRpm(){
 }
 
 function is_publish_TypePython(){
-   if [ "`find . -name \"setup.py\"`" != "" ]; then
+   if [ "`find . -name \"setup.py\" -not -path \"./external/*\"`" != "" ]; then
       typePackageProject="python ${typePackageProject}"
    fi
 }
