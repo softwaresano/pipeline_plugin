@@ -392,7 +392,7 @@ Puedes consultar los logs en el directorio $debug_dir" $errorCode
    if [ "$?" == "0" ]; then
       _message "[INFO] Rpm content: $rpmGeneratedName"
       _message "-------------------------------------------------------------------"
-       rpm -qlp $rpmGeneratedName
+       rpm -qlpv $rpmGeneratedName
       _message "-------------------------------------------------------------------"
    fi
 }
