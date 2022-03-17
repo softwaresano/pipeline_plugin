@@ -200,13 +200,17 @@ function publish_rpms(){
          exit 1
       fi
       local repo_dir_without_arch=$(dirname $target_repo)
+      wait_to_publish
+      block_publish
       for architecture in $(cat $archs_file|sort|uniq -i); do
          _log "[INFO] Updating rpm repo stored in $repo_dir_without_arch/$architecture"
          createrepo $repo_dir_without_arch/$architecture
          if [[ "$?" != "0" ]]; then
+	    unblock_publish
             exitError "Unable to update repository[$repo_dir_without_arch/$architecture]. Review permissions" 1
          fi
       done;
+      unblock_publish
    fi
    while read rpm; do
      local rpm_name=$(rpm -q --queryformat "[%{NAME}]" $rpm 2>/dev/null)
