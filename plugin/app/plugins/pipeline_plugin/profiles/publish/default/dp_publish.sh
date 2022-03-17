@@ -39,7 +39,7 @@ function block_publish(){
     local block_directory=$(get_block_directory)
     _log "[INFO] Avoid new publications in $block_directory directory"
     mkdir -p $block_directory
-    echo "" > $block_directory/$DP_PUBLISH_LOCK_FILE
+    echo "$(hostname)-${PWD}" > $block_directory/$DP_PUBLISH_LOCK_FILE
 }
 
 # When ends the publication of an artifact, unblock repo
@@ -139,14 +139,7 @@ function publish_artifacts(){
    IFS=$oldIFS
 }
 
-# Publish artifact in a concrete repository. This repo depends on artifact_type
-# (iso or rpm) and the tag version in scm
-function publish(){
-   # Check it is generated from a scm repo
-   getVersionModule
-   $(getVersionModule) && [[ $? != 0 ]] && echo "[ERROR] I can not publish an artifact without version" && exit 1
-   local artifact_regr_expr=$1
-   # Can i publish new artifact?
+function wait_to_publish() {
    local i=1
    while [[ "$(is_blocked)" == "true" ]]; do
         [[ $i -gt $DP_PUBLISH_MAX_TIME_BLOCKED ]] && echo "[ERROR] This publication is not possible because there are other publication activated in $(get_block_directory). Remove $(get_block_directory)/$DP_PUBLISH_LOCK_FILE" && return 1;
@@ -154,6 +147,16 @@ function publish(){
         sleep 1
         i=$((i+1))
     done;
+}
+
+# Publish artifact in a concrete repository. This repo depends on artifact_type
+# (iso or rpm) and the tag version in scm
+function publish(){
+   # Check it is generated from a scm repo
+   getVersionModule
+   $(getVersionModule) && [[ $? != 0 ]] && echo "[ERROR] I can not publish an artifact without version" && exit 1
+   local artifact_regr_expr=$1
+   wait_to_publish || return 1
    #Remove *.
    local artifact_type=${artifact_regr_expr#*\.}
    local published_artifacts=.dp_published_${artifact_type}
