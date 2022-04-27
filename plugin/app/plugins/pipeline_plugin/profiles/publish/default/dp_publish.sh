@@ -97,7 +97,6 @@ function publish_artifact(){
    mkdir -p $metadata_dir
    local branch_type=$(dp_branch_type.sh)
    if [ -f $metadata_file ]; then
-     if [[ "${branch_type}" != 'release' ]]; then
       if [ '$(echo $N_RPMS_FOR_COMPONENT|egrep "^[0-9]+$")' != '' ]; then
          # Only the last (n_entry) 
          n_entry=$N_RPMS_FOR_COMPONENT
@@ -109,7 +108,6 @@ function publish_artifact(){
             tail -$n_entry $metadata_file >$metadata_file.tmp
             mv $metadata_file.tmp $metadata_file
          fi
-      fi
      fi
    fi
    echo $(basename $artifact_file) >>$metadata_file
