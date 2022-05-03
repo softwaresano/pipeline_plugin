@@ -27,9 +27,10 @@ function get_block_directory(){
 function is_blocked(){
     local block_directory=$(get_block_directory)
     if [ -f $block_directory/$DP_PUBLISH_LOCK_FILE ]; then
-       echo "true"
+       cat "$block_directory/$DP_PUBLISH_LOCK_FILE"
+       return 0
     else
-       echo "false"
+       return 1
     fi
 }
 
@@ -139,7 +140,7 @@ function publish_artifacts(){
 
 function wait_to_publish() {
    local i=1
-   while [[ "$(is_blocked)" == "true" ]]; do
+   while is_blocked ]]; do
         [[ $i -gt $DP_PUBLISH_MAX_TIME_BLOCKED ]] && echo "[ERROR] This publication is not possible because there are other publication activated in $(get_block_directory). Remove $(get_block_directory)/$DP_PUBLISH_LOCK_FILE" && return 1;
         echo "[INFO] Other artifact is publishing. Waiting $i seconds until $DP_PUBLISH_MAX_TIME_BLOCKED"
         sleep 1
