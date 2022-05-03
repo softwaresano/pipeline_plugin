@@ -200,7 +200,7 @@ function publish_rpms(){
          exit 1
       fi
       local repo_dir_without_arch=$(dirname $target_repo)
-      wait_to_publish
+      wait_to_publish || return 1
       block_publish
       for architecture in $(cat $archs_file|sort|uniq -i); do
          _log "[INFO] Updating rpm repo stored in $repo_dir_without_arch/$architecture"
