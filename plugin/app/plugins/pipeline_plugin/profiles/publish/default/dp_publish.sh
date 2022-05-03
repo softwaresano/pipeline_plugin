@@ -17,7 +17,7 @@ source $DP_HOME/tools/versions/dp_version.sh
 source $DP_HOME/config/dp.cfg
 
 DP_PUBLISH_LOCK_FILE=".dp_publish_lock_file"
-DP_PUBLISH_MAX_TIME_BLOCKED=180 # in seconds
+DP_PUBLISH_MAX_TIME_BLOCKED=900 # in seconds
 DP_BLOCK_PUBLISH_DIRECTORY=$(dirname $REPO_RPM_HOME)/.lock
 
 function get_block_directory(){
