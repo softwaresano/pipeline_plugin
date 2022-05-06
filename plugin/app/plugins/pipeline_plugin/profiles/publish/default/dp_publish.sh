@@ -45,9 +45,12 @@ function block_publish(){
 
 # When ends the publication of an artifact, unblock repo
 function unblock_publish(){
-    local block_directory=$(get_block_directory)
-    _log "[INFO] Enable new publications in $block_directory directory"
-    rm -f $block_directory/$DP_PUBLISH_LOCK_FILE
+  local block_directory=$(get_block_directory)
+  _log "[INFO] Enable new publications in $block_directory directory"
+  sed -i '$ d' "$block_directory/$DP_PUBLISH_LOCK_FILE"
+  if ! [ -s "$block_directory/$DP_PUBLISH_LOCK_FILE" ]; then
+    rm -f "$block_directory/$DP_PUBLISH_LOCK_FILE"
+  fi
 }
 
 function default_repo_dir(){
@@ -168,6 +171,7 @@ function publish(){
    local error_code=0
    publish_${artifact_type}s $published_artifacts
    error_code=$?
+   echo "[INFO] Published ${artifact_type:?} ${published_artifacts:?} finished"
    unblock_publish
    rm -f $published_artifacts
    return $error_code
