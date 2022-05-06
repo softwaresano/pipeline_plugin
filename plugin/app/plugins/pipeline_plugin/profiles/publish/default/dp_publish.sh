@@ -154,7 +154,7 @@ function publish(){
    getVersionModule
    $(getVersionModule) && [[ $? != 0 ]] && echo "[ERROR] I can not publish an artifact without version" && exit 1
    local artifact_regr_expr=$1
-   wait_to_publish || return 1
+   block_publish
    #Remove *.
    local artifact_type=${artifact_regr_expr#*\.}
    local published_artifacts=.dp_published_${artifact_type}
@@ -163,8 +163,7 @@ function publish(){
    for i in $(find . -name "$artifact_regr_expr"|grep -v "\.venv/"); do
       echo $(readlink -f $i) >>$published_artifacts
    done;
-   [[ ! -f $published_artifacts ]] && _log "[WARNING] There are any artifact to publish" && return 0
-   block_publish
+   [[ ! -f $published_artifacts ]] && _log "[WARNING] There are not any artifact to publish" && unblock_publish && return 0
    local error_code=0
    publish_${artifact_type}s $published_artifacts
    error_code=$?
