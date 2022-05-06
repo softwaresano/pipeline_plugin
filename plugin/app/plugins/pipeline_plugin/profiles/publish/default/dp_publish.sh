@@ -30,7 +30,8 @@ function lock_message(){
 
 function is_blocked(){
   local block_directory=$(get_block_directory)
-  grep -E "^$(lock_message)$" "$block_directory/$DP_PUBLISH_LOCK_FILE" 2>/dev/null && return 1 || return 0
+  grep -E "^$(lock_message)$" "$block_directory/$DP_PUBLISH_LOCK_FILE" 2>/dev/null && return 1
+  [[ -f "$block_directory/$DP_PUBLISH_LOCK_FILE" ]] && return 0 || return 1
 }
 
 # When starts the publication of an artifact, block repo
@@ -98,7 +99,7 @@ function publish_artifact(){
    local branch_type=$(dp_branch_type.sh)
    if [ -f $metadata_file ]; then
       if [ '$(echo $N_RPMS_FOR_COMPONENT|egrep "^[0-9]+$")' != '' ]; then
-         # Only the last (n_entry) 
+         # Only the last (n_entry)
          n_entry=$N_RPMS_FOR_COMPONENT
          k=$(expr $(cat $metadata_file|wc -l) - $n_entry + 1)
          if [ $k -gt 0 ]; then
