@@ -24,23 +24,22 @@ function get_block_directory(){
     echo $DP_BLOCK_PUBLISH_DIRECTORY/$(dirname $(default_repo_dir))
 }
 
-function is_blocked(){
-    local block_directory=$(get_block_directory)
-    if [ -f $block_directory/$DP_PUBLISH_LOCK_FILE ]; then
-       cat "$block_directory/$DP_PUBLISH_LOCK_FILE"
-       return 0
-    else
-       return 1
-    fi
+function lock_message(){
+  echo "$(hostname)-${PWD}"
 }
 
+function is_blocked(){
+  local block_directory=$(get_block_directory)
+  grep "$(lock_message)" "$block_directory/$DP_PUBLISH_LOCK_FILE" 2>/dev/null
+}
 
 # When starts the publication of an artifact, block repo
 function block_publish(){
-    local block_directory=$(get_block_directory)
-    _log "[INFO] Avoid new publications in $block_directory directory"
-    mkdir -p $block_directory
-    echo "$(hostname)-${PWD}" > $block_directory/$DP_PUBLISH_LOCK_FILE
+  wait_to_publish || return 1
+  local block_directory=$(get_block_directory)
+  _log "[INFO] Avoid new publications in $block_directory directory"
+  mkdir -p $block_directory
+  echo "$(lock_message)" >> $block_directory/$DP_PUBLISH_LOCK_FILE
 }
 
 # When ends the publication of an artifact, unblock repo
@@ -139,13 +138,13 @@ function publish_artifacts(){
 }
 
 function wait_to_publish() {
-   local i=1
-   while is_blocked ]]; do
-        [[ $i -gt $DP_PUBLISH_MAX_TIME_BLOCKED ]] && echo "[ERROR] This publication is not possible because there are other publication activated in $(get_block_directory). Remove $(get_block_directory)/$DP_PUBLISH_LOCK_FILE" && return 1;
-        echo "[INFO] Other artifact is publishing. Waiting $i seconds until $DP_PUBLISH_MAX_TIME_BLOCKED"
-        sleep 1
-        i=$((i+1))
-    done;
+  local i=1
+  while is_blocked; do
+    [[ $i -gt $DP_PUBLISH_MAX_TIME_BLOCKED ]] && echo "[ERROR] This publication is not possible because there are other publication activated in $(get_block_directory). Remove $(get_block_directory)/$DP_PUBLISH_LOCK_FILE" && return 1;
+    echo "[INFO] Other artifact is publishing. Waiting $i seconds until $DP_PUBLISH_MAX_TIME_BLOCKED"
+    sleep 1
+    i=$((i+1))
+  done;
 }
 
 # Publish artifact in a concrete repository. This repo depends on artifact_type
