@@ -30,7 +30,7 @@ function lock_message(){
 
 function is_blocked(){
   local block_directory=$(get_block_directory)
-  grep "$(lock_message)" "$block_directory/$DP_PUBLISH_LOCK_FILE" 2>/dev/null
+  grep -E "^$(lock_message)$" "$block_directory/$DP_PUBLISH_LOCK_FILE" 2>/dev/null && return 1 || return 0
 }
 
 # When starts the publication of an artifact, block repo
