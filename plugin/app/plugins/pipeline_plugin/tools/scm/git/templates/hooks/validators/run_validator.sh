@@ -17,7 +17,7 @@ function get_validator() {
   local py_validators
   file_name=$1
   bash_validators="bash shfmt shellcheck"
-  py_validators="py black pylint mypy"
+  py_validators="py black mypy"
   case $(basename "$file_name") in
   "sonar-project.properties")
     echo "sonar-project"
