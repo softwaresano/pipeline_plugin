@@ -1,6 +1,15 @@
 #!/bin/bash
 [ -z "$DP_HOME" ] && echo "[ERROR] DP_HOME must be defined" && exit 1
 
+function git() {
+  if [[ -n "${COMPONENT_HOME}" ]]; then
+          (cd "${COMPONENT_HOME:?}" && /usr/bin/git $@)
+  else
+    /usr/bin/git $@
+  fi
+
+}
+
 function getCacheProperty() {
   [[ ${!1} != '' ]] && echo "${!1}"
 }
