@@ -34,6 +34,7 @@ function get_validator() {
   esac
   case $file_name in
   Makefile | Pipfile | Gemfile | package.json) type_file="$file_name" ;;
+  *.adoc) type_file="adoc";;
   *) type_file=$(file "$file_name" | grep -Po '(?<=: ).*') ;;
   esac
   case $type_file in
