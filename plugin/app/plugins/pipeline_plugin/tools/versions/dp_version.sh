@@ -1,5 +1,6 @@
 #!/bin/bash
 [ -z "$DP_HOME" ] && echo "[ERROR] DP_HOME must be defined" && exit 1
+source "${DP_HOME:?}"/tools/versions/git.sh
 
 function getCacheProperty() {
   [[ ${!1} != '' ]] && echo "${!1}"

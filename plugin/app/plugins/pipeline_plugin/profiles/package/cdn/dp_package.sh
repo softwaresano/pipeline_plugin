@@ -1,6 +1,9 @@
 #!/bin/bash
 
 [ -z "$DP_HOME" ] && echo "[ERROR] DP_HOME must be defined" && exit 1
+
+source "${DP_HOME:?}"/tools/versions/git.sh
+
 ### HELP section
 dp_help_message="This command has not any help
 [cdn] package type
