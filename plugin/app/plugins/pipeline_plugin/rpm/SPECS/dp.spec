@@ -51,7 +51,7 @@ mv %{buildroot}/%{_home_dir_}/profiles/package/redhat/macros.dp %{buildroot}/usr
 %files
 %defattr(-,%{develenv_project_id},%{develenv_project_id},-)
 %{_home_dir_}
-/usr/lib/rpm/macros.d/macros.dp
+%attr(0644, root, root) /usr/lib/rpm/macros.d/macros.dp
 %config(noreplace) %{_home_dir_}/config
 
 
