@@ -1,7 +1,6 @@
 #!/bin/bash
 # Validate bash
 function validate(){
-  grep -q "### Devel packages" "${file_name:?}" && 
-    echo "thirdparty-rpms.txt  modified automatically" && return 1
-  return 0
+  sed -i '/^### Devel packages$/,$d' "${file_name:?}" || return 1
+  sed -i '$d' "${file_name:?}"
 }
