@@ -19,7 +19,7 @@ function get_validator() {
   bash_validators="bash shfmt shellcheck"
   py_validators="py black mypy pylint"
   erb_validators="erb erblint"
-  rb_validators="ruby rubocop"
+  rb_validators="rb rubocop"
   case $(basename "$file_name") in
   "sonar-project.properties")
     echo "sonar-project"
