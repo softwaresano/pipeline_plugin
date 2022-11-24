@@ -18,6 +18,8 @@ function get_validator() {
   file_name=$1
   bash_validators="bash shfmt shellcheck"
   py_validators="py black mypy pylint"
+  erb_validators="erb erblint"
+  rb_validators="ruby rubocop"
   case $(basename "$file_name") in
   "sonar-project.properties")
     echo "sonar-project"
@@ -35,6 +37,8 @@ function get_validator() {
   case $file_name in
   Makefile | Pipfile | Gemfile | package.json) type_file="$file_name" ;;
   *.adoc) type_file="adoc";;
+  *.erb) type_file="erb";;
+  *.rb) type_file="rb";;
   *) type_file=$(file "$file_name" | grep -Po '(?<=: ).*') ;;
   esac
   case $type_file in
@@ -45,6 +49,8 @@ function get_validator() {
   "POSIX shell script text executable") echo "sh shfmt shellcheck" ;;
   Makefile | Pipfile | Gemfile | package.json) echo "${type_file}" ;;
   *Python*|*python*) echo "${py_validators}" ;;
+  erb) echo "${erb_validators:?}";;
+  rb) echo "${rb_validators:?}";;
   *) # By default, it uses the extension file to identify file type
     base_file_name=$(basename "$file_name")
     #get last suffix
