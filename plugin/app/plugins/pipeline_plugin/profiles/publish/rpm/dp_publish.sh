@@ -71,6 +71,7 @@ function are_there_any_new_dependency(){
   cat $TMP_DEPENCENCIES_FILE|sort|uniq -i > $TMP_DEPENCENCIES_FILE.new
   rm -rf $TMP_DEPENCENCIES_FILE
   if [[ "$(diff $TMP_DEPENCENCIES_FILE.new $dependencies_file)" != "" ]]; then
+    rm -f "${dependencies_file:?}"
     mv $TMP_DEPENCENCIES_FILE.new $dependencies_file
     return 0
   else
