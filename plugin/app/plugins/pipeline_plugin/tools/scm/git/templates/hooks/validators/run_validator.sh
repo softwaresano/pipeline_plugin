@@ -34,7 +34,7 @@ function get_validator() {
   esac
   case $file_name in
   Makefile | Pipfile | Gemfile | package.json) type_file="$file_name" ;;
-  *.adoc) type_file="adoc";;
+  *.adoc) type_file="adoc" ;;
   *) type_file=$(file "$file_name" | grep -Po '(?<=: ).*') ;;
   esac
   case $type_file in
@@ -44,7 +44,7 @@ function get_validator() {
   "Bourne-Again shell script, ASCII text executable, with very long lines") echo "${bash_validators}" ;;
   "POSIX shell script text executable") echo "sh shfmt shellcheck" ;;
   Makefile | Pipfile | Gemfile | package.json) echo "${type_file}" ;;
-  *Python*|*python*) echo "${py_validators}" ;;
+  *Python* | *python*) echo "${py_validators}" ;;
   *) # By default, it uses the extension file to identify file type
     base_file_name=$(basename "$file_name")
     #get last suffix
@@ -54,13 +54,28 @@ function get_validator() {
 }
 
 function individual_validator() {
+  execute_validator "${1:?}" "${2:?}" || return 1
+  if [[ -f ${CDN_BUILD_LIB}/hooks/${validator}.sh ]]; then
+    execute_validator "${1:?}" "${2:?}" "${CDN_BUILD_LIB:?}"/hooks "cdn-build" || return 1
+  fi
+  if [[ -f ./hooks/${validator}.sh ]]; then
+    execute_validator "${1:?}" "${2:?}" ./hooks/ "component" || return 1
+  fi
+}
+function execute_validator() {
   local file_name
   local validator
   local result_code
   local validation_error
-  file_name=$1
-  validator=$2
-  validator_file="${validator_dir}/${validator}.sh"
+  local validator_scripts_dir
+  local prefix
+  local validator_name
+  file_name=${1:?}
+  validator=${2:?}
+  validator_scripts_dir=${3:-${validator_dir:?}}
+  prefix=${4}
+  [[ ${prefix} == "" ]] && validator_name="${validator:?}" || validator_name="${validator:?}(${prefix})"
+  validator_file="${validator_scripts_dir}/${validator}.sh"
   if [[ -f $validator_file ]]; then
     source "$validator_file"
     if is_hook_enabled "${file_name}"; then
@@ -73,11 +88,11 @@ function individual_validator() {
     result_code=126
   fi
   case $result_code in
-  125) dp_log.sh "[WARNING] [${validator}] hook disabled for $file_name" ;;
+  125) dp_log.sh "[WARNING] [${validator_name:?}] hook disabled for $file_name" ;;
   126) dp_log.sh "[WARNING] There is not any validator for $file_name" ;;
-  0) dp_log.sh "[INFO]  [OK] [${validator}] $file_name" ;;
+  0) dp_log.sh "[INFO]  [OK] [${validator_name:?}] $file_name" ;;
   *)
-    dp_log.sh "[ERROR] [KO] [${validator}] $file_name"
+    dp_log.sh "[ERROR] [KO] [${validator_name:?}] $file_name"
     echo "==================================================================="
     echo -en "${validation_error}\n"
     n_errors=$((n_errors + 1))
