@@ -55,7 +55,7 @@ function get_validator() {
 
 function individual_validator() {
   execute_validator "${1:?}" "${2:?}" || return 1
-  if [[ -f ${CDN_BUILD_LIB}/hooks/${validator}.sh ]]; then
+  if grep -q "\$(CDN_BUILD_LIB)" Makefile 2 >/dev/null && [[ -f ${CDN_BUILD_LIB}/hooks/${validator}.sh ]]; then
     execute_validator "${1:?}" "${2:?}" "${CDN_BUILD_LIB:?}"/hooks "cdn-build" || return 1
   fi
   if [[ -f ./hooks/${validator}.sh ]]; then
