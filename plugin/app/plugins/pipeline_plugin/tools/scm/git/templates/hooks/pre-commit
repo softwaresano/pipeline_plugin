@@ -1,7 +1,7 @@
 #!/bin/bash
 validator_dir=$(dirname "$0")/validators
 #shellcheck source=./plugin/app/plugins/pipeline_plugin/tools/scm/git/templates/hooks/validators/run_validator.sh
-source "${validator_dir}"/run_validator.sh
+source "${validator_dir:?}"/run_validator.sh
 n_errors=0
 errors_files=''
 while read -r file_name; do
