@@ -2,12 +2,18 @@
 function prepare_commit_message() {
   local prefix_message
   local commit_message
+  local hook
   prefix_message=$(dp_scm_compliant.sh) || exit $?
   commit_message=$(cat "$1")
   #shellcheck source=plugin/app/plugins/pipeline_plugin/tools/scm/git/templates/hooks/validators/run_validator.sh
   source "$(dirname "$0")/validators/run_validator.sh"
   is_hook_enabled "preCommitMessage" || return 0
   validator_dir="$(dirname "$0")/validators" run_validator "${commit_message}" "check_docs" || return $?
+  if [[ -d .git/hooks/integrity ]]; then
+    find .git/hooks/integrity/ -maxdepth 1 -type f | sort | while read -r hook; do
+      validator_dir="$(dirname "$0")/validators" run_validator "${commit_message:?}" "$(basename "${hook:?}")" || exit $?
+    done || return $?
+  fi
   validator_dir="$(dirname "$0")/validators" run_validator "${commit_message}" "integrity" || return $?
   validator_dir="$(dirname "$0")/validators" run_validator "${commit_message}" "gitleaks" || return $?
   validator_dir="$(dirname "$0")/validators" run_validator "${commit_message}" "gitlint" || return $?
