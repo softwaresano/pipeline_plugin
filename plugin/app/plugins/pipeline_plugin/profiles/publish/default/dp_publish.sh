@@ -79,7 +79,7 @@ function is_new_artifact(){
 function delete_deprecated_rpms() {
   local directory="${1:?}"
   local delete_script="/opt/p2pcdn/bin/releaseflow/artifacts_management/am_delete_deprecated_rpms.sh"
-  if [[ -x "${deleted_script:?}" ]]; then
+  if [[ -x "${delete_script:?}" ]]; then
     "${delete_script:?}" "${directory:?}" || echo "[WARNING] Old rpms has not been deleted"
   fi
 }
