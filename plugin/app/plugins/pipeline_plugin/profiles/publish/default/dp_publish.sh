@@ -76,6 +76,15 @@ function is_new_artifact(){
    [ -f "$(get_repo_dir $fullName)/$fullName" ] && echo "true" || echo "false"
 }
 
+function delete_deprecated_rpms() {
+  local directory="${1:?}"
+  local delete_script="/opt/p2pcdn/bin/releaseflow/artifacts_management/am_delete_deprecated_rpms.sh"
+  if [[ -x "${deleted_script:?}" ]]; then
+    "${delete_script:?}" "${directory:?}" || echo "[WARNING] Old rpms has not been deleted"
+  fi
+}
+
+
 function publish_in_user_story(){
   local artifact_file=$1
   local rpm_file_name=$(basename $artifact_file)
@@ -86,9 +95,11 @@ function publish_in_user_story(){
     mkdir -p $dir_repo $user_story_repo
     touch "$user_story_repo"/..
     cp $artifact_file $user_story_repo
-    createrepo $user_story_repo
+    delete_deprecated_rpms "${user_story_repo:?}"
+    createrepo "${user_story_repo:?}"
     rm -f $dir_repo/$rpm_file_name
     ln $user_story_repo/$rpm_file_name $dir_repo/$rpm_file_name
+    delete_deprecated_rpms "${dir_repo:?}"
     createrepo $dir_repo
   fi
 }
