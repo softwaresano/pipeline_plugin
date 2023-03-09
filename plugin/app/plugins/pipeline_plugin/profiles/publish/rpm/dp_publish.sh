@@ -214,7 +214,7 @@ function publish_rpms(){
    fi
    while read rpm; do
      local rpm_name=$(rpm -q --queryformat "[%{NAME}]" $rpm 2>/dev/null)
-     ls "$(dirname $rpm)/$rpm_name"-*|egrep "${rpm_name}-([0-9]+\.){2}[0-9]-[0-9]+\.g.+\.rpm$"|sort -V|tail -1
+     ls "$(dirname $rpm)/$rpm_name"-*|egrep "${rpm_name}-([0-9]+\.){2}[0-9]+-[0-9]+\.g.+\.rpm$"|sort -V|tail -1
    done < "$rpm_files" |uniq -i > "$PWD/last_rpms.txt"
    get_dependencies  "$PWD/last_rpms.txt"
    local error_code=$?
