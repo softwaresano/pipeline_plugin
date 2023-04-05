@@ -63,7 +63,7 @@ get_version_string()
            local ko_version
            local tag_file
            ko_version=$(echo ${version}|cut -d'/' -f1)
-           major_version=$(grep $(grep "refs/tags/${ko_version}/KO" ${git_root_dir}/.git/packed-refs|awk '{print $1}') ${git_root_dir}/.git/packed-refs |grep -Po "(?<=refs/tags/).*(?=/KO)"|tail -1)
+           major_version=$(grep $(grep "refs/tags/${ko_version}/KO" ${git_root_dir}/.git/packed-refs|awk '{print $1}') ${git_root_dir}/.git/packed-refs |grep -Po "(?<=refs/tags/).*(?=/KO)"|sort -V|tail -1)
            cache_version_string="${major_version}-${version#*KO-}"
         ;;
         release)
