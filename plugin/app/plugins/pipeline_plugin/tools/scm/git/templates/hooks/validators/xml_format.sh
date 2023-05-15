@@ -7,7 +7,7 @@ function validate() {
   rm -f "${xml_formated_file:?}"
   xmllint --format "$file_name" 2>/dev/stdout > "${xml_formated_file:?}" || return 1
   if ! diff "${file_name:?}" "${xml_formated_file:?}"; then
-    dp_log.sh "[INFO] Run xmllint --format ${file_name:?} to fix it"
+    dp_log.sh "[INFO] Run xmllint --format '${file_name:?}' to fix it"
     return 1
   fi
 }

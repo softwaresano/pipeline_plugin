@@ -6,7 +6,7 @@ n_errors=0
 errors_files=''
 while read -r file_name; do
   run_validator "$file_name" "encoding" && run_validator "$file_name" ""
-done < <(git status --porcelain | grep -E '^AM |^ M |^M |^A ' | awk '{print $2}')
+done < <(git status --porcelain | grep -E '^AM |^ M |^M |^A ' | cut -d' ' -f3- |cut -d'"' -f2)
 [[ ${n_errors} == "0" ]] && exit 0
 echo -en "
 
