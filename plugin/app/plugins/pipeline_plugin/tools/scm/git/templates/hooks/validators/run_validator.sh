@@ -35,6 +35,10 @@ function get_validator() {
   case $file_name in
   Makefile | Pipfile | Gemfile | package.json) type_file="$file_name" ;;
   *.adoc) type_file="adoc" ;;
+  *.xml)
+    echo "xml xml_format"
+    return 0
+    ;;
   *) type_file=$(file "$file_name" | grep -Po '(?<=: ).*') ;;
   esac
   case $type_file in
