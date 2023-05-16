@@ -21,3 +21,5 @@ function xml_format_fix() {
   formated_file=$(format_file) || return 1
   echo "${formated_file:?}" > "${file_name:?}"
 }
+
+[[ $(readlink -f "$0") == $(readlink -f "${BASH_SOURCE[0]}") ]] && xml_format_fix "$@"
