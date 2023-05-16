@@ -1,7 +1,7 @@
 #!/bin/bash
 
 function format_file() {
-  xmllint --format "$file_name" 2>/dev/null  || return 1
+  xmllint --format "$file_name" 2>/dev/null
 }
 
 # Validate xml_format
