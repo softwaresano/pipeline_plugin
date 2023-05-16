@@ -1,12 +1,12 @@
 #!/bin/bash
 
 function format_file() {
+  command -v xmllint >/dev/null || return 126
   xmllint --format "$file_name" 2>/dev/null
 }
 
 # Validate xml_format
 function validate() {
-  command -v xmllint >/dev/null || return 126
   local formated_file
   formated_file=$(format_file) || return 1
   if ! diff "${file_name:?}" <(echo "${formated_file:?}"); then
