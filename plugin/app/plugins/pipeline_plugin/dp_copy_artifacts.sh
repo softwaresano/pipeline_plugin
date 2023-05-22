@@ -89,10 +89,12 @@ function copy_artifact(){
     # Ensure that parent target exists
     rm -rf $target
     mkdir -p $(dirname $target)
-    cp -rl $source_file $target
-    copy_repodata "${source_file}" "${target}" 'initiative/noarch'
-    copy_repodata "${source_file}" "${target}" 'initiative/x86_64'
-    copy_repodata "${source_file}" "${target}" '3party'
+    ${DEFAULT_COPY_COMMAND:-cp -rl} $source_file $target
+    if [[ "${DEFAULT_COPY_COMMAND:-cp -rl}" == "cp -rl" ]]; then
+      copy_repodata "${source_file}" "${target}" 'initiative/noarch'
+      copy_repodata "${source_file}" "${target}" 'initiative/x86_64'
+      copy_repodata "${source_file}" "${target}" '3party'
+    fi
     # Remove extra metadata
     rm -rf $target/.dependencies $target/ur\@* $target/initiative/.noarch $target/initiative/.x86_64
     local error_code=$?
