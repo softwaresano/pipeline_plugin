@@ -89,7 +89,7 @@ function copy_artifact(){
     # Ensure that parent target exists
     rm -rf $target
     mkdir -p $(dirname $target)
-    cp "${DEFAULT_COPY_FLAGS:--rl}" $source_file $target
+    ${DEFAULT_COPY_COMMAND:-cp -rl} $source_file $target
     copy_repodata "${source_file}" "${target}" 'initiative/noarch'
     copy_repodata "${source_file}" "${target}" 'initiative/x86_64'
     copy_repodata "${source_file}" "${target}" '3party'
