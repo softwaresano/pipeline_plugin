@@ -83,7 +83,7 @@ function are_there_any_new_dependency(){
 }
 
 function enable_repos_in_builders() {
-	 find /etc/yum.repos.d/ -type f -name "*.repo" | grep -v redhat.repo | while read -r path; do grep -Po '(?<=\[).*(?=])' "$path"; done | grep -v "^tid-cdn-service" | sort -u|paste -sd ","
+	 find /etc/yum.repos.d/ -type f ! -name "redhat.repo" -name "*.repo" | while read -r path; do grep -Po '(?<=\[).*(?=])' "$path"; done | grep -v "^tid-cdn-service" | sort -u|paste -sd ","
 }
 
 function yumdownloader_options(){
