@@ -82,6 +82,10 @@ function are_there_any_new_dependency(){
   fi
 }
 
+function enable_repos_in_builders() {
+	 find /etc/yum.repos.d/ -type f ! -name "redhat.repo" -name "*.repo" | while read -r path; do grep -Po '(?<=\[).*(?=])' "$path"; done | grep -v "^tid-cdn-service" | sort -u|paste -sd ","
+}
+
 function yumdownloader_options(){
   local repo_type
   local enablerepos_options
@@ -92,7 +96,7 @@ function yumdownloader_options(){
   for ini_repo in $1; do
     enablerepos_options="${enablerepos_options} --repofrompath '$(basename "$ini_repo"),$ini_repo'"
   done;
-  echo "${enablerepos_options} --disablerepo \"tid-cdn-service*\""
+  echo "${enablerepos_options} --enablerepo="$(enable_repos_in_builders)" --disablerepo \"tid-cdn-service*\""
 }
 
 function get_dependencies(){
