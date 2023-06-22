@@ -97,7 +97,8 @@ function createChangeLog(){
    #Si no existe el changelog se genera a partir de los logs del SCM
    if [ "`cat $modifiedSpecFile|egrep \"^%changelog\"`" == "" ]; then
       if [ "$scmtype" == "git" ]; then
-         echo "%changelog" >> $modifiedSpecFile
+         echo "
+%changelog" >> $modifiedSpecFile
          local current_version=$(get_version)
          git log ${current_version}/KO..HEAD --format="%ad - %aE %h %s %b"|grep -E "^[A-Z].* Merge pull request #"|awk -v current_version="$current_version" '{print "* "$1" "$2" "$3" "$5" - "$8" - " current_version;print "  - "$15"\n  "}'|head -1 >> $modifiedSpecFile
          git log ${current_version}/KO..HEAD --format="%ad - %aE %h %s %b"|grep -E "^[A-Z].* Merge pull request #"|awk '{print "- "$15" - "$9;out=" ";for(i=16;i<=NF;i++){out=out" "$i}; print out}' >> $modifiedSpecFile
