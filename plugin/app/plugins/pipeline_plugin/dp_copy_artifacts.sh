@@ -78,7 +78,7 @@ function copy_artifact(){
     local i=$DP_PUBLISH_MAX_TIME_BLOCKED
     while [[ "$(is_blocked $source_file)" == "true" ]]; do
         [[ 0 -gt $i ]] && \
-           _log "[ERROR] $source_file has not been published because the $target directory is blocked. Remove ${DP_BLOCK_PUBLISH_DIRECTORY}/$source_file/$DP_PUBLISH_LOCK_FILE, /var/develenv/repositories/environments/qacdn-dev/synchronizing and /var/develenv/repositories/environments/extra_components/synchronizing" && \
+           _log "[ERROR] $source_file has not been published because the $target directory is blocked. Remove ${DP_BLOCK_PUBLISH_DIRECTORY}/$source_file/$DP_PUBLISH_LOCK_FILE"
            return 1;
         _log "[INFO] Other artifact is publishing. Waiting $i seconds"
         sleep 1
