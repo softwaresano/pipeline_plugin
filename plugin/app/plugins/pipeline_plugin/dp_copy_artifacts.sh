@@ -30,11 +30,7 @@ function get_block_directory(){
 
 function is_blocked() {
     local block_directory=$1
-    if [ -f ${DP_BLOCK_PUBLISH_DIRECTORY}/$block_directory/$DP_PUBLISH_LOCK_FILE ] || [ -f /var/develenv/repositories/environments/extra_components/synchronizing ] || [ -f /var/develenv/repositories/environments/qacdn-dev/synchronizing ] ; then
-       echo "true"
-    else
-       echo "false"
-    fi
+    [ -f ${DP_BLOCK_PUBLISH_DIRECTORY}/$block_directory/$DP_PUBLISH_LOCK_FILE ] && echo "true" || echo "false"
 }
 
 # When starts the publication of an artifact, block repo
