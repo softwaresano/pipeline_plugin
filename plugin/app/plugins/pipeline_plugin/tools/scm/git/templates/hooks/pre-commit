@@ -4,9 +4,11 @@ validator_dir=$(dirname "$0")/validators
 source "${validator_dir:?}"/run_validator.sh
 n_errors=0
 errors_files=''
+run_validator "force.check_changes" "" || exit 1
 while read -r file_name; do
   run_validator "$file_name" "encoding" && run_validator "$file_name" ""
 done < <(git status --porcelain | grep -E '^AM |^ M |^M |^A ' | cut -d' ' -f3- |cut -d'"' -f2)
+
 [[ ${n_errors} == "0" ]] && exit 0
 echo -en "
 
@@ -18,5 +20,4 @@ Ex: To disable hooks for ${error_file}.
 DISABLE_HOOK='${error_file}' git commit ...
 More info over hooks in: http://cdn-deploy-manager.cdn.hi.inet/cdn/repositories/current/docs/components/cdn-build/includes/git-hooks.adoc
 "
-
 exit 1
