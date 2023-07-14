@@ -4,7 +4,7 @@ validator_dir=$(dirname "$0")/validators
 source "${validator_dir:?}"/run_validator.sh
 n_errors=0
 errors_files=''
-run_validator "force.check_changes" "" || exit 1
+run_validator " " "check_changes" || exit 1
 while read -r file_name; do
   run_validator "$file_name" "encoding" && run_validator "$file_name" ""
 done < <(git status --porcelain | grep -E '^AM |^ M |^M |^A ' | cut -d' ' -f3- |cut -d'"' -f2)
