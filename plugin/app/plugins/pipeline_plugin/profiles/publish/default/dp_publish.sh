@@ -32,6 +32,8 @@ function is_blocked(){
   local block_directory=$(get_block_directory)
   grep -E "^$(lock_message)$" "$block_directory/$DP_PUBLISH_LOCK_FILE" 2>/dev/null && return 1
   [[ -f "$block_directory/$DP_PUBLISH_LOCK_FILE" ]] && return 0 || return 1
+  [[ -f "/var/develenv/repositories/environments/qacdn-dev/synchronizing" ]] && return 0 || return 1
+  [[ -f "/var/develenv/repositories/environments/extra_components/synchronizing" ]] && return 0 || return 1
 }
 
 # When starts the publication of an artifact, block repo
