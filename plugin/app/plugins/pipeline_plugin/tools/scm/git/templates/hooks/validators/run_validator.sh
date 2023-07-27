@@ -96,7 +96,12 @@ function execute_validator() {
     result_code=126
   fi
   case $result_code in
-  125) dp_log.sh "[WARNING] [${validator_name:?}] hook disabled for $file_name" ;;
+  125) if [[ ${file_name:?} == " " ]]; then 
+	  dp_log.sh "[WARNING] [${validator_name:?}] hook disabled" 
+	  return 0
+       fi
+       dp_log.sh "[WARNING] [${validator_name:?}] hook disabled for $file_name" 
+       ;;
   126) dp_log.sh "[WARNING] There is not any validator for $file_name" ;;
   0) dp_log.sh "[INFO]  [OK] [${validator_name:?}] $file_name" ;;
   *)
