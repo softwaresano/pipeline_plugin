@@ -15,7 +15,7 @@ function load_cache_version() {
   local git_home
   local last_commit
   git_home="$(git rev-parse --show-toplevel 2>/dev/null)" || return 1
-  last_commit=$(git show-ref | grep -Po ".*(?= refs/heads/$(git rev-parse --abbrev-ref HEAD))")
+  last_commit=$(git show-ref | grep -Po ".*(?= refs/heads/$(git rev-parse --abbrev-ref HEAD)$)")
   cache_version_file="${git_home:?}/.git/version_file"
   cache_commit=$(grep -Po "(?<=cache_commit=).*" "${cache_version_file:?}" 2>/dev/null)
   [[ ${cache_commit} != "${last_commit}" ]] && rm -f "${cache_version_file}" &&
