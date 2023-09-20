@@ -1,5 +1,8 @@
 #!/bin/bash
 validator_dir=$(dirname "$0")/validators
+cat .git/failed_hooks 2>/dev/null|xargs rm -vf
+rm -vf .git/failed_hooks
+
 #shellcheck source=./plugin/app/plugins/pipeline_plugin/tools/scm/git/templates/hooks/validators/run_validator.sh
 source "${validator_dir:?}"/run_validator.sh
 n_errors=0
