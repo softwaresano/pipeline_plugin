@@ -2,6 +2,7 @@
 validator_dir=$(dirname "$0")/validators
 cat .git/failed_hooks 2>/dev/null|xargs rm -vf
 rm -vf .git/failed_hooks
+touch .git/failed_hooks
 
 #shellcheck source=./plugin/app/plugins/pipeline_plugin/tools/scm/git/templates/hooks/validators/run_validator.sh
 source "${validator_dir:?}"/run_validator.sh
@@ -13,14 +14,22 @@ while read -r file_name; do
 done < <(git status --porcelain | grep -E '^AM |^ M |^M |^A ' | cut -d' ' -f3- |cut -d'"' -f2)
 
 [[ ${n_errors} == "0" ]] && exit 0
-echo -en "
 
-Files with hook errors: ${n_errors}
-${errors_files}
+files_with_errors="$(echo -en "${errors_files}"|sort -u)"
+echo "${files_with_errors}" >> /tmp/errors.txt
+n_files_with_errors="$(echo -en "${files_with_errors:?}"|wc -l)"
+echo -en "
+===================================================================
+===================================================================
+Files with hook errors: ${n_files_with_errors}
+${files_with_errors}
+
 You can disable hook in a file using:
 DISABLE_HOOK=<file> git commit ...
 Ex: To disable hooks for ${error_file}.
 DISABLE_HOOK='${error_file}' git commit ...
 More info over hooks in: http://cdn-deploy-manager.cdn.hi.inet/cdn/repositories/current/docs/components/cdn-build/includes/git-hooks.adoc
+===================================================================
+===================================================================
 "
 exit 1
