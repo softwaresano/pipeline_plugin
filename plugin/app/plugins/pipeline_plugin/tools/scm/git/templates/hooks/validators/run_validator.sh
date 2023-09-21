@@ -61,15 +61,17 @@ function get_validator() {
 function individual_validator() {
   local file_name=${1:?}
   local validator=${2:?}
+  local validator_error=0
   if [[ -f "${validator_dir:?}/${validator:?}.sh" ]]; then
-     execute_validator "${file_name:?}" "${validator:?}" || return 1
+     execute_validator "${file_name:?}" "${validator:?}" || validator_error=1
   fi
   if grep -q "\$(CDN_BUILD_LIB)" Makefile 2 >/dev/null && [[ -f ${CDN_BUILD_LIB}/hooks/${validator}.sh ]]; then
-    execute_validator "${file_name:?}" "${validator:?}" "${CDN_BUILD_LIB:?}"/hooks "cdn-build" || return 1
+    execute_validator "${file_name:?}" "${validator:?}" "${CDN_BUILD_LIB:?}"/hooks "cdn-build" || validator_error=1
   fi
   if [[ -f ./hooks/${validator}.sh ]]; then
-    execute_validator "${file_name:?}" "${validator:?}" ./hooks/ "component" || return 1
+    execute_validator "${file_name:?}" "${validator:?}" ./hooks/ "component" || validator_error=1
   fi
+  return "${validator_error:?}"
 }
 function execute_validator() {
   local file_name
