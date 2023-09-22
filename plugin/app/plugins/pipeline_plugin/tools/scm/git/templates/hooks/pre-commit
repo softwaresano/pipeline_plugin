@@ -31,7 +31,7 @@ You can disable hook in a file using:
 DISABLE_HOOK=<file> git commit ...
 Ex: To disable hooks for ${error_file}.
 DISABLE_HOOK='${error_file}' git commit ...
-More info over hooks in: http://cdn-deploy-manager.cdn.hi.inet/cdn/repositories/current/docs/components/cdn-build/includes/git-hooks.adoc
+More info about hooks in: http://cdn-deploy-manager.cdn.hi.inet/cdn/repositories/current/docs/components/cdn-build/includes/git-hooks.adoc
 EOF
 fi
 cat << EOF
