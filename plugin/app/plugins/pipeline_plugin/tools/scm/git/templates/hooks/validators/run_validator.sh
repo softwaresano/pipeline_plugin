@@ -73,11 +73,14 @@ function individual_validator() {
   fi
   return "${validator_error:?}"
 }
+function hook_log() {
+  dp_log.sh "${1:?}" |& tee -a .git/hooks.log
+}
+
 function execute_validator() {
   local file_name
   local validator
   local result_code
-  local validation_error
   local validator_scripts_dir
   local prefix
   local validator_name
@@ -90,7 +93,8 @@ function execute_validator() {
   if [[ -f $validator_file ]]; then
     source "$validator_file"
     if is_hook_enabled "${file_name}"; then
-      validation_error=$(validate)
+      dp_log.sh " >>> HOOK: Running ${validator_name:?} for ${file_name:?}"
+      validate
       result_code=$?
     else
       result_code=$?
@@ -100,21 +104,18 @@ function execute_validator() {
   fi
   case $result_code in
   125) if [[ ${file_name:?} == " " ]]; then 
-	  dp_log.sh "[WARNING] [${validator_name:?}] hook disabled" 
+	  hook_log "[WARNING] [${validator_name:?}] hook disabled" 
 	  return 0
        fi
-       dp_log.sh "[WARNING] [${validator_name:?}] hook disabled for $file_name" 
+       hook_log "[WARNING] [${validator_name:?}] hook disabled for $file_name" 
        ;;
-  126) dp_log.sh "[WARNING] There is not any validator for $file_name" ;;
-  0) dp_log.sh "[INFO]  [OK] [${validator_name:?}] $file_name" ;;
+  126) hook_log "[WARNING] There is not any validator for $file_name" ;;
+  0) hook_log "[INFO]  [OK] [${validator_name:?}] $file_name" ;;
   *)
-    dp_log.sh "[ERROR] [KO] [${validator_name:?}] $file_name"
-    echo "==================================================================="
-    echo -en "${validation_error}\n"
+    hook_log "[ERROR] [KO] [${validator_name:?}] $file_name"
     n_errors=$((n_errors + 1))
     errors_files="${errors_files}\n  - ${file_name}"
     error_file=${file_name}
-    echo "==================================================================="
     ;;
   esac
   return $result_code
@@ -124,7 +125,6 @@ function run_validator() {
   local file_name
   local validator
   local result_code
-  local validation_error
   file_name=$1
   validator=$2
   if [[ ${validator} == '' ]]; then

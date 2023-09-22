@@ -2,6 +2,7 @@
 validator_dir=$(dirname "$0")/validators
 cat .git/failed_hooks 2>/dev/null|xargs rm -vf
 rm -vf .git/failed_hooks
+rm -vf .git/hooks.log
 touch .git/failed_hooks
 
 #shellcheck source=./plugin/app/plugins/pipeline_plugin/tools/scm/git/templates/hooks/validators/run_validator.sh
@@ -13,13 +14,16 @@ while read -r file_name; do
   run_validator "$file_name" "encoding" && run_validator "$file_name" ""
 done < <(git status --porcelain | grep -E '^AM |^ M |^M |^A ' | cut -d' ' -f3- |cut -d'"' -f2)
 
-[[ ${n_errors} == "0" ]] && exit 0
-
-files_with_errors="$(echo -en "${errors_files}"|sort -u)"
-n_files_with_errors="$(echo -en "${files_with_errors:?}"|wc -l)"
-echo -en "
+cat << EOF
 ===================================================================
 ===================================================================
+Hooks summary:
+$(cat .git/hooks.log)
+EOF
+if [[ "${n_errors}" != "0" ]]; then
+  files_with_errors="$(echo -en "${errors_files}"|sort -u)"
+  n_files_with_errors="$(echo -en "${files_with_errors:?}"|wc -l)"
+  cat << EOF
 Files with hook errors: ${n_files_with_errors}
 ${files_with_errors}
 
@@ -28,7 +32,10 @@ DISABLE_HOOK=<file> git commit ...
 Ex: To disable hooks for ${error_file}.
 DISABLE_HOOK='${error_file}' git commit ...
 More info over hooks in: http://cdn-deploy-manager.cdn.hi.inet/cdn/repositories/current/docs/components/cdn-build/includes/git-hooks.adoc
+EOF
+fi
+cat << EOF
 ===================================================================
 ===================================================================
-"
-exit 1
+EOF
+[[ "${n_errors}" == "0" ]] && exit 0 || exit 1
