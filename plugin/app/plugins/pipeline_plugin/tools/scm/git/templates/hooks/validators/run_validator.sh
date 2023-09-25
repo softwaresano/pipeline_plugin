@@ -17,7 +17,7 @@ function get_validator() {
   local py_validators
   local extra_bash_validators
   file_name=$1
-  grep -q "\$(CDN_BUILD_LIB)" Makefile && extra_bash_validators="lint_shell" || extra_bash_validators="shellcheck"
+  grep -q "\$(CDN_BUILD_LIB)" Makefile && extra_bash_validators="lint_shell test_shell" || extra_bash_validators="shellcheck"
   bash_validators="bash shfmt ${extra_bash_validators:?}"
   py_validators="py black"
   case $(basename "$file_name") in
