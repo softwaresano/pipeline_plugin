@@ -15,8 +15,10 @@ function get_validator() {
   local type_file
   local file_name
   local py_validators
+  local extra_bash_validators
   file_name=$1
-  bash_validators="bash shfmt shellcheck"
+  grep -q "\$(CDN_BUILD_LIB)" Makefile && extra_bash_validators="lint_shell" || extra_bash_validators="shellcheck"
+  bash_validators="bash shfmt ${extra_bash_validators:?}"
   py_validators="py black"
   case $(basename "$file_name") in
   "sonar-project.properties")
@@ -93,7 +95,11 @@ function execute_validator() {
   if [[ -f $validator_file ]]; then
     source "$validator_file"
     if is_hook_enabled "${file_name}"; then
-      dp_log.sh " >>> HOOK: Running ${validator_name:?} for ${file_name:?}"
+      local hook_message_suffix=''
+      if [[ "${file_name}" != '' ]]; then
+        hook_message_suffix=" for ${file_name:?}"
+      fi
+      dp_log.sh " >>> HOOK: Running ${validator_name:?}${hook_message_suffix}"
       validate
       result_code=$?
     else
@@ -104,10 +110,10 @@ function execute_validator() {
   fi
   case $result_code in
   125) if [[ ${file_name:?} == " " ]]; then 
-	  hook_log "[WARNING] [${validator_name:?}] hook disabled" 
-	  return 0
+    hook_log "[WARNING] [${validator_name:?}] hook disabled"
+    return 0
        fi
-       hook_log "[WARNING] [${validator_name:?}] hook disabled for $file_name" 
+       hook_log "[WARNING] [${validator_name:?}] hook disabled for $file_name"
        ;;
   126) hook_log "[WARNING] There is not any validator for $file_name" ;;
   0) hook_log "[INFO]  [OK] [${validator_name:?}] $file_name" ;;
