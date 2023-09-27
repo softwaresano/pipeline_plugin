@@ -96,7 +96,8 @@ function execute_validator() {
     source "$validator_file"
     if is_hook_enabled "${file_name}"; then
       local hook_message_suffix=''
-      if [[ "${file_name}" != '' ]]; then
+      #$(echo -n "$file_name" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
+      if [[ "$(echo -n "$file_name" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')" != '' ]]; then
         hook_message_suffix=" for ${file_name:?}"
       fi
       dp_log.sh " >>> HOOK: Running ${validator_name:?}${hook_message_suffix}"
