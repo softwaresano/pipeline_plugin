@@ -45,11 +45,8 @@ function get_validator() {
   *) type_file=$(file "$file_name" | grep -Po '(?<=: ).*') ;;
   esac
   case $type_file in
-  "Bourne-Again shell script, ASCII text executable") echo "${bash_validators}" ;;
-  "Bourne-Again shell script text executable, ASCII text") echo "${bash_validators}" ;;
-  "Bourne-Again shell script text executable") echo "${bash_validators}" ;;
-  "Bourne-Again shell script, ASCII text executable, with very long lines") echo "${bash_validators}" ;;
-  "POSIX shell script text executable") echo "sh shfmt shellcheck" ;;
+  "Bourne-Again"*) echo "${bash_validators}" ;;
+  "POSIX shell"*) echo "sh shfmt shellcheck" ;;
   Makefile | Pipfile | Gemfile | package.json) echo "${type_file}" ;;
   *Python* | *python*) echo "${py_validators}" ;;
   *) # By default, it uses the extension file to identify file type
