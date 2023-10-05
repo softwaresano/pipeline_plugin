@@ -42,6 +42,10 @@ function get_validator() {
     echo "xml xml_format"
     return 0
     ;;
+  *.groovy|Jenkinsfile)
+    grep -q "\$(CDN_BUILD_LIB)" Makefile && echo "lint_groovy" || echo "groovy"
+    return 0
+    ;;
   *) type_file=$(file "$file_name" | grep -Po '(?<=: ).*') ;;
   esac
   case $type_file in
