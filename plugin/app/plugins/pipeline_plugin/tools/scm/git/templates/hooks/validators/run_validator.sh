@@ -44,6 +44,7 @@ function get_validator() {
     ;;
   *.spec)
     grep -q "\$(CDN_BUILD_LIB)" Makefile && echo "lint_rpm package_rpm" || echo "spec"
+    ;;
   *.groovy|Jenkinsfile)
     grep -q "\$(CDN_BUILD_LIB)" Makefile && echo "lint_groovy" || echo "groovy"
     return 0
