@@ -49,6 +49,10 @@ function get_validator() {
   "POSIX shell"*) echo "sh shfmt shellcheck" ;;
   Makefile | Pipfile | Gemfile | package.json) echo "${type_file}" ;;
   *Python* | *python*) echo "${py_validators}" ;;
+  *.groovy|Jenkinsfile)
+    grep -q "\$(CDN_BUILD_LIB)" Makefile && echo "lint_groovy" || echo "groovy"
+    return 0
+    ;;
   *) # By default, it uses the extension file to identify file type
     base_file_name=$(basename "$file_name")
     #get last suffix
