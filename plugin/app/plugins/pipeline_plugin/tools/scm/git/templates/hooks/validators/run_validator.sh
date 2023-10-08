@@ -37,7 +37,6 @@ function get_validator() {
   case $file_name in
   Makefile | Pipfile | Gemfile | package.json) type_file="$file_name" ;;
   *.mk) type_file="Makefile";;
-  *.adoc) type_file="adoc" ;;
   *.xml)
     echo "xml xml_format"
     return 0
