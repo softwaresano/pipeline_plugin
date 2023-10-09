@@ -37,6 +37,10 @@ function get_validator() {
     ;;
   esac
   case $file_name in
+  *.adoc)
+    is_cdn_build && echo "compile_adoc" || echo "adoc"
+    return 0
+    ;;
   Makefile | Pipfile | Gemfile | package.json) type_file="$file_name" ;;
   *.mk) type_file="Makefile";;
   *.xml)
