@@ -7,7 +7,12 @@ function prepare_commit_message() {
   #shellcheck source=plugin/app/plugins/pipeline_plugin/tools/scm/git/templates/hooks/validators/run_validator.sh
   source "$(dirname "$0")/validators/run_validator.sh"
   is_hook_enabled "preCommitMessage" || return 0
-  validator_dir="$(dirname "$0")/validators" run_validator "${commit_message}" "check_docs" || return $?
+  if [[ -e "${CDN_BUILD_LIB}/hooks/integrity.sh" || -e .hooks/integrity.sh ]]; then
+    touch .git/integrity_hooks/integrity
+  fi
+  while read -r integrity_hook; do
+    validator_dir="$(dirname "$0")/validators" run_validator "${commit_message}"  "$(basename "${integrity_hook:?}")" || return $?
+  done < <(find .git/integrity_hooks -maxdepth 1 -type d -not -path .git/integrity_hooks)
   validator_dir="$(dirname "$0")/validators" run_validator "${commit_message}" "integrity" || return $?
   validator_dir="$(dirname "$0")/validators" run_validator "${commit_message}" "gitleaks" || return $?
   validator_dir="$(dirname "$0")/validators" run_validator "${commit_message}" "gitlint" || return $?

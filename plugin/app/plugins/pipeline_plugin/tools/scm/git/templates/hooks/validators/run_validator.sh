@@ -8,7 +8,9 @@ function is_hook_enabled() {
     return 125
   fi
 }
-
+function is_cdn_build() {
+  grep -q "\$(CDN_BUILD_LIB)" Makefile
+}
 # Return the function to file validate
 function get_validator() {
   local bash_validators
@@ -17,7 +19,7 @@ function get_validator() {
   local py_validators
   local extra_bash_validators
   file_name=$1
-  grep -q "\$(CDN_BUILD_LIB)" Makefile && extra_bash_validators="lint_shell test_shell" || extra_bash_validators="shellcheck"
+  is_cdn_build && extra_bash_validators="lint_shell test_shell" || extra_bash_validators="shellcheck"
   bash_validators="bash shfmt ${extra_bash_validators:?}"
   py_validators="py black"
   case $(basename "$file_name") in
@@ -35,19 +37,22 @@ function get_validator() {
     ;;
   esac
   case $file_name in
+  *.adoc)
+    is_cdn_build && echo "compile_adoc" || echo "adoc"
+    return 0
+    ;;
   Makefile | Pipfile | Gemfile | package.json) type_file="$file_name" ;;
   *.mk) type_file="Makefile";;
-  *.adoc) type_file="adoc" ;;
   *.xml)
     echo "xml xml_format"
     return 0
     ;;
   *.spec)
-    grep -q "\$(CDN_BUILD_LIB)" Makefile && echo "lint_rpm package_rpm" || echo "spec"
+    is_cdn_build && echo "lint_rpm package_rpm" || echo "spec"
     return 0
     ;;
   *.groovy|Jenkinsfile)
-    grep -q "\$(CDN_BUILD_LIB)" Makefile && echo "lint_groovy" || echo "groovy"
+    is_cdn_build && echo "lint_groovy" || echo "groovy"
     return 0
     ;;
   *) type_file=$(file "$file_name" | grep -Po '(?<=: ).*') ;;
@@ -70,9 +75,9 @@ function individual_validator() {
   local validator=${2:?}
   local validator_error=0
   if [[ -f "${validator_dir:?}/${validator:?}.sh" ]]; then
-     execute_validator "${file_name:?}" "${validator:?}" || validator_error=1
+    execute_validator "${file_name:?}" "${validator:?}" || validator_error=1
   fi
-  if grep -q "\$(CDN_BUILD_LIB)" Makefile 2 >/dev/null && [[ -f ${CDN_BUILD_LIB}/hooks/${validator}.sh ]]; then
+  if is_cdn_build 2 >/dev/null && [[ -f ${CDN_BUILD_LIB}/hooks/${validator}.sh ]]; then
     execute_validator "${file_name:?}" "${validator:?}" "${CDN_BUILD_LIB:?}"/hooks "cdn-build" || validator_error=1
   fi
   if [[ -f ./hooks/${validator}.sh ]]; then
