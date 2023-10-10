@@ -59,13 +59,19 @@ function get_validator() {
     is_cdn_build && echo "lint_groovy" || echo "groovy"
     return 0
     ;;
+  *.rb)
+    is_cdn_build && echo "lint_ruby" || echo "rb"
+    return 0
+    ;;
   *) type_file=$(file "$file_name" | grep -Po '(?<=: ).*') ;;
   esac
   case $type_file in
   "Bourne-Again"*) echo "${bash_validators}" ;;
   "POSIX shell"*) echo "sh shfmt shellcheck" ;;
   Makefile | Pipfile | Gemfile | package.json) echo "${type_file}" ;;
-  *Python* | *python*) echo "${py_validators}" ;;
+  *Python* | *python*)
+    is_cdn_build && echo "${py_validators:?} lint_python" || echo "${py_validators:?}"
+    ;;
   *) # By default, it uses the extension file to identify file type
     base_file_name=$(basename "$file_name")
     #get last suffix
