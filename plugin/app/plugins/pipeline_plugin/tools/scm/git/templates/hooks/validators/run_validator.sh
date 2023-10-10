@@ -41,8 +41,11 @@ function get_validator() {
     is_cdn_build && echo "compile_adoc" || echo "adoc"
     return 0
     ;;
-  Makefile | Pipfile | Gemfile | package.json) type_file="$file_name" ;;
-  *.mk) type_file="Makefile";;
+  Makefile|*.mk)
+    is_cdn_build && echo "test_makefile"
+    return 0
+    ;;
+  Pipfile | Gemfile | package.json) type_file="$file_name" ;;
   *.xml)
     echo "xml xml_format"
     return 0
