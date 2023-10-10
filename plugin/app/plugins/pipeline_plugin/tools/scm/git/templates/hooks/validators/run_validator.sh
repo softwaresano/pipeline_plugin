@@ -37,6 +37,10 @@ function get_validator() {
     ;;
   esac
   case $file_name in
+  *.md)
+    is_cdn_build && echo "lint_markdown" || echo "md"
+    return 0
+    ;;
   *.adoc)
     is_cdn_build && echo "compile_adoc" || echo "adoc"
     return 0
