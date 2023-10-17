@@ -66,6 +66,10 @@ function get_validator() {
     is_cdn_build && echo "lint_ruby" || echo "rb"
     return 0
     ;;
+  *.yml|*.yaml)
+    is_cdn_build && echo "lint_yaml" || echo "yaml"
+    return 0
+    ;;
   *) type_file=$(file "$file_name" | grep -Po '(?<=: ).*') ;;
   esac
   case $type_file in
