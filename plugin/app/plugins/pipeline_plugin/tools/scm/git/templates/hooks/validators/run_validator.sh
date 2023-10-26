@@ -66,6 +66,10 @@ function get_validator() {
     is_cdn_build && echo "lint_ruby" || echo "rb"
     return 0
     ;;
+  *.erb)
+    is_cdn_build && echo "lint_ruby" || echo "erb"
+    return 0
+    ;;
   *.yml|*.yaml)
     is_cdn_build && echo "lint_yaml" || echo "yaml"
     return 0
