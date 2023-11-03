@@ -4,6 +4,7 @@ cat .git/failed_hooks 2>/dev/null|xargs rm -vf
 rm -vf .git/failed_hooks
 rm -vf .git/target_hooks
 rm -rvf .git/integrity_hooks
+rm -rfv .git/tempdir/diffs
 rm -vf .git/hooks.log
 touch .git/failed_hooks
 touch .git/target_hooks
@@ -28,9 +29,19 @@ if [[ "${n_errors}" != "0" ]]; then
   files_with_errors="$(echo -en "${errors_files}"|sort -u)"
   n_files_with_errors="$(echo -en "${files_with_errors:?}"|wc -l)"
   cat << EOF
-Files with hook errors: ${n_files_with_errors}
+== Files with hook errors: ${n_files_with_errors}
 ${files_with_errors}
 
+EOF
+if [[ -d .git/tempdir/diffs ]]; then
+  cat << EOF
+== Review diffs file:
+
+$(find .git/tempdir/diffs -type f -exec echo "  - {}" \;)
+
+EOF
+fi
+cat << EOF
 You can disable hook in a file using:
 DISABLE_HOOK=<file> git commit ...
 Ex: To disable hooks for ${error_file}.
