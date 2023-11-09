@@ -74,6 +74,10 @@ function get_validator() {
     is_cdn_build && echo "lint_yaml" || echo "yaml"
     return 0
     ;;
+  *.css|*.html|*.htm|*.js|*.md|*.ts)
+    echo "prettier"
+    return 0
+    ;;
   *) type_file=$(file "$file_name" | grep -Po '(?<=: ).*') ;;
   esac
   case $type_file in
