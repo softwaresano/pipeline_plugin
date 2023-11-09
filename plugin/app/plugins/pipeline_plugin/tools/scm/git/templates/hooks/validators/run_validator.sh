@@ -74,7 +74,7 @@ function get_validator() {
     is_cdn_build && echo "lint_yaml" || echo "yaml"
     return 0
     ;;
-  *.css | *.html | *.htm | *.js | *.ts)
+  *.css | *.html | *.htm | *.js | *.ts | *.json)
     echo "prettier"
     return 0
     ;;
