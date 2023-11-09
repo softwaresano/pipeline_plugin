@@ -78,7 +78,11 @@ function get_validator() {
     echo "json prettier"
     return 0
     ;;
-  *.css | *.html | *.htm | *.js | *.ts)
+  *.ts)
+    grep -q "techs.*typescript" Makefile 2>/dev/null && echo "lint_typescript" || echo "prettier"
+    return 0
+    ;;
+  *.css | *.html | *.htm | *.js)
     echo "prettier"
     return 0
     ;;
