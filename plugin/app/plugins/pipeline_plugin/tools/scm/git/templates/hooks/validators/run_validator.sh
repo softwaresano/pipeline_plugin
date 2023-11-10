@@ -9,7 +9,7 @@ function is_hook_enabled() {
   fi
 }
 function is_cdn_build() {
-  grep -q "\$(CDN_BUILD_LIB)" Makefile
+  grep -q '$(CDN_BUILD_LIB)' Makefile 2>/dev/null
 }
 # Return the function to file validate
 function get_validator() {
@@ -38,15 +38,15 @@ function get_validator() {
   esac
   case $file_name in
   *.md)
-    is_cdn_build && echo "lint_markdown" || echo "md"
+    is_cdn_build && echo "lint_markdown" || echo "md prettier"
     return 0
     ;;
   *.adoc)
     is_cdn_build && echo "compile_adoc" || echo "adoc"
     return 0
     ;;
-  Makefile|*.mk)
-    is_cdn_build && echo "test_makefile" || echo "Makefile"
+  Makefile | *.mk)
+    is_cdn_build && echo "test_makefile" || echo "Makefile"
     return 0
     ;;
   Pipfile | Gemfile | package.json) type_file="$file_name" ;;
@@ -58,7 +58,7 @@ function get_validator() {
     is_cdn_build && echo "lint_rpm package_rpm" || echo "spec"
     return 0
     ;;
-  *.groovy|Jenkinsfile)
+  *.groovy | Jenkinsfile)
     is_cdn_build && echo "lint_groovy" || echo "groovy"
     return 0
     ;;
@@ -70,8 +70,20 @@ function get_validator() {
     is_cdn_build && echo "lint_ruby" || echo "erb"
     return 0
     ;;
-  *.yml|*.yaml)
+  *.yml | *.yaml)
     is_cdn_build && echo "lint_yaml" || echo "yaml"
+    return 0
+    ;;
+  *.json)
+    echo "json prettier"
+    return 0
+    ;;
+  *.ts)
+    grep -q "techs.*typescript" Makefile 2>/dev/null && echo "lint_typescript" || echo "prettier"
+    return 0
+    ;;
+  *.css | *.html | *.htm | *.js)
+    echo "prettier"
     return 0
     ;;
   *) type_file=$(file "$file_name" | grep -Po '(?<=: ).*') ;;
@@ -140,12 +152,13 @@ function execute_validator() {
     result_code=126
   fi
   case $result_code in
-  125) if [[ ${file_name:?} == " " ]]; then 
-    hook_log "[WARNING] [${validator_name:?}] hook disabled"
-    return 0
-       fi
-       hook_log "[WARNING] [${validator_name:?}] hook disabled for $file_name"
-       ;;
+  125)
+    if [[ ${file_name:?} == " " ]]; then
+      hook_log "[WARNING] [${validator_name:?}] hook disabled"
+      return 0
+    fi
+    hook_log "[WARNING] [${validator_name:?}] hook disabled for $file_name"
+    ;;
   126) hook_log "[WARNING] There is not any validator for $file_name" ;;
   0) hook_log "[INFO]  [OK] [${validator_name:?}] $file_name" ;;
   *)
