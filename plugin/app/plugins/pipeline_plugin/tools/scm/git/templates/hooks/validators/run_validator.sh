@@ -86,6 +86,10 @@ function get_validator() {
     echo "prettier"
     return 0
     ;;
+  *.cpp | *.c)
+    grep -q "techs.*(cxx|cmake)" Makefile 2>/dev/null && echo "lint_cxx" || echo "cxx"
+    return 0
+    ;;
   *) type_file=$(file "$file_name" | grep -Po '(?<=: ).*') ;;
   esac
   case $type_file in
