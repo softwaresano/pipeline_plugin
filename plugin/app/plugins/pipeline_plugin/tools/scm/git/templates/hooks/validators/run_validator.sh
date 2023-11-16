@@ -63,7 +63,9 @@ function get_validator() {
     return 0
     ;;
   *.rb)
-    is_cdn_build && echo "lint_ruby" || echo "rb"
+    ruby_hooks=""
+    grep -q "techs.*rake" Makefile 2>/dev/null && ruby_hooks=" test_rake" 
+    is_cdn_build && echo "lint_ruby${ruby_hooks} " || echo "rb"
     return 0
     ;;
   *.erb)
