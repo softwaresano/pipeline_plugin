@@ -34,7 +34,7 @@ if [[ "${n_errors}" != "0" ]]; then
 ${files_with_errors}
 
 EOF
-if [[ -d target/logs/new_warnings.txt ]]; then
+if [[ -f  target/logs/new_warnings.txt ]]; then
   cat target/logs/new_warnings.txt
   if [[ -d .git/tempdir/diffs ]]; then
     cat << EOF
