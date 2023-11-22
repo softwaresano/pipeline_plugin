@@ -6,6 +6,7 @@ rm -vf .git/target_hooks
 rm -rvf .git/integrity_hooks
 rm -rfv .git/tempdir/diffs
 rm -vf .git/hooks.log
+rm -vf target/logs/new_warnings.txt
 touch .git/failed_hooks
 touch .git/target_hooks
 mkdir -p .git/integrity_hooks
@@ -33,13 +34,16 @@ if [[ "${n_errors}" != "0" ]]; then
 ${files_with_errors}
 
 EOF
-if [[ -d .git/tempdir/diffs ]]; then
-  cat << EOF
+if [[ -f  target/logs/new_warnings.txt ]]; then
+  cat target/logs/new_warnings.txt
+  if [[ -d .git/tempdir/diffs ]]; then
+    cat << EOF
 == Review diffs file:
 
 $(find .git/tempdir/diffs -type f -exec echo "  - {}" \;)
 
 EOF
+  fi
 fi
 cat << EOF
 You can disable hook in a file using:
