@@ -24,7 +24,7 @@ cat << EOF
 ===================================================================
 ===================================================================
 Hooks summary:
-$(cat .git/hooks.log)
+$(cat .git/hooks.log 2>/dev/null)
 EOF
 if [[ "${n_errors}" != "0" ]]; then
   files_with_errors="$(echo -en "${errors_files}"|sort -u)"
