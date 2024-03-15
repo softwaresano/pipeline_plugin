@@ -11,11 +11,14 @@ function prepare_commit_message() {
     touch .git/integrity_hooks/integrity
   fi
   while read -r integrity_hook; do
-    validator_dir="$(dirname "$0")/validators" run_validator "${commit_message}"  "$(basename "${integrity_hook:?}")" || return $?
+    validator_dir="$(dirname "$0")/validators" run_validator "${commit_message}" "$(basename "${integrity_hook:?}")" || return $?
   done < <(find .git/integrity_hooks -maxdepth 1 -type d -not -path .git/integrity_hooks)
   validator_dir="$(dirname "$0")/validators" run_validator "${commit_message}" "integrity" || return $?
   validator_dir="$(dirname "$0")/validators" run_validator "${commit_message}" "gitleaks" || return $?
   validator_dir="$(dirname "$0")/validators" run_validator "${commit_message}" "gitlint" || return $?
   printf "%s %s" "$prefix_message" "${commit_message}" >"$1"
+  if is_cdn_build 2 >/dev/null; then
+    "${CDN_BUILD_LIB:?}"/hooks/commit_message.sh "${1:?}"
+  fi
 }
 prepare_commit_message "$1"
