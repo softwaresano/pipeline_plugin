@@ -16,7 +16,8 @@ function prepare_commit_message() {
   validator_dir="$(dirname "$0")/validators" run_validator "${commit_message}" "integrity" || return $?
   validator_dir="$(dirname "$0")/validators" run_validator "${commit_message}" "gitleaks" || return $?
   validator_dir="$(dirname "$0")/validators" run_validator "${commit_message}" "gitlint" || return $?
-  printf "%s %s" "$prefix_message" "${commit_message}" >"$1"
+  printf "%s %s" "$prefix_message" "${commit_message}" >"${1:?}"
+  echo "" >> "${1:?}"
   if is_cdn_build 2 >/dev/null; then
     "${CDN_BUILD_LIB:?}"/hooks/commit_message.sh "${1:?}"
   fi
