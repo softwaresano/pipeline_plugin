@@ -1,4 +1,8 @@
 #!/bin/bash
+function are_old_hooks() {
+  [[ -f ${GIT_HOOK_LOG:-.git/hooks.log} ]] && [[ $(($(date +%s) - $(stat -c %Y "${GIT_HOOK_LOG:-.git/hooks.log}"))) -gt 10 ]]
+}
+
 function prepare_commit_message() {
   local prefix_message
   local commit_message
@@ -7,6 +11,9 @@ function prepare_commit_message() {
   #shellcheck source=plugin/app/plugins/pipeline_plugin/tools/scm/git/templates/hooks/validators/run_validator.sh
   source "$(dirname "$0")/validators/run_validator.sh"
   is_hook_enabled "preCommitMessage" || return 0
+  if are_old_hooks; then
+     rm -fv "${GIT_HOOK_LOG:-.git/hooks.log}"
+  fi
   if [[ -e "${CDN_BUILD_LIB}/hooks/integrity.sh" || -e .hooks/integrity.sh ]]; then
     touch .git/integrity_hooks/integrity
   fi
