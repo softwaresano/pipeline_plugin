@@ -34,16 +34,21 @@ if [[ "${n_errors}" != "0" ]]; then
 ${files_with_errors}
 
 EOF
-if [[ -f  target/logs/new_warnings.txt ]]; then
-  cat target/logs/new_warnings.txt
-  if [[ -d .git/tempdir/diffs ]]; then
+if is_cdn_build 2 >/dev/null; then
+logs_dir=$(make PARAM=LOGS_DIR help)
+if [[ -f "${logs_dir:?}"/new_warnings.txt ]]; then
+  cat "${logs_dir:?}"/new_warnings.txt
+  report_dir=$(make PARAM=REPORT_DIR help)
+  sdiff_files=$(find "${report_dir:?}" -type f -name "*.sdiff" -exec echo "  - {}" \;)
+  if [[ "${sdiff_files}" != '' ]]; then
     cat << EOF
 == Review diffs file:
 
-$(find .git/tempdir/diffs -type f -exec echo "  - {}" \;)
+${sdiff_files:?}
 
 EOF
   fi
+fi
 fi
 cat << EOF
 You can disable hook in a file using:
