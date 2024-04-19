@@ -7,6 +7,7 @@ rm -rvf .git/integrity_hooks
 rm -rfv .git/tempdir/diffs
 rm -vf .git/hooks.log
 rm -vf target/logs/new_warnings.txt
+rm -vf target/logs/fix_warnings.txt
 touch .git/failed_hooks
 touch .git/target_hooks
 mkdir -p .git/integrity_hooks
