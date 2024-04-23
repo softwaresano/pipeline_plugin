@@ -87,16 +87,15 @@ function enable_repos_in_builders() {
 }
 
 function yumdownloader_options(){
-  local repo_type
   local enablerepos_options
-  repo_type='developers'
-  if [[ "$(is_stable_branch)" == "true" ]]; then
-     repo_type='rc'
-  fi
   for ini_repo in $1; do
     enablerepos_options="${enablerepos_options} --repofrompath '$(basename "$ini_repo"),$ini_repo'"
   done;
-  echo "${enablerepos_options} --enablerepo="$(enable_repos_in_builders)" --disablerepo \"tid-cdn-service*\""
+  if [[ "$(is_stable_branch)" == "true" ]]; then
+    echo "${enablerepos_options} --enablerepo="$(enable_repos_in_builders)" --disablerepo \"tid-cdn-service*\""
+  else
+    echo "${enablerepos_options} --enablerepo="$(enable_repos_in_builders)""
+  fi
 }
 
 function get_dependencies(){
