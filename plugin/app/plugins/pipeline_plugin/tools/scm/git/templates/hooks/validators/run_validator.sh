@@ -9,8 +9,12 @@ function is_hook_enabled() {
   fi
 }
 function is_cdn_build() {
-  grep -q '$(CDN_BUILD_LIB)' Makefile 2>/dev/null
+   [[ -s .git/techs ]]
 }
+function is_present_tech() {
+  grep -Eq "^${1:?}$" .git/techs
+}
+
 # Return the function to file validate
 function get_validator() {
   local bash_validators
@@ -19,7 +23,7 @@ function get_validator() {
   local py_validators
   local extra_bash_validators
   file_name=$1
-  is_cdn_build && extra_bash_validators="lint_shell test_shell" || extra_bash_validators="shellcheck"
+  is_present_tech shell  && extra_bash_validators="lint_shell test_shell" || extra_bash_validators="shellcheck"
   bash_validators="bash shfmt ${extra_bash_validators:?}"
   py_validators="py black"
   case $(basename "$file_name") in
@@ -38,7 +42,7 @@ function get_validator() {
   esac
   case $file_name in
   *.md)
-    is_cdn_build && echo "lint_markdown" || echo "md prettier"
+    is_present_tech markdown && echo "lint_markdown" || echo "md prettier"
     return 0
     ;;
   *.adoc)
@@ -46,7 +50,7 @@ function get_validator() {
     return 0
     ;;
   Makefile | *.mk)
-    is_cdn_build && echo "test_makefile" || echo "Makefile"
+    is_present_tech makefile && echo "test_makefile" || echo "Makefile"
     return 0
     ;;
   Pipfile | Gemfile | package.json) type_file="$file_name" ;;
@@ -55,25 +59,25 @@ function get_validator() {
     return 0
     ;;
   *.spec)
-    is_cdn_build && echo "lint_rpm package_rpm" || echo "spec"
+    is_present_tech rpm && echo "lint_rpm package_rpm" || echo "spec"
     return 0
     ;;
   *.groovy | Jenkinsfile)
-    is_cdn_build && echo "lint_groovy" || echo "groovy"
+    is_present_tech groovy && echo "lint_groovy" || echo "groovy"
     return 0
     ;;
   *.rb)
     ruby_hooks=""
-    grep -q "techs.*rake" Makefile 2>/dev/null && ruby_hooks=" test_rake" 
-    is_cdn_build && echo "lint_ruby${ruby_hooks} " || echo "rb"
+    is_present_tech rake && ruby_hooks=" test_rake"
+    is_present_tech "(ruby|gems|rake)" && echo "lint_ruby${ruby_hooks} " || echo "rb"
     return 0
     ;;
   *.erb)
-    is_cdn_build && echo "lint_ruby" || echo "erb"
+    is_present_tech "(ruby|gems|rake)"  && echo "lint_ruby" || echo "erb"
     return 0
     ;;
   *.yml | *.yaml)
-    is_cdn_build && echo "lint_yaml" || echo "yaml"
+    is_present_tech yaml && echo "lint_yaml" || echo "yaml"
     return 0
     ;;
   *.json)
@@ -81,7 +85,7 @@ function get_validator() {
     return 0
     ;;
   *.ts)
-    grep -q "techs.*typescript" Makefile 2>/dev/null && echo "lint_typescript" || echo "prettier"
+    is_present_tech typescript && echo "lint_typescript" || echo "prettier"
     return 0
     ;;
   *.css | *.html | *.htm | *.js)
@@ -89,9 +93,13 @@ function get_validator() {
     return 0
     ;;
   *.cpp | *.c)
-    grep -q "techs.*(cxx|cmake)" Makefile 2>/dev/null && echo "lint_cxx" || echo "cxx"
+    is_present_tech "(cxx|cmake)"  && echo "lint_cxx" || echo "cxx"
     return 0
     ;;
+  *.pp)
+    is_present_tech "puppet"  && echo "lint_puppet" || echo "pp"
+    return 0
+  ;;
   *) type_file=$(file "$file_name" | grep -Po '(?<=: ).*') ;;
   esac
   case $type_file in
@@ -116,7 +124,7 @@ function individual_validator() {
   if [[ -f "${validator_dir:?}/${validator:?}.sh" ]]; then
     execute_validator "${file_name:?}" "${validator:?}" || validator_error=1
   fi
-  if is_cdn_build 2 >/dev/null && [[ -f ${CDN_BUILD_LIB}/hooks/${validator}.sh ]]; then
+  if is_cdn_build && [[ -f ${CDN_BUILD_LIB}/hooks/${validator}.sh ]]; then
     execute_validator "${file_name:?}" "${validator:?}" "${CDN_BUILD_LIB:?}"/hooks "cdn-build" || validator_error=1
   fi
   if [[ -f ./hooks/${validator}.sh ]]; then

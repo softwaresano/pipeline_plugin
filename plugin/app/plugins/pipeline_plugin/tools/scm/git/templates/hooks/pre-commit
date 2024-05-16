@@ -11,6 +11,7 @@ rm -vf target/logs/fix_warnings.txt
 touch .git/failed_hooks
 touch .git/target_hooks
 mkdir -p .git/integrity_hooks
+make help PARAM=all_techs  2>/dev/null|tr ' ' '\n'|grep -v '^$'|sort -u > .git/techs
 
 #shellcheck source=./plugin/app/plugins/pipeline_plugin/tools/scm/git/templates/hooks/validators/run_validator.sh
 source "${validator_dir:?}"/run_validator.sh
@@ -35,7 +36,7 @@ if [[ "${n_errors}" != "0" ]]; then
 ${files_with_errors}
 
 EOF
-if is_cdn_build 2 >/dev/null; then
+if is_cdn_build; then
 logs_dir=$(make PARAM=LOGS_DIR help)
 if [[ -f "${logs_dir:?}"/new_warnings.txt ]]; then
   cat "${logs_dir:?}"/new_warnings.txt
