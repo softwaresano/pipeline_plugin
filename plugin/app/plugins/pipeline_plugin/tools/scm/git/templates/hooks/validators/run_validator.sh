@@ -97,7 +97,7 @@ function get_validator() {
     return 0
     ;;
   *.pp)
-    is_present_tech "puppet"  && echo "lint_puppet" || echo "pp"
+    is_present_tech "puppet"  && echo "pp lint_puppet" || echo "pp"
     return 0
   ;;
   *) type_file=$(file "$file_name" | grep -Po '(?<=: ).*') ;;
