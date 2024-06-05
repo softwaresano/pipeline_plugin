@@ -4,7 +4,7 @@ cat .git/failed_hooks 2>/dev/null|xargs rm -vf
 rm -vf .git/failed_hooks
 rm -vf .git/target_hooks
 rm -rvf .git/integrity_hooks
-rm -rfv .git/tempdir/diffs
+[[ -d target/reports ]] && find target/reports -type f -name "*.sdiff" -exec rm -fv {} \;
 rm -vf .git/hooks.log
 rm -vf target/logs/new_warnings.txt
 rm -vf target/logs/fix_warnings.txt
