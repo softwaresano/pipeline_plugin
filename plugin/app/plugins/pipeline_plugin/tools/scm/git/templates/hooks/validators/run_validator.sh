@@ -66,7 +66,7 @@ function get_validator() {
     is_present_tech groovy && echo "lint_groovy" || echo "groovy"
     return 0
     ;;
-  *.rb|Rakefile)
+  *.rb|Rakefile|Gemfile)
     ruby_hooks=""
     is_present_tech rake && ruby_hooks=" test_rake"
     is_present_tech "(ruby|gems|rake)" && echo "lint_ruby${ruby_hooks} " || echo "rb"
