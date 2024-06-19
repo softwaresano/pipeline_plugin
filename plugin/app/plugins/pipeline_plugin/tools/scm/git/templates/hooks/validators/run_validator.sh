@@ -109,7 +109,7 @@ function get_validator() {
   case $type_file in
   "Bourne-Again"*) echo "${bash_validators}" ;;
   "POSIX shell"*) echo "sh shfmt shellcheck" ;;
-  Makefile | Pipfile | Gemfile | package.json) echo "${type_file}" ;;
+  Pipfile | package.json) echo "${type_file}" ;;
   *Python* | *python*)
     is_cdn_build && echo "${py_validators:?} lint_python test_python" || echo "${py_validators:?}"
     ;;
