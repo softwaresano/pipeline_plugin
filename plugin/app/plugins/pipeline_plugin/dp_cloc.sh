@@ -32,7 +32,7 @@ exclude_dirs=$(cat .gitignore .clocignore 2>/dev/null|grep -v "#"|grep -v "*"|gr
 extra_config=$(cat .clocrc 2>/dev/null)
 mkdir -p target/reports
 >target/reports/cloc.txt
-$DP_HOME/profiles/metrics/tools/cloc-1.84.pl . \
+$DP_HOME/profiles/metrics/tools/cloc.pl HEAD \
     --out=target/reports/cloc.txt \
     --fullpath \
     --not-match-d="${exclude_dirs}${default_ignore_dirs}" \
@@ -41,7 +41,7 @@ $DP_HOME/profiles/metrics/tools/cloc-1.84.pl . \
 
 cat target/reports/cloc.txt
 
-$DP_HOME/profiles/metrics/tools/cloc-1.84.pl . \
+$DP_HOME/profiles/metrics/tools/cloc.pl HEAD \
      --by-file --xml --out=target/reports/cloc.xml \
     --fullpath \
     --not-match-d="${exclude_dirs}${default_ignore_dirs}" \
