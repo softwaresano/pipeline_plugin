@@ -31,6 +31,7 @@ extra_config=$(cat .clocrc 2>/dev/null)
 mkdir -p target/reports
 >target/reports/cloc.txt
 $DP_HOME/profiles/metrics/tools/cloc.pl HEAD \
+    --read-lang-def="$DP_HOME/profiles/metrics/tools/cloc_extra_languages.txt" \
     --out=target/reports/cloc.txt \
     --fullpath ${extra_config}
    
@@ -38,12 +39,12 @@ $DP_HOME/profiles/metrics/tools/cloc.pl HEAD \
 cat target/reports/cloc.txt
 
 $DP_HOME/profiles/metrics/tools/cloc.pl HEAD \
-     --by-file --xml --out=target/reports/cloc.xml \
+    --read-lang-def="$DP_HOME/profiles/metrics/tools/cloc_extra_languages.txt" \
+    --by-file --xml --out=target/reports/cloc.xml \
     --fullpath ${extra_config}
 
 #Sloccount format for jenkins
 sloccount_file="target/reports/sloccount.sc"
 xsltproc $DP_HOME/profiles/metrics/tools/cloc2sloccount.xsl \
         target/reports/cloc.xml > $sloccount_file
-$DP_HOME/profiles/metrics/tools/languages/cloc_extra_languages.sh >> $sloccount_file
 post_cloc $*
