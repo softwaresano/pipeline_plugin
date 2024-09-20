@@ -1,8 +1,9 @@
+---
 # This is a basic workflow to help you get started with Actions
 
 name: CI
 
-# Controls when the action will run. 
+# Controls when the action will run.
 on:
   # Triggers the workflow on push or pull request events but only for the develop branch
   push:
@@ -38,7 +39,8 @@ jobs:
           dp_package.sh
           find . -name "*.rpm"
       - name: Upload artifact
-        uses: actions/upload-artifact@v1.0.0
+        uses: actions/upload-artifact@v4.0.0
         with:
           name: Binary RPM
           path: plugin/target/rpm
+...
