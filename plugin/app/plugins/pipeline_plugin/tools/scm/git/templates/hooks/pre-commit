@@ -19,7 +19,11 @@ n_errors=0
 errors_files=''
 run_validator " " "check_changes" || exit 1
 while read -r file_name; do
-  run_validator "$file_name" "encoding" && run_validator "$file_name" ""
+  run_validator "$file_name" "encoding" &&
+  run_validator "$file_name" "file_path" &&
+  run_validator "$file_name" "not_binary" && 
+  run_validator "$file_name" "size" && 
+  run_validator "$file_name" ""
 done < <(git status --porcelain | grep -E --color=no '^AM |^ M |^M |^A '|awk '{$1=""; $0=$0; sub(/^ */, ""); print;}'|sort)
 
 cat << EOF
