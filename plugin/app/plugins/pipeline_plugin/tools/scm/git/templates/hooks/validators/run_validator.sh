@@ -23,7 +23,7 @@ function get_validator() {
   local py_validators
   local extra_bash_validators
   file_name=$1
-  is_present_tech shell  && extra_bash_validators="lint_shell test_shell" || extra_bash_validators="shellcheck"
+  is_present_tech shell  && extra_bash_validators="code_style_shell lint_shell test_shell" || extra_bash_validators="shellcheck"
   bash_validators="bash shfmt ${extra_bash_validators:?}"
   py_validators="py black"
   case $(basename "$file_name") in
@@ -97,7 +97,7 @@ function get_validator() {
     return 0
     ;;
   *.cpp | *.c)
-    is_present_tech "(cxx|cmake)"  && echo "lint_cxx" || echo "cxx"
+    is_present_tech "(cxx|cmake)"  && echo "code_style_cxx lint_cxx" || echo "cxx"
     return 0
     ;;
   *.pp)
@@ -111,7 +111,7 @@ function get_validator() {
   "POSIX shell"*) echo "sh shfmt shellcheck" ;;
   Pipfile | package.json) echo "${type_file}" ;;
   *Python* | *python*)
-    is_cdn_build && echo "${py_validators:?} lint_python test_python" || echo "${py_validators:?}"
+    is_cdn_build && echo "${py_validators:?} code_style_python lint_python test_python" || echo "${py_validators:?}"
     ;;
   *) # By default, it uses the extension file to identify file type
     base_file_name=$(basename "$file_name")
