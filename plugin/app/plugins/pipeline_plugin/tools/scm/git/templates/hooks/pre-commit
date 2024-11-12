@@ -18,7 +18,7 @@ source "${validator_dir:?}"/run_validator.sh
 n_errors=0
 errors_files=''
 run_validator " " "check_changes" || exit 1
-is_cdn_build && codespell_validator=lint_codespell || codespell
+is_cdn_build && codespell_validator=lint_codespell || codespell_validator=codespell
 while read -r file_name; do
   run_validator "$file_name" "encoding" &&
   run_validator "$file_name" "file_path" &&
