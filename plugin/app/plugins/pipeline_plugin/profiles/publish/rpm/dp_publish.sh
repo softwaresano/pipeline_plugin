@@ -148,7 +148,7 @@ name-[version].[x86_64|noarch].rpm[:el5,:el6]"
    _log "[INFO] Downloading dependencies for $rpm_names"
    rm -Rf "/var/tmp/yum-$(id -un)-*"
    tmp_yumdownloader_log=$(mktemp -p /tmp)
-   rm -rf "${cache_folder:?}"
+   rm -rfv "${cache_folder:?}"
    /usr/bin/dnf --installroot "${INSTALL_ROOT_DIR}" clean all --setopt=cachedir="${cache_folder:?}" --setopt=module_platform_id=platform:el8 --releasever 8
    local yumdownloader_command="yumdownloader --setopt=module_platform_id=platform:el8 \
           --releasever 8 \
@@ -261,7 +261,7 @@ function publish_3party_rpm_dependencies(){
 
 function execute(){
    local cache_folder='/tmp/dnf_cache'
-   rm -rf "${cache_folder:?}"
+   rm -rfv "${cache_folder:?}"
    /usr/bin/dnf --installroot "${INSTALL_ROOT_DIR}" clean all --setopt=cachedir="${cache_folder:?}" --setopt=module_platform_id=platform:el8 --releasever 8
    publish "*.rpm"
    local error_code=$?
