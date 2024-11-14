@@ -149,14 +149,13 @@ name-[version].[x86_64|noarch].rpm[:el5,:el6]"
    rm -Rf "/var/tmp/yum-$(id -un)-*"
    tmp_yumdownloader_log=$(mktemp -p /tmp)
    rm -rfv "${cache_folder:?}"
-   /usr/bin/dnf --installroot "${INSTALL_ROOT_DIR}" clean all --setopt=cachedir="${cache_folder:?}" --setopt=module_platform_id=platform:el8 --releasever 8
    local yumdownloader_command="yumdownloader --setopt=module_platform_id=platform:el8 \
-          --releasever 8 \
-          --installroot \"${INSTALL_ROOT_DIR}\" \
-          --destdir \"$target_repo_dir\" \
-          --setopt=cachedir="${cache_folder:?}" \
-          $(yumdownloader_options "${initiative_rpm_dirs}") \
-          --resolve ${rpm_names}"
+            --setopt=cachedir="${cache_folder:?}" \
+            --releasever 8 \
+            --installroot \"${INSTALL_ROOT_DIR}\" \
+            --destdir \"$target_repo_dir\" \
+            $(yumdownloader_options "${initiative_rpm_dirs}") \
+            --resolve ${rpm_names}"
    echo "$yumdownloader_command"
    eval "${yumdownloader_command}" 2>&1|tee $tmp_yumdownloader_log
    status_yum_downloader=${PIPESTATUS[0]}
@@ -260,9 +259,6 @@ function publish_3party_rpm_dependencies(){
 }
 
 function execute(){
-   local cache_folder='/tmp/dnf_cache'
-   rm -rfv "${cache_folder:?}"
-   /usr/bin/dnf --installroot "${INSTALL_ROOT_DIR}" clean all --setopt=cachedir="${cache_folder:?}" --setopt=module_platform_id=platform:el8 --releasever 8
    publish "*.rpm"
    local error_code=$?
    if [ $error_code != 0 ]; then
