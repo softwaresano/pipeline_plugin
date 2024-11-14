@@ -104,6 +104,7 @@ function get_dependencies(){
    local rpm_files=$1
    local target_repo=""
    local target_repo_dir=""
+   local cache_folder='/tmp/dnf_cache'
    extract_dependencies $rpm_files
    IFS=$'\n'
    # rpm_files examples:
@@ -147,16 +148,18 @@ name-[version].[x86_64|noarch].rpm[:el5,:el6]"
    _log "[INFO] Downloading dependencies for $rpm_names"
    rm -Rf "/var/tmp/yum-$(id -un)-*"
    tmp_yumdownloader_log=$(mktemp -p /tmp)
-   /usr/bin/dnf --installroot "${INSTALL_ROOT_DIR}" clean all --setopt=module_platform_id=platform:el8 --releasever 8 
+   rm -rfv "${cache_folder:?}"
    local yumdownloader_command="yumdownloader --setopt=module_platform_id=platform:el8 \
-          --releasever 8 \
-          --installroot \"${INSTALL_ROOT_DIR}\" \
-          --destdir \"$target_repo_dir\" \
-          $(yumdownloader_options "${initiative_rpm_dirs}") \
-          --resolve ${rpm_names}"
+            --setopt=cachedir="${cache_folder:?}" \
+            --releasever 8 \
+            --installroot \"${INSTALL_ROOT_DIR}\" \
+            --destdir \"$target_repo_dir\" \
+            $(yumdownloader_options "${initiative_rpm_dirs}") \
+            --resolve ${rpm_names}"
    echo "$yumdownloader_command"
    eval "${yumdownloader_command}" 2>&1|tee $tmp_yumdownloader_log
    status_yum_downloader=${PIPESTATUS[0]}
+   rm -rfv "${cache_folder:?}"
    errors=$(egrep '^Error in resolve of packages|No Match for argument' $tmp_yumdownloader_log|wc -l)
    if [[ "$errors" != '0' ]]; then
      _log "[ERROR] ERROR downloading:"
@@ -257,7 +260,6 @@ function publish_3party_rpm_dependencies(){
 }
 
 function execute(){
-   /usr/bin/dnf --installroot "${INSTALL_ROOT_DIR}" clean all --setopt=module_platform_id=platform:el8 --releasever 8
    publish "*.rpm"
    local error_code=$?
    if [ $error_code != 0 ]; then
