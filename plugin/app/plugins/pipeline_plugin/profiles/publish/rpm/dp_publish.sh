@@ -159,6 +159,7 @@ name-[version].[x86_64|noarch].rpm[:el5,:el6]"
    echo "$yumdownloader_command"
    eval "${yumdownloader_command}" 2>&1|tee $tmp_yumdownloader_log
    status_yum_downloader=${PIPESTATUS[0]}
+   rm -rfv "${cache_folder:?}"
    errors=$(egrep '^Error in resolve of packages|No Match for argument' $tmp_yumdownloader_log|wc -l)
    if [[ "$errors" != '0' ]]; then
      _log "[ERROR] ERROR downloading:"
