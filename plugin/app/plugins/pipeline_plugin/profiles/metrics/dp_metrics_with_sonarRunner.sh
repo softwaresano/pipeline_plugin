@@ -108,7 +108,7 @@ function get_sonar_implicit_options(){
     sonar_parameters="-Dsonar.github.repository=$(dp_scm_url.sh|grep -Po '(?<=\:).*(?=\.git$)') ${sonar_parameters}"
   local sonar_cnes_report_property=''
   [[ -s "${CNES_REPORT}" ]] && sonar_cnes_report_property=" -Dsonar.icode.reports.path=${CNES_REPORT}"
-  echo "${sonar_parameters}${sonar_cnes_report_property}"
+  echo "${sonar_parameters}${sonar_cnes_report_property} ${SONAR_OPTIONS}"
 }
 
 function run_sonar_scanner(){
