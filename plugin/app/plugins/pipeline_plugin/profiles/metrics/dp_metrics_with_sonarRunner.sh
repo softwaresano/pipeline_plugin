@@ -108,7 +108,7 @@ function get_sonar_implicit_options(){
     sonar_parameters="-Dsonar.github.repository=$(dp_scm_url.sh|grep -Po '(?<=\:).*(?=\.git$)') ${sonar_parameters}"
   local sonar_cnes_report_property=''
   [[ -s "${CNES_REPORT}" ]] && sonar_cnes_report_property=" -Dsonar.icode.reports.path=${CNES_REPORT}"
-  echo "${sonar_parameters}${sonar_cnes_report_property} ${SONAR_OPTIONS}"
+  echo "${sonar_parameters}${sonar_cnes_report_property}"
 }
 
 function run_sonar_scanner(){
@@ -157,8 +157,8 @@ function execute(){
    if [[ "${CHANGE_ID}" != '' ]]; then
      change_id_prefix="${CHANGE_ID}:"
    fi
-   grep '^sonar.projectName=' $sonarFileconf >/dev/null || sonar_implicit_options="-Dsonar.projectName=${SONAR_PROJECT_NAME:-${change_id_prefix}${sonar_project_key}} ${sonar_implicit_options}"
-   sonar_command="${command} -Dsonar.projectKey=${SONAR_PROJECT_KEY:-${change_id_prefix}${sonar_project_key}} ${sonar_implicit_options}"
+   grep '^sonar.projectName=' $sonarFileconf >/dev/null || sonar_implicit_options="-Dsonar.projectName=${change_id_prefix}${sonar_project_key} ${sonar_implicit_options}"
+   sonar_command="${command} -Dsonar.projectKey=${change_id_prefix}${sonar_project_key} ${sonar_implicit_options} ${SONAR_OPTIONS}"
    run_sonar_scanner "${sonar_command}" || return 1
    _log "[INFO] Metrics calculated"
 }
