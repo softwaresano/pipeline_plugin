@@ -158,7 +158,7 @@ function execute(){
      change_id_prefix="${CHANGE_ID}:"
    fi
    grep '^sonar.projectName=' $sonarFileconf >/dev/null || sonar_implicit_options="-Dsonar.projectName=${change_id_prefix}${sonar_project_key} ${sonar_implicit_options}"
-   sonar_command="${command} -Dsonar.projectKey=${change_id_prefix}${sonar_project_key} ${sonar_implicit_options}"
+   sonar_command="${command} -Dsonar.projectKey=${change_id_prefix}${sonar_project_key} ${sonar_implicit_options} ${SONAR_OPTIONS}"
    run_sonar_scanner "${sonar_command}" || return 1
    _log "[INFO] Metrics calculated"
 }
