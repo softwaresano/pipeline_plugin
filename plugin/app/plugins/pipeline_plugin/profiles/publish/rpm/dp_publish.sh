@@ -277,7 +277,7 @@ function main(){
                && exit $?
 }
 
-INSTALL_ROOT_DIR=/home/develenv/yumdownloader
+INSTALL_ROOT_DIR=${INSTALL_ROOT_DIR:-/home/develenv/yumdownloader}
 
 if [ "$DEBUG_PIPELINE" == "TRUE" ]; then
    main --debug $*
