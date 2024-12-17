@@ -104,7 +104,7 @@ function get_dependencies(){
    local rpm_files=$1
    local target_repo=""
    local target_repo_dir=""
-   local cache_folder='/tmp/dnf_cache'
+   local cache_folder='cache'
    extract_dependencies $rpm_files
    IFS=$'\n'
    # rpm_files examples:
