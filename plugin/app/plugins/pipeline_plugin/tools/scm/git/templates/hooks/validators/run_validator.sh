@@ -93,7 +93,7 @@ function get_validator() {
     return 0
     ;;
   *.css | *.html | *.htm | *.js)
-    [[ -f $CDN_BUILD_LIB ]] && echo "code_style_prettier" || echo "prettier"
+    is_cdn_build && echo "code_style_prettier" || echo "prettier"
     return 0
     ;;
   *.cpp | *.c)
