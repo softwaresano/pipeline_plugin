@@ -96,7 +96,7 @@ function get_validator() {
     is_cdn_build && echo "code_style_prettier" || echo "prettier"
     return 0
     ;;
-  *.cpp | *.c)
+  *.cpp | *.c | *.h)
     is_present_tech "(cxx|cmake)"  && echo "code_style_cxx lint_cxx" || echo "cxx"
     return 0
     ;;
