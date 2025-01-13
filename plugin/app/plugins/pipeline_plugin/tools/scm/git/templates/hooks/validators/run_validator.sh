@@ -93,14 +93,14 @@ function get_validator() {
     return 0
     ;;
   *.html | *.htm | *.js)
-    echo "prettier"
+    is_cdn_build && echo "code_style_prettier" || echo "prettier"
     return 0
     ;;
   *.css | *.scss)
     is_present_tech "css"  && echo "lint_css" || echo "prettier"
     return 0
     ;;
-  *.cpp | *.c)
+  *.cpp | *.c | *.h)
     is_present_tech "(cxx|cmake)"  && echo "code_style_cxx lint_cxx" || echo "cxx"
     return 0
     ;;
