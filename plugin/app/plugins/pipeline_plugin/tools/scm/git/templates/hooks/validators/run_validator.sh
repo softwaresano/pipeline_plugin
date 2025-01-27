@@ -92,8 +92,12 @@ function get_validator() {
     is_present_tech typescript && echo "lint_typescript" || echo "prettier"
     return 0
     ;;
-  *.css | *.html | *.htm | *.js)
-    is_cdn_build && echo "code_style_prettier" || echo "prettier"
+  *.html | *.htm | *.js)
+    is_cdn_build && echo "code_style_prettier" || echo "prettier"
+    return 0
+    ;;
+  *.css | *.scss)
+    is_present_tech "css"  && echo "lint_css" || echo "prettier"
     return 0
     ;;
   *.cpp | *.c | *.h)
