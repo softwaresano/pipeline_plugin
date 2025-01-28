@@ -36,7 +36,7 @@ function get_validator() {
     return 0
     ;;
   "Dockerfile")
-    is_present_tech docker && echo "lint_docker" || echo "dockerfile"
+    is_present_tech docker && echo "lint_docker package_docker" || echo "dockerfile"
     return 0
     ;;
   esac
