@@ -86,6 +86,15 @@ function enable_repos_in_builders() {
 	 find /etc/yum.repos.d/ -type f ! -name "redhat.repo" -name "*.repo" | while read -r path; do grep -Po '(?<=\[).*(?=])' "$path"; done | grep -v "^tid-cdn-service" | sort -u|paste -sd ","
 }
 
+function enable_repos() {
+   local rpm_repos_path="${CDN_BUILD_LIB:-/opt/p2pcdn/var/lib/build}"/rpm_repos
+   if [[ -f ${rpm_repos_path:?} ]]; then
+      awk -F',' '{print "--repofrompath=" $1 "," $2}' "${rpm_repos_path:?}" |paste -sd ' '
+   else
+      echo "--enablerepo='$(enable_repos_in_builders)'"
+   fi
+}
+
 function yumdownloader_options(){
   local repo_type
   local enablerepos_options
@@ -96,7 +105,7 @@ function yumdownloader_options(){
   for ini_repo in $1; do
     enablerepos_options="${enablerepos_options} --repofrompath '$(basename "$ini_repo"),$ini_repo'"
   done;
-  echo "${enablerepos_options} --enablerepo="$(enable_repos_in_builders)" --disablerepo \"tid-cdn-service*\""
+  echo "${enablerepos_options} "$(enable_repos)" --disablerepo \"tid-cdn-service*\""
 }
 
 function get_dependencies(){
@@ -150,6 +159,7 @@ name-[version].[x86_64|noarch].rpm[:el5,:el6]"
    tmp_yumdownloader_log=$(mktemp -p /tmp)
    rm -rfv "${cache_folder:?}"
    local yumdownloader_command="yumdownloader --setopt=module_platform_id=platform:el8 \
+            --setopt=sslverify=False \
             --setopt=cachedir="${cache_folder:?}" \
             --releasever 8 \
             --installroot \"${INSTALL_ROOT_DIR}\" \
