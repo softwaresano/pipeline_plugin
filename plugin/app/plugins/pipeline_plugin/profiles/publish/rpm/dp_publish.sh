@@ -87,9 +87,9 @@ function enable_repos_in_builders() {
 }
 
 function enable_repos() {
-   local rpm_repos_path="${CDN_BUILD_LIB:-/opt/p2pcdn/var/lib/build}"/rpm_repos
-   if [[ -f ${rpm_repos_path:?} ]]; then
-      awk -F',' '{print "--repofrompath=" $1 "," $2}' "${rpm_repos_path:?}" |paste -sd ' '
+   local rpm_repos_path="${RPM_REPOS_PATH:-/opt/p2pcdn/var/lib/build}/rpm_repos"
+   if [[ -x ${rpm_repos_path:?} ]]; then
+     "${rpm_repos_path:?}"|sort -u|awk -F',' '{print "--repofrompath=" $1 "," $2}'|paste -sd ' '
    else
       echo "--enablerepo='$(enable_repos_in_builders)'"
    fi
