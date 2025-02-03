@@ -362,7 +362,7 @@ function createRPM(){
    sed 1,${lineSeparator}d $packagerFile >> $modifiedSpecFile
    echo "" >> $modifiedSpecFile
    echo "## Original spec file" >> $modifiedSpecFile
-   rpmBuildCommand="rpmbuild -v --clean --define 'dp_package 'true --define 'os_release '$(dp_os_release.sh) --define 'versionModule '$versionModule \
+   rpmBuildCommand="rpmbuild -v --clean ${CUSTOM_RPM_MACROS} --define 'dp_package 'true --define 'os_release '$(dp_os_release.sh) --define 'versionModule '$versionModule \
 --define 'releaseModule '$releaseModule $prePackageExtension -bb $modifiedSpecFile"
    if [ "$(is_modificable spec_file $specFile)" == "true" ]; then
       filterSpecFile $specFile
