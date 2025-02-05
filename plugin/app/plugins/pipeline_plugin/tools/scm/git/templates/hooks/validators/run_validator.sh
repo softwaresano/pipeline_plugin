@@ -115,7 +115,7 @@ function get_validator() {
   "POSIX shell"*) echo "sh shfmt shellcheck" ;;
   Pipfile | package.json) echo "${type_file}" ;;
   *Python* | *python*)
-    is_cdn_build && echo "${py_validators:?} code_style_python lint_python test_python" || echo "${py_validators:?}"
+    is_cdn_build && echo "${py_validators:?} code_style_python lint_python security_python test_python" || echo "${py_validators:?}"
     ;;
   *) # By default, it uses the extension file to identify file type
     base_file_name=$(basename "$file_name")
