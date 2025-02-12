@@ -159,6 +159,7 @@ name-[version].[x86_64|noarch].rpm[:el5,:el6]"
    tmp_yumdownloader_log=$(mktemp -p /tmp)
    rm -rfv "${cache_folder:?}"
    local yumdownloader_command="yumdownloader --setopt=module_platform_id=platform:el8 \
+	    --setopt=plugins=1 \
             --setopt=sslverify=False \
             --setopt=cachedir="${cache_folder:?}" \
             --releasever 8 \
