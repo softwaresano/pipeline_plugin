@@ -36,7 +36,7 @@ function get_validator() {
     return 0
     ;;
   "Dockerfile")
-    is_present_tech docker && echo "lint_docker" || echo "dockerfile"
+    is_present_tech docker && echo "lint_docker package_docker" || echo "dockerfile"
     return 0
     ;;
   esac
@@ -92,11 +92,15 @@ function get_validator() {
     is_present_tech typescript && echo "lint_typescript" || echo "prettier"
     return 0
     ;;
-  *.css | *.html | *.htm | *.js)
-    echo "prettier"
+  *.html | *.htm | *.js)
+    is_cdn_build && echo "code_style_prettier" || echo "prettier"
     return 0
     ;;
-  *.cpp | *.c)
+  *.css | *.scss)
+    is_present_tech "css"  && echo "lint_css" || echo "prettier"
+    return 0
+    ;;
+  *.cpp | *.c | *.h)
     is_present_tech "(cxx|cmake)"  && echo "code_style_cxx lint_cxx" || echo "cxx"
     return 0
     ;;
@@ -111,7 +115,7 @@ function get_validator() {
   "POSIX shell"*) echo "sh shfmt shellcheck" ;;
   Pipfile | package.json) echo "${type_file}" ;;
   *Python* | *python*)
-    is_cdn_build && echo "${py_validators:?} code_style_python lint_python test_python" || echo "${py_validators:?}"
+    is_cdn_build && echo "${py_validators:?} code_style_python lint_python security_python test_python" || echo "${py_validators:?}"
     ;;
   *) # By default, it uses the extension file to identify file type
     base_file_name=$(basename "$file_name")
