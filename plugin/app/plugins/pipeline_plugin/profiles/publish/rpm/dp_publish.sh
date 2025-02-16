@@ -153,22 +153,26 @@ name-[version].[x86_64|noarch].rpm[:el5,:el6]"
    unset IFS
    are_there_any_new_dependency $target_repo_dir || return 0
    createrepo $target_repo_dir
-   local rpm_names=$(echo $rpm_dependencies|sed s:"\.rpm$":"":g|sed s:"\.rpm ":" ":g|sort -u)
+   local rpm_names=($(echo $rpm_dependencies|sed s:"\.rpm$":"":g|sed s:"\.rpm ":" ":g|sort -u))
    _log "[INFO] Downloading dependencies for $rpm_names"
    rm -Rf "/var/tmp/yum-$(id -un)-*"
    tmp_yumdownloader_log=$(mktemp -p /tmp)
-   rm -rfv "${cache_folder:?}"
-   local yumdownloader_command="yumdownloader --setopt=module_platform_id=platform:el8 \
-	    --setopt=plugins=1 \
+   if [[ "${YUMDOWNLOADER_CMD}" == "" ]]; then
+     rm -rfv "${cache_folder:?}"
+     local yumdownloader_command="yumdownloader --setopt=module_platform_id=platform:el8 \
+	         --setopt=plugins=1 \
             --setopt=sslverify=False \
             --setopt=cachedir="${cache_folder:?}" \
             --releasever 8 \
             --installroot \"${INSTALL_ROOT_DIR}\" \
             --destdir \"$target_repo_dir\" \
             $(yumdownloader_options "${initiative_rpm_dirs}") \
-            --resolve ${rpm_names}"
-   echo "$yumdownloader_command"
-   eval "${yumdownloader_command}" 2>&1|tee $tmp_yumdownloader_log
+            --resolve ${rpm_names[@]}"
+      echo "$yumdownloader_command"
+      eval "${yumdownloader_command}" 2>&1|tee $tmp_yumdownloader_log
+   else
+      "${YUMDOWNLOADER_CMD:?}" "${rpm_names[@]}" 2>&1|tee "${tmp_yumdownloader_log:?}"
+   fi
    status_yum_downloader=${PIPESTATUS[0]}
    rm -rfv "${cache_folder:?}"
    errors=$(egrep '^Error in resolve of packages|No Match for argument' $tmp_yumdownloader_log|wc -l)
