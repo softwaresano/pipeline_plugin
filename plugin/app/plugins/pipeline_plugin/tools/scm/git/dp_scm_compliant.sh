@@ -2,8 +2,9 @@
 # Return JIRA_ID associated with a branch name. Only if the repo belongs to
 # <project_name> parameter
 function get_repo_project_name(){
-  basename $(git remote show -n origin | grep Fetch | cut -d: -f2-)|cut -d'-' -f1
+  git tag |grep -Po '.*(?=/Project$)'
 }
+
 function get_git_prefix_message(){
   project_name=$1
   jira_prefix=$2
