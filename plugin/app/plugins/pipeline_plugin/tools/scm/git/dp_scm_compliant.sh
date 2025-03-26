@@ -10,7 +10,10 @@ function get_git_prefix_message() {
   local current_branch=${2:?}
   local jira_prefix=${3:?}
 
-  [[ ${current_branch:?} =~ ${jira_prefix:?} ]] && return 0
+  if [[ ${current_branch:?} =~ ${jira_prefix:?} ]]; then
+    echo "${current_branch:?}"|grep -Po '(?<=/).*'|grep -Po '.*(?=_)' || true
+    return 0
+  fi
   dp_log.sh "[ERROR] [$current_branch] is not a valid $project_name branch name."
   if [[ "$jira_prefix" != "WITHOUT_JIRA" ]]; then
     dp_log.sh "[ERROR] The valid branch name is: ${jira_prefix:?}"
