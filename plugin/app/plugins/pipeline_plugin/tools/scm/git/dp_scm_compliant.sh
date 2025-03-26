@@ -11,7 +11,7 @@ function get_git_prefix_message() {
   local jira_prefix=${3:?}
 
   if [[ ${current_branch:?} =~ ${jira_prefix:?} ]]; then
-    echo "${current_branch:?}"|grep -Po '(?<=/).*'|grep -Po '.*(?=_)' || true
+    echo "${current_branch:?}"|grep -Po '(?<=/).*'|cut -d'_' -f1 || true
     return 0
   fi
   dp_log.sh "[ERROR] [$current_branch] is not a valid $project_name branch name."
