@@ -23,7 +23,7 @@ function is_package_TypeCustom(){
 function is_package_TypeRedhat(){
    # For security only 6 levels
    #  Máximum submodule/src/main/rpm/SPECS/
-   if [ "$(find . -maxdepth 7 -name "*.spec"  -not -path "./target/*" -not -path "./external/*" -not -path "./.git/*" -not -path "./.scannerwork/*")" != "" ]; then
+   if [ "$(find . -maxdepth 7 -type f -name "*.spec"  -not -path "./target/*" -not -path "./external/*" -not -path "./.git/*" -not -path "./.scannerwork/*")" != "" ]; then
       typePackageProject="redhat ${typePackageProject}"
    fi
 }
@@ -43,7 +43,7 @@ function is_package_TypeMakefile(){
 }
 
 function is_package_TypePythonPackageRpm(){
-   local specFiles=$(find . -name "*.spec")
+   local specFiles=$(find . -type f -name "*.spec")
    [ -z "$specFiles" ] && [ -f "setup.py" ] && \
       typePackageProject="pythonTemplate ${typePackageProject}"
 }
