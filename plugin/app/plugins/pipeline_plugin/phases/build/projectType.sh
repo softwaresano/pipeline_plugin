@@ -15,7 +15,7 @@ fi
 # Maybe the project doesn't need a build. Only package. 
 # At the moment only supports rpm.
 function is_build_TypeProjectWithoutBuild(){
-    [[ "$(find . -name "*.spec")" != "" ]] && \
+    [[ "$(find . -type f -name "*.spec")" != "" ]] && \
     typePackageProject="projectWithoutBuild"
 }
 
