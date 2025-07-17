@@ -1,6 +1,6 @@
 #!/bin/bash
 validator_dir=$(dirname "$0")/validators
-cat .git/failed_hooks 2>/dev/null|xargs rm -vf
+cat .git/failed_hooks 2>/dev/null | xargs rm -vf
 rm -vf .git/failed_hooks
 rm -vf .git/target_hooks
 rm -rvf .git/integrity_hooks
@@ -11,7 +11,7 @@ rm -vf target/logs/fix_warnings.txt
 touch .git/failed_hooks
 touch .git/target_hooks
 mkdir -p .git/integrity_hooks
-make help PARAM=all_techs  2>/dev/null|tr ' ' '\n'|grep -v '^$'|sort -u > .git/techs
+make help PARAM=all_techs 2>/dev/null | tr ' ' '\n' | grep -v '^$' | sort -u >.git/techs
 
 #shellcheck source=./plugin/app/plugins/pipeline_plugin/tools/scm/git/templates/hooks/validators/run_validator.sh
 source "${validator_dir:?}"/run_validator.sh
@@ -21,44 +21,44 @@ run_validator " " "check_changes" || exit 1
 is_cdn_build && codespell_validator=lint_codespell || codespell_validator=codespell
 while read -r file_name; do
   run_validator "$file_name" "encoding" &&
-  run_validator "$file_name" "file_path" &&
-  run_validator "$file_name" "not_binary" &&
-  run_validator "$file_name" "size" &&
-  run_validator "${file_name:?}" "${codespell_validator:?}" &&
-  run_validator "$file_name" ""
-done < <(git status --porcelain | grep -E --color=no '^AM |^ M |^M |^A '|awk '{$1=""; $0=$0; sub(/^ */, ""); print;}'|sort)
+    run_validator "$file_name" "file_path" &&
+    run_validator "$file_name" "not_binary" &&
+    run_validator "$file_name" "size" &&
+    run_validator "${file_name:?}" "${codespell_validator:?}" &&
+    run_validator "$file_name" ""
+done < <(git status --porcelain | grep -E --color=no '^AM |^ M |^M |^A ' | awk '{$1=""; $0=$0; sub(/^ */, ""); print;}' | sort)
 
-cat << EOF
+cat <<EOF
 ===================================================================
 ===================================================================
 Hooks summary:
 $(cat .git/hooks.log 2>/dev/null)
 EOF
-if [[ "${n_errors}" != "0" ]]; then
-  files_with_errors="$(echo -en "${errors_files}"|sort -u)"
-  n_files_with_errors="$(echo -en "${files_with_errors:?}"|wc -l)"
-  cat << EOF
+if [[ ${n_errors} != "0" ]]; then
+  files_with_errors="$(echo -en "${errors_files}" | sort -u)"
+  n_files_with_errors="$(echo -en "${files_with_errors:?}" | wc -l)"
+  cat <<EOF
 == Files with hook errors: ${n_files_with_errors}
 ${files_with_errors}
 
 EOF
-if is_cdn_build; then
-logs_dir=$(make PARAM=LOGS_DIR help)
-if [[ -f "${logs_dir:?}"/new_warnings.txt ]]; then
-  cat "${logs_dir:?}"/new_warnings.txt
-  report_dir=$(make PARAM=REPORT_DIR help)
-  sdiff_files=$(find "${report_dir:?}" -type f -name "*.sdiff" -exec echo "  - {}" \;)
-  if [[ "${sdiff_files}" != '' ]]; then
-    cat << EOF
-== Review diffs file:
+  if is_cdn_build; then
+    logs_dir=$(make PARAM=LOGS_DIR help)
+    if [[ -f "${logs_dir:?}"/new_warnings.txt ]]; then
+      cat "${logs_dir:?}"/new_warnings.txt
+      report_dir=$(make PARAM=REPORT_DIR help)
+      sdiff_files=$(find "${report_dir:?}" -type f -name "*.sdiff" -exec echo "  - {}" \;)
+      if [[ ${sdiff_files} != '' ]]; then
+        cat <<EOF
+== Check the contents of these files:
 
 ${sdiff_files:?}
 
 EOF
+      fi
+    fi
   fi
-fi
-fi
-cat << EOF
+  cat <<EOF
 You can disable hook in a file using:
 DISABLE_HOOK=<file> git commit ...
 Ex: To disable hooks for ${error_file}.
@@ -66,8 +66,8 @@ DISABLE_HOOK='${error_file}' git commit ...
 More info about hooks in: http://cdn-deploy-manager.cdn.hi.inet/cdn/repositories/current/docs/components/cdn-build/includes/git-hooks.adoc
 EOF
 fi
-cat << EOF
+cat <<EOF
 ===================================================================
 ===================================================================
 EOF
-[[ "${n_errors}" == "0" ]] && exit 0 || exit 1
+[[ ${n_errors} == "0" ]] && exit 0 || exit 1
