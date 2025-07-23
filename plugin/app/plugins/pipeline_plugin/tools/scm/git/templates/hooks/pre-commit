@@ -60,7 +60,6 @@ EOF
       fi
     fi
     make summary_metrics
-    n_autofix="$(( $(wc -l < .git/autofix.sh) - 1 ))"
     if [[ -f .git/autofix.sh ]]; then
       n_autofix="$(( $(wc -l < .git/autofix.sh) - 1 ))"
       if [ $n_autofix -gt 0 ]; then
