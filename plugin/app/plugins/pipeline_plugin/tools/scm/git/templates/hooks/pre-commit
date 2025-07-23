@@ -8,6 +8,7 @@ rm -rvf .git/integrity_hooks
 rm -vf .git/hooks.log
 rm -vf target/logs/new_warnings.txt
 rm -vf target/logs/fix_warnings.txt
+rm -rfv .git/summary_metrics
 touch .git/failed_hooks
 touch .git/target_hooks
 mkdir -p .git/integrity_hooks
@@ -57,6 +58,7 @@ ${sdiff_files:?}
 EOF
       fi
     fi
+    make summary_metrics
   fi
   cat <<EOF
 You can disable hook in a file using:
