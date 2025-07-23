@@ -61,7 +61,7 @@ EOF
     fi
     make summary_metrics
     if [[ -f .git/autofix.sh ]]; then
-	echo "Run .git/autofix.sh to fix $(( $(wc -l < .git/autofix.sh) - 1 )) warnigs"
+	echo "====>  Run .git/autofix.sh to fix $(( $(wc -l < .git/autofix.sh) - 1 )) warnings"
     fi
   fi
   cat <<EOF
