@@ -60,8 +60,11 @@ EOF
       fi
     fi
     make summary_metrics
+    n_autofix="$(( $(wc -l < .git/autofix.sh) - 1 ))"
     if [[ -f .git/autofix.sh ]]; then
-	echo "====>  Run .git/autofix.sh to fix $(( $(wc -l < .git/autofix.sh) - 1 )) warnings"
+      n_autofix="$(( $(wc -l < .git/autofix.sh) - 1 ))"
+      if [ $n_autofix -gt 0 ]; then
+	    echo "====>  Run .git/autofix.sh to fix ${n_autofix:?} warnings"
     fi
   fi
   cat <<EOF
