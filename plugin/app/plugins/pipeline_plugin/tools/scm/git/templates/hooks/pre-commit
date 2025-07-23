@@ -9,6 +9,7 @@ rm -vf .git/hooks.log
 rm -vf target/logs/new_warnings.txt
 rm -vf target/logs/fix_warnings.txt
 rm -rfv .git/summary_metrics
+rm -fv .git/autofix.sh
 touch .git/failed_hooks
 touch .git/target_hooks
 mkdir -p .git/integrity_hooks
@@ -59,6 +60,9 @@ EOF
       fi
     fi
     make summary_metrics
+    if [[ -f .git/autofix.sh ]]; then
+	echo "====>  Run .git/autofix.sh to fix $(( $(wc -l < .git/autofix.sh) - 1 )) warnings"
+    fi
   fi
   cat <<EOF
 You can disable hook in a file using:
