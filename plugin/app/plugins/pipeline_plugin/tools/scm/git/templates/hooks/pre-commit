@@ -9,6 +9,7 @@ rm -vf .git/hooks.log
 rm -vf target/logs/new_warnings.txt
 rm -vf target/logs/fix_warnings.txt
 rm -rfv .git/summary_metrics
+rm -fv target/reports/summary_metrics.md
 rm -fv .git/autofix.sh
 touch .git/failed_hooks
 touch .git/target_hooks
@@ -61,9 +62,9 @@ EOF
     fi
     make summary_metrics
     if [[ -f .git/autofix.sh ]]; then
-      n_autofix="$(( $(wc -l < .git/autofix.sh) - 1 ))"
+      n_autofix="$(($(wc -l <.git/autofix.sh) - 1))"
       if [ $n_autofix -gt 0 ]; then
-	    echo "====>  Run .git/autofix.sh to fix ${n_autofix:?} warnings"
+        echo "====>  Run .git/autofix.sh to fix ${n_autofix:?} warnings"
       fi
     fi
   fi
@@ -75,6 +76,10 @@ DISABLE_HOOK='${error_file}' git commit ...
 More info about hooks in: http://cdn-deploy-manager.cdn.hi.inet/cdn/repositories/current/docs/components/cdn-build/includes/git-hooks.adoc
 EOF
 fi
+if [[ -d .git/summary_metrics && ! -f target/reports/summary_metrics.md ]]; then
+  make summary_metrics
+fi
+
 cat <<EOF
 ===================================================================
 ===================================================================
