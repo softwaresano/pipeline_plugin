@@ -10,6 +10,8 @@ rm -vf target/logs/new_warnings.txt
 rm -vf target/logs/fix_warnings.txt
 rm -rfv .git/summary_metrics
 rm -fv target/reports/summary_metrics.md
+rm -fv .git/tempdir/scm_diff_report.txt
+rm -fvr target/reports/new_w*
 rm -fv .git/autofix.sh
 touch .git/failed_hooks
 touch .git/target_hooks
@@ -21,6 +23,7 @@ source "${validator_dir:?}"/run_validator.sh
 n_errors=0
 errors_files=''
 run_validator " " "check_changes" || exit 1
+run_validator " " "scm_diff" || exit 1
 is_cdn_build && codespell_validator=lint_codespell || codespell_validator=codespell
 while read -r file_name; do
   run_validator "$file_name" "encoding" &&
