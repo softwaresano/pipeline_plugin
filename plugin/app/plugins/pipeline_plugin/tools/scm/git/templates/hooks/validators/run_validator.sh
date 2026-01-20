@@ -66,6 +66,10 @@ function get_validator() {
     is_present_tech groovy && echo "lint_groovy" || echo "groovy"
     return 0
     ;;
+  *.json)
+    is_present_tech json && echo "lint_json" || echo "json"
+    return 0
+    ;;
   Gemfile)
     is_present_tech "(ruby|gems|rake)" && echo "Gemfile lint_ruby" || echo "rb"
     return 0
