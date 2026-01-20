@@ -67,7 +67,7 @@ function get_validator() {
     return 0
     ;;
   *.json)
-    is_present_tech json && echo "lint_json"
+    is_present_tech json && echo "lint_json" || echo "json"
     return 0
     ;;
   Gemfile)
