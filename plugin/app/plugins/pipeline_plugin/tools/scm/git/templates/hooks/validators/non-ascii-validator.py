@@ -16,11 +16,11 @@ status = 0
 MAX_ASCII_CODE = 255
 
 # Allow Unicode characters in documentation files
-UNICODE_ALLOWED_EXTENSIONS = ['.adoc', '.md', '.markdown', '.rst', '.txt']
+UNICODE_ALLOWED_EXTENSIONS = ['']
 
 # Allowed Unicode symbol ranges (emojis and icons)
 ALLOWED_SYMBOL_RANGES = [
-    (0x2600, 0x27BF),   # Miscellaneous Symbols and Dingbats (includes ✅, ❌)
+    (0x2600, 0x27BF),   # Miscellaneous Symbols and Dingbats
     (0x1F300, 0x1F9FF), # Emoticons, Symbols, Pictographs (emojis)
     (0x2300, 0x23FF),   # Miscellaneous Technical
     (0x2000, 0x206F),   # General Punctuation
