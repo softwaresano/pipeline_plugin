@@ -1,13 +1,14 @@
 #!/usr/bin/python3
 
 """
-require-ascii
+require-ascii with icon/emoji allowlist
 """
 
 # http://python-future.org/compatible_idioms.html
 from __future__ import print_function
 
 import sys
+import unicodedata
 
 status = 0
 
@@ -15,7 +16,37 @@ status = 0
 MAX_ASCII_CODE = 255
 
 # Allow Unicode characters in documentation files
-UNICODE_ALLOWED_EXTENSIONS = ['.adoc', '.md', '.markdown', '.rst']
+UNICODE_ALLOWED_EXTENSIONS = ['.adoc', '.md', '.markdown', '.rst', '.txt']
+
+# Allowed Unicode symbol ranges (emojis and icons)
+ALLOWED_SYMBOL_RANGES = [
+    (0x2600, 0x27BF),   # Miscellaneous Symbols and Dingbats (includes ✅, ❌)
+    (0x1F300, 0x1F9FF), # Emoticons, Symbols, Pictographs (emojis)
+    (0x2300, 0x23FF),   # Miscellaneous Technical
+    (0x2000, 0x206F),   # General Punctuation
+]
+
+# Allowed Unicode categories (Symbol and Punctuation)
+ALLOWED_CATEGORIES = ['So', 'Sk', 'Sm', 'Sc', 'Po', 'Ps', 'Pe', 'Pi', 'Pf', 'Pd']
+
+def is_allowed_unicode(char):
+    """Check if character is an allowed icon/symbol"""
+    code = ord(char)
+    
+    # Check if in allowed ranges
+    for start, end in ALLOWED_SYMBOL_RANGES:
+        if start <= code <= end:
+            return True
+    
+    # Check Unicode category
+    try:
+        category = unicodedata.category(char)
+        if category in ALLOWED_CATEGORIES:
+            return True
+    except:
+        pass
+    
+    return False
 
 for filename in sys.argv:
     line_num = 0
@@ -39,7 +70,11 @@ for filename in sys.argv:
             col_num = 0
             for char in line:
                 col_num += 1
-                if ord(char) > MAX_ASCII_CODE and not allow_unicode:
+                if ord(char) > MAX_ASCII_CODE:
+                    # If file allows Unicode, check if it's an allowed icon/symbol
+                    if allow_unicode and is_allowed_unicode(char):
+                        continue
+                    # Otherwise, reject the character
                     print(
                         f"{filename}: line {line_num} column {col_num} " +
                         f"character \"{char}\" (decimal {ord(char)})"
