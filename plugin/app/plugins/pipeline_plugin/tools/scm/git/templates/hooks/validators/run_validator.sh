@@ -67,7 +67,7 @@ function get_validator() {
     return 0
     ;;
   *.json)
-    is_present_tech json && echo "lint_json" || echo "json"
+    is_present_tech json && echo "code_style_prettier lint_json" || echo "json prettier"
     return 0
     ;;
   Gemfile)
@@ -88,12 +88,8 @@ function get_validator() {
     is_present_tech yaml && echo "lint_yaml" || echo "yaml"
     return 0
     ;;
-  *.json)
-    echo "json prettier"
-    return 0
-    ;;
   *.ts)
-    is_present_tech typescript && echo "lint_typescript" || echo "prettier"
+    is_present_tech typescript && echo "code_style_prettier lint_typescript" || echo "prettier"
     return 0
     ;;
   *.html | *.htm | *.js)
