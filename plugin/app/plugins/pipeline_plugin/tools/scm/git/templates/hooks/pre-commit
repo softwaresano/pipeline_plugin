@@ -30,8 +30,8 @@ while read -r file_name; do
     run_validator "$file_name" "file_path" &&
     run_validator "$file_name" "not_binary" &&
     run_validator "$file_name" "size" &&
-    run_validator "${file_name:?}" "${codespell_validator:?}" &&
-    run_validator "$file_name" ""
+    run_validator "$file_name" "" &&
+    run_validator "${file_name:?}" "${codespell_validator:?}"
 done < <(git status --porcelain | grep -E --color=no '^AM |^ M |^M |^A ' | awk '{$1=""; $0=$0; sub(/^ */, ""); print;}' | sort)
 
 cat <<EOF
