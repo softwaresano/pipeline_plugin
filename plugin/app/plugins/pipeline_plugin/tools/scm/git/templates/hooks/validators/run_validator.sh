@@ -89,7 +89,8 @@ function get_validator() {
     return 0
     ;;
   *.ts)
-    is_present_tech typescript && echo "code_style_prettier lint_typescript" || echo "prettier"
+    is_present_tech typescript && echo "code_style_prettier lint_typescript" && return 0
+    is_present_tech prettier && echo "code_style_prettier" || echo "prettier"
     return 0
     ;;
   *.html | *.htm | *.js)
