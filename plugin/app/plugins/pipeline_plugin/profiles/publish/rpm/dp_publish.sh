@@ -193,11 +193,7 @@ name-[version].[x86_64|noarch].rpm[:el5,:el6]"
          pushd . >/dev/null
          cd $initiative_dir
          IFS=$'\n'
-         # Only our pipeline-built rpms (release carries the git hash, e.g.
-         # -143.gb15f7ed5.el8) belong in initiative. Match just those, so a
-         # third-party rpm wrongly placed in initiative is not removed from the
-         # 3party repo, where that dependency actually belongs.
-         for file in $(find -maxdepth 1 -type f -regextype posix-extended -regex ".*-[0-9]+\.g[0-9a-f]+\..*\.rpm"); do
+		 for file in $(find -maxdepth 1 -type f -name "*.rpm"); do
             rm -fv $target_repo_dir/$(basename $file)
          done;
          unset IFS
