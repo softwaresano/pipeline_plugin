@@ -53,7 +53,7 @@ function get_repo_dir(){
 function extract_dependencies(){
   local rpm_files=$1
   local line
-  rm -rf $TMP_DEPENCENCIES_FILE
+  rm -rvf $TMP_DEPENCENCIES_FILE
   while read -r line || [[ -n "$line" ]]; do
     if [[ -f "$line" ]]; then
        rpm -qp --requires $line|grep -v ^"config(" >>$TMP_DEPENCENCIES_FILE
@@ -69,9 +69,9 @@ function are_there_any_new_dependency(){
   touch $dependencies_file
   cat $dependencies_file>>$TMP_DEPENCENCIES_FILE
   cat $TMP_DEPENCENCIES_FILE|sort|uniq -i > $TMP_DEPENCENCIES_FILE.new
-  rm -rf $TMP_DEPENCENCIES_FILE
+  rm -rvf $TMP_DEPENCENCIES_FILE
   if [[ "$(diff $TMP_DEPENCENCIES_FILE.new $dependencies_file)" != "" ]]; then
-    rm -f "${dependencies_file:?}"
+    rm -fv "${dependencies_file:?}"
     mv $TMP_DEPENCENCIES_FILE.new $dependencies_file
     return 0
   else
@@ -156,7 +156,7 @@ name-[version].[x86_64|noarch].rpm[:el5,:el6]"
    createrepo $target_repo_dir
    local rpm_names=($(echo $rpm_dependencies|sed s:"\.rpm$":"":g|sed s:"\.rpm ":" ":g|sort -u))
    _log "[INFO] Downloading dependencies for $rpm_names"
-   rm -Rf "/var/tmp/yum-$(id -un)-*"
+   rm -Rfv "/var/tmp/yum-$(id -un)-*"
    tmp_yumdownloader_log=$(mktemp -p /tmp)
    if [[ "${YUMDOWNLOADER_CMD}" == "" ]]; then
      rm -rfv "${cache_folder:?}"
@@ -181,10 +181,10 @@ name-[version].[x86_64|noarch].rpm[:el5,:el6]"
      _log "[ERROR] ERROR downloading:"
      egrep '^Error in resolve of packages|No Match for argument' $tmp_yumdownloader_log
    fi
-   rm -f $tmp_yumdownloader_log
+   rm -vf $tmp_yumdownloader_log
    [[ "$errors" != '0' ]] && return 1
    [[ $status_yum_downloader != 0 ]] && _log "[ERROR] Problems downloading rpms" && return 1
-   rm -f $tmp_yumdownloader_log
+   rm -fv $tmp_yumdownloader_log
    # Remove initiative rpms stored in 3party repo
    _log "[INFO] Remove initiative rpms stored in 3party"
    IFS=" "
@@ -193,8 +193,12 @@ name-[version].[x86_64|noarch].rpm[:el5,:el6]"
          pushd . >/dev/null
          cd $initiative_dir
          IFS=$'\n'
-         for file in $(find -maxdepth 1 -type f -name "*.rpm"); do
-            rm -f $target_repo_dir/$(basename $file)
+         # Only our pipeline-built rpms (release carries the git hash, e.g.
+         # -143.gb15f7ed5.el8) belong in initiative. Match just those, so a
+         # third-party rpm wrongly placed in initiative is not removed from the
+         # 3party repo, where that dependency actually belongs.
+         for file in $(find -maxdepth 1 -type f -regextype posix-extended -regex ".*-[0-9]+\.g[0-9a-f]+\..*\.rpm"); do
+            rm -fv $target_repo_dir/$(basename $file)
          done;
          unset IFS
          popd >/dev/null
@@ -256,7 +260,7 @@ function post_publish(){
       [[ "$item" == "" ]] && return $ret_val
       local pull_request_dir=$(dirname $(dirname $(default_repo_dir)))/us/$item
       _log "[INFO] Removing pull request directory [$pull_request_dir]"
-      rm -rf $pull_request_dir
+      rm -rvf $pull_request_dir
       return $ret_val
 }
 
@@ -267,7 +271,7 @@ function publish_3party_rpm_dependencies(){
       _log "[INFO] Publishing third party rpms"
       local third_parties_dir=$(dirname $(default_repo_dir))/.3parties
       mkdir -p $third_parties_dir
-      rm -f ${third_parties_dir}/$(basename -s .git $(dp_scm_url.sh))
+      rm -fv ${third_parties_dir}/$(basename -s .git $(dp_scm_url.sh))
       cp thirdparty-rpms.txt ${third_parties_dir}/$(basename -s .git $(dp_scm_url.sh))
       get_dependencies $PWD/thirdparty-rpms.txt
       return $?
