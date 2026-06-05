@@ -193,7 +193,7 @@ name-[version].[x86_64|noarch].rpm[:el5,:el6]"
          pushd . >/dev/null
          cd $initiative_dir
          IFS=$'\n'
-		 for file in $(find -maxdepth 1 -type f -name "*.rpm"); do
+         for file in $(find -maxdepth 1 -type f -name "*.rpm"); do
             rm -fv $target_repo_dir/$(basename $file)
          done;
          unset IFS
