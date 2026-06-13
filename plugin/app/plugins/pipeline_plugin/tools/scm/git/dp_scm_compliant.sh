@@ -23,8 +23,10 @@ function get_git_prefix_message() {
 
 project_name=$(get_repo_project_name)
 projects_id_dir=$(git rev-parse --show-toplevel)/.git/hooks/projects_id
-jira_prefix_file=$projects_id_dir/$project_name/jira_prefix
-jira_prefix=$(cat $jira_prefix_file 2>/dev/null)
+jira_prefix_file="$projects_id_dir/$project_name"/jira_prefix
+if [[ "${jira_prefix}" == '' ]]; then
+  jira_prefix=$(cat "$jira_prefix_file" 2>/dev/null)
+fi
 
 if [[ "$jira_prefix" == "" ]]; then
   if [[ "$project_name" == "cdn" ]]; then
