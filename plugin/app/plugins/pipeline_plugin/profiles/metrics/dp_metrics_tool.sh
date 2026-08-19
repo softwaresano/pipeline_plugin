@@ -25,11 +25,11 @@ function isSonarOk(){
 
 function getMetricsTool(){
    local tool="withoutMetricsConfig"
-   if [ -f pom.xml ]; then
-         tool="sonar"
-   else
-      if [ -f sonar-project.properties ]; then
+   if [ -f sonar-project.properties ]; then
          tool="sonarRunner"
+   else
+      if [ -f pom.xml ]; then
+         tool="sonar"
       fi
    fi
    if [ "$tool" != "withoutMetricsConfig" ]; then
