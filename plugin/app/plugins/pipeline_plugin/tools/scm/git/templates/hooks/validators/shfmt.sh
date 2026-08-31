@@ -1,4 +1,5 @@
 #!/bin/bash
+
 # Validate shell formater
 function validate() {
   if ! shfmt -d -s -i 2 "$file_name"; then
