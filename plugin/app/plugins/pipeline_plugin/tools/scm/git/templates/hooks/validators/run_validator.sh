@@ -42,7 +42,7 @@ function get_validator() {
   esac
   case $file_name in
   *.md)
-    is_present_tech markdown && echo "code_style_prettier lint_markdown" || echo "md prettier"
+    is_present_tech markdown && echo "lint_markdown" || echo "md prettier"
     return 0
     ;;
   *.adoc)
