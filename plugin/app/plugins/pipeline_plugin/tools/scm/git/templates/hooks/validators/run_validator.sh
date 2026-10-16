@@ -63,7 +63,7 @@ function get_validator() {
     return 0
     ;;
   *.groovy | Jenkinsfile)
-    is_present_tech groovy && echo "lint_groovy" || echo "groovy"
+    is_present_tech groovy && echo "lint_groovy check_coverage_groovy" || echo "groovy"
     return 0
     ;;
   *.json)
