@@ -50,7 +50,7 @@ function get_validator() {
     return 0
     ;;
   Makefile | *.mk)
-    is_present_tech makefile && echo "test_makefile" || echo "Makefile"
+    is_present_tech makefile && echo "test_makefile lint_makefile" || echo "Makefile"
     return 0
     ;;
   Pipfile | package.json) type_file="$file_name" ;;
