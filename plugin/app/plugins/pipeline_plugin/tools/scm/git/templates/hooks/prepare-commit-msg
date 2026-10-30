@@ -2,7 +2,7 @@
 # The git dir of the checkout: in a linked worktree (git worktree add) .git is a file
 git_dir=$(git rev-parse --git-dir)
 function are_old_hooks() {
-  [[ -f ${GIT_HOOK_LOG:-${git_dir}/hooks.log} ]] && [[ $(($(date +%s) - $(stat -c %Y "${GIT_HOOK_LOG:-${git_dir}/hooks.log}"))) -gt 10 ]]
+  [[ -f ${GIT_HOOK_LOG:-${git_dir:?}/hooks.log} ]] && [[ $(($(date +%s) - $(stat -c %Y "${GIT_HOOK_LOG:-${git_dir:?}/hooks.log}"))) -gt 10 ]]
 }
 
 function prepare_commit_message() {
@@ -14,14 +14,14 @@ function prepare_commit_message() {
   source "$(dirname "$0")/validators/run_validator.sh"
   is_hook_enabled "preCommitMessage" || return 0
   if are_old_hooks; then
-     rm -fv "${GIT_HOOK_LOG:-${git_dir}/hooks.log}"
+     rm -fv "${GIT_HOOK_LOG:-${git_dir:?}/hooks.log}"
   fi
   if [[ -e "${CDN_BUILD_LIB}/hooks/integrity.sh" || -e .hooks/integrity.sh ]]; then
-    touch "${git_dir}"/integrity_hooks/integrity
+    touch "${git_dir:?}"/integrity_hooks/integrity
   fi
   while read -r integrity_hook; do
     validator_dir="$(dirname "$0")/validators" run_validator "${commit_message}" "$(basename "${integrity_hook:?}")" || return $?
-  done < <(find "${git_dir}"/integrity_hooks -maxdepth 1 -type d -not -path "${git_dir}"/integrity_hooks)
+  done < <(find "${git_dir:?}"/integrity_hooks -maxdepth 1 -type d -not -path "${git_dir:?}"/integrity_hooks)
   validator_dir="$(dirname "$0")/validators" run_validator "${commit_message}" "integrity" || return $?
   validator_dir="$(dirname "$0")/validators" run_validator "${commit_message}" "gitleaks" || return $?
   validator_dir="$(dirname "$0")/validators" run_validator "${commit_message}" "gitlint" || return $?
