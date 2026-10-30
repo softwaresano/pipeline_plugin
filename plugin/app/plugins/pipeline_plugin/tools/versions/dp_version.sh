@@ -12,11 +12,10 @@ function setCacheProperty() {
 }
 
 function load_cache_version() {
-  local git_home
   local last_commit
-  git_home="$(git rev-parse --show-toplevel 2>/dev/null)" || return 1
+  # The git dir of the checkout: in a linked worktree (git worktree add) .git is a file
+  cache_version_file="$(git rev-parse --path-format=absolute --git-path version_file 2>/dev/null)" || return 1
   last_commit=$(git show-ref | grep -Po ".*(?= refs/heads/$(git rev-parse --abbrev-ref HEAD)$)")
-  cache_version_file="${git_home:?}/.git/version_file"
   cache_commit=$(grep -Po "(?<=cache_commit=).*" "${cache_version_file:?}" 2>/dev/null)
   [[ ${cache_commit} != "${last_commit}" ]] && rm -f "${cache_version_file}" &&
     cache_commit="${last_commit}" && git pack-refs --all &&
@@ -186,8 +185,9 @@ function get_scm_branch_type() {
 #It returns true if it's subversion
 function is_scm_type() {
   (
-    while [ ! -d "$1" ] && [ ! "$PWD" = "/" ]; do cd ..; done
-    if [ -d "$1" ]; then
+    # -e: .git is a file in a linked worktree
+    while [ ! -e "$1" ] && [ ! "$PWD" = "/" ]; do cd ..; done
+    if [ -e "$1" ]; then
       echo "true"
     else
       echo "false"

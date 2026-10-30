@@ -58,12 +58,12 @@ get_version_string()
            ## if we are in develop use the total count of commits
            ###  version=$(git describe --tags --long --match */KO)
            version=$(for i in $(git tag|grep "/KO"|sort -Vr); do git describe --tags --long --match $i 2>/dev/null && break; done;)
-           git_root_dir=$(git rev-parse --show-toplevel)
+           packed_refs=$(git rev-parse --git-path packed-refs)
            local major_version
            local ko_version
            local tag_file
            ko_version=$(echo ${version}|cut -d'/' -f1)
-           major_version=$(grep $(grep "refs/tags/${ko_version}/KO" ${git_root_dir}/.git/packed-refs|awk '{print $1}') ${git_root_dir}/.git/packed-refs |grep -Po "(?<=refs/tags/).*(?=/KO)"|sort -V|tail -1)
+           major_version=$(grep $(grep "refs/tags/${ko_version}/KO" ${packed_refs}|awk '{print $1}') ${packed_refs} |grep -Po "(?<=refs/tags/).*(?=/KO)"|sort -V|tail -1)
            cache_version_string="${major_version}-${version#*KO-}"
         ;;
         release)
