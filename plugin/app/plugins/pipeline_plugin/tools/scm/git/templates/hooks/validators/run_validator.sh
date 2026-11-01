@@ -1,6 +1,7 @@
 #!/bin/bash
 #shellcheck source=plugin/app/plugins/pipeline_plugin/tools/scm/git/templates/hooks/validators/run_validator.sh
 # Run validator
+git_dir=${git_dir:-$(git rev-parse --git-dir)}
 function is_hook_enabled() {
   if [[ $DISABLE_HOOK == "ALL" ]] ||
     [[ $DISABLE_HOOK == "all" ]] ||
@@ -9,10 +10,10 @@ function is_hook_enabled() {
   fi
 }
 function is_cdn_build() {
-   [[ -s .git/techs ]]
+   [[ -s "${git_dir:?}"/techs ]]
 }
 function is_present_tech() {
-  grep -Eq "^${1:?}$" .git/techs
+  grep -Eq "^${1:?}$" "${git_dir:?}"/techs
 }
 
 # Return the function to file validate
@@ -142,7 +143,7 @@ function individual_validator() {
   return "${validator_error:?}"
 }
 function hook_log() {
-  dp_log.sh "${1:?}" |& tee -a .git/hooks.log
+  dp_log.sh "${1:?}" |& tee -a "${git_dir:?}"/hooks.log
 }
 
 function execute_validator() {

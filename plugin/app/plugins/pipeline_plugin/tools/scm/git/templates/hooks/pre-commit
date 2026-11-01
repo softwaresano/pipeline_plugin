@@ -1,23 +1,25 @@
 #!/bin/bash
 validator_dir=$(dirname "$0")/validators
-cat .git/failed_hooks 2>/dev/null | xargs rm -vf
-rm -vf .git/failed_hooks
-rm -vf .git/target_hooks
-rm -rvf .git/integrity_hooks
+# The git dir of the checkout: in a linked worktree (git worktree add) .git is a file
+git_dir=$(git rev-parse --git-dir)
+cat "${git_dir:?}"/failed_hooks 2>/dev/null | xargs rm -vf
+rm -vf "${git_dir:?}"/failed_hooks
+rm -vf "${git_dir:?}"/target_hooks
+rm -rvf "${git_dir:?}"/integrity_hooks
 [[ -d target/reports ]] && find target/reports -type f -name "*.sdiff" -exec rm -fv {} \;
-rm -vf .git/hooks.log
+rm -vf "${git_dir:?}"/hooks.log
 rm -vf target/logs/new_warnings.txt
 rm -vf target/logs/fix_warnings.txt
-rm -rfv .git/summary_metrics
+rm -rfv "${git_dir:?}"/summary_metrics
 rm -fv target/reports/summary_metrics.md
-rm -fv .git/tempdir/scm_diff_report.txt
-rm -fv .git/tempdir/ai_review*.md
+rm -fv "${git_dir:?}"/tempdir/scm_diff_report.txt
+rm -fv "${git_dir:?}"/tempdir/ai_review*.md
 rm -fvr target/reports/new_w*
-rm -fv .git/autofix.sh
-touch .git/failed_hooks
-touch .git/target_hooks
-mkdir -p .git/integrity_hooks
-make help PARAM=all_techs 2>/dev/null | tr ' ' '\n' | grep -v '^$' | sort -u >.git/techs
+rm -fv "${git_dir:?}"/autofix.sh
+touch "${git_dir:?}"/failed_hooks
+touch "${git_dir:?}"/target_hooks
+mkdir -p "${git_dir:?}"/integrity_hooks
+make help PARAM=all_techs 2>/dev/null | tr ' ' '\n' | grep -v '^$' | sort -u >"${git_dir:?}"/techs
 
 #shellcheck source=./plugin/app/plugins/pipeline_plugin/tools/scm/git/templates/hooks/validators/run_validator.sh
 source "${validator_dir:?}"/run_validator.sh
@@ -40,7 +42,7 @@ cat <<EOF
 ===================================================================
 ===================================================================
 Hooks summary:
-$(cat .git/hooks.log 2>/dev/null)
+$(cat "${git_dir:?}"/hooks.log 2>/dev/null)
 EOF
 if [[ ${n_errors} != "0" ]]; then
   files_with_errors="$(echo -en "${errors_files}" | sort -u)"
@@ -66,10 +68,10 @@ EOF
       fi
     fi
     make summary_metrics
-    if [[ -f .git/autofix.sh ]]; then
-      n_autofix="$(($(wc -l <.git/autofix.sh) - 1))"
+    if [[ -f "${git_dir:?}"/autofix.sh ]]; then
+      n_autofix="$(($(wc -l <"${git_dir:?}"/autofix.sh) - 1))"
       if [ $n_autofix -gt 0 ]; then
-        echo "====>  Run .git/autofix.sh to fix ${n_autofix:?} warnings"
+        echo "====>  Run ${git_dir:?}/autofix.sh to fix ${n_autofix:?} warnings"
       fi
     fi
   fi
@@ -81,7 +83,7 @@ DISABLE_HOOK='${error_file}' git commit ...
 More info about hooks in: http://cdn-deploy-manager.cdn.hi.inet/cdn/repositories/current/docs/components/cdn-build/includes/git-hooks.adoc
 EOF
 fi
-if [[ -d .git/summary_metrics && ! -f target/reports/summary_metrics.md ]]; then
+if [[ -d "${git_dir:?}"/summary_metrics && ! -f target/reports/summary_metrics.md ]]; then
   make summary_metrics
 fi
 
